@@ -584,15 +584,24 @@
                 const angka = i + 1;
                 const jumlah = frequencies[i];
                 const labelDisplay = currentTheme === 'alam' ? labelsAlam[i] : angka;
+                
+                // Tentukan ikon yang ditampilkan (gambar bentang alam atau titik dadu)
+                let iconDisplay = '';
+                if (currentTheme === 'alam') {
+                    iconDisplay = `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg border-2 border-slate-200 shadow-sm" alt="${labelsAlam[i]}" onerror="this.style.display='none'">`;
+                } else {
+                    iconDisplay = `<span class="text-2xl sm:text-3xl" style="color: ${diceColors[i]}; line-height: 1;">${diceFacesTable[i]}</span>`;
+                }
+
                 const tr = document.createElement('tr');
                 tr.id = `row-${angka}`;
                 tr.className = 'transition-colors duration-500 hover:bg-pink-50/50'; 
 
                 tr.innerHTML = `
                     <td class="px-4 sm:px-6 py-1.5 text-center border-r-2 border-pink-50">
-                        <div class="flex flex-col items-center justify-center">
-                            <span class="text-2xl sm:text-3xl" style="color: ${diceColors[i]}; line-height: 1;">${diceFacesTable[i]}</span>
-                            <span class="font-black text-slate-700 text-sm sm:text-base mt-0.5 text-center leading-tight">${labelDisplay}</span>
+                        <div class="flex flex-col items-center justify-center gap-1">
+                            ${iconDisplay}
+                            <span class="font-black text-slate-700 text-sm sm:text-base text-center leading-tight">${labelDisplay}</span>
                         </div>
                     </td>
                     <td class="px-4 sm:px-6 py-1.5">${generateTallyMarks(jumlah)}</td>
