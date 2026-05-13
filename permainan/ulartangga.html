@@ -42,15 +42,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Wrapper Papan (Untuk menempelkan tombol di sudut bawahnya) */
-        .board-wrapper {
-            width: 100%;
-            max-width: min(95vw, 75vh); /* Memaksimalkan ukuran papan */
-            position: relative;
-            margin: auto;
-        }
-
-        /* Kotak Grid Ular Tangga */
+        /* Kotak Grid Ular Tangga - Super Presisi */
         .board-container {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -81,7 +73,7 @@
             .cell { border-radius: 12px; }
         }
 
-        /* Pion Pemain */
+        /* Pion Pemain (Bisa Banyak) */
         .player-token {
             position: absolute;
             width: 4.5%;
@@ -267,8 +259,8 @@
         </div>
     </div>
 
-    <!-- P3 (Kiri Bawah - Agak ke atas agar tidak tumpang tindih dengan dadu pada layar kecil) -->
-    <div id="card-p2" class="absolute bottom-20 left-4 sm:bottom-6 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
+    <!-- P3 (Kiri Bawah) -->
+    <div id="card-p2" class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
         <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-emerald-600 text-sm shadow-inner">P3</div>
         <div class="pr-2">
             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
@@ -285,45 +277,52 @@
         </div>
     </div>
 
-    <!-- WRAPPER UTAMA PAPAN -->
-    <div class="w-full h-full flex justify-center items-center p-4 pt-16 pb-20 sm:pb-24">
+    <!-- WRAPPER UTAMA PAPAN & TOMBOL (FLEX ROW) -->
+    <div class="w-full h-full flex flex-row justify-center items-end sm:items-center p-2 sm:p-4 pt-16 sm:pt-20 pb-20 sm:pb-24">
         
-        <div class="board-wrapper">
+        <div class="flex items-end gap-2 sm:gap-4 w-full max-w-[min(95vw,85vh)] justify-center">
             
-            <!-- BOARD CONTAINER -->
-            <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-3 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
-                <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
-                    <!-- SVG LAYER -->
-                    <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-
-                    <!-- GRID KOTAK 10x10 -->
-                    <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full">
-                        <!-- Sel (Kotak) di-generate oleh JS -->
-                    </div>
-
-                    <!-- PION PEMAIN -->
-                    <div id="tokens-container">
-                        <div id="player-token-0" class="player-token hidden"></div>
-                        <div id="player-token-1" class="player-token hidden"></div>
-                        <div id="player-token-2" class="player-token hidden"></div>
-                        <div id="player-token-3" class="player-token hidden"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- TOMBOL KOCOK (DIPINDAH KE POJOK KIRI BAWAH PAPAN) -->
-            <div class="absolute -bottom-16 sm:-bottom-20 left-0 z-[100] flex flex-row items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 pr-2 sm:pr-3 rounded-full shadow-xl border-2 border-emerald-100 transition-transform">
-                <div id="mini-dice-visual" class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-full shadow-inner flex items-center justify-center text-2xl sm:text-3xl font-black transition-all">🎲</div>
-                <button id="btn-roll" onclick="rollDice3D()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-full px-5 py-2 sm:px-6 sm:py-2.5 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm tracking-widest uppercase border border-brand-600">
+            <!-- TOMBOL KOCOK (SAMPING KIRI PAPAN, MEPEK KOTAK 1) -->
+            <div class="z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 transition-transform mb-3 sm:mb-6 shrink-0">
+                <div id="mini-dice-visual" class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-3xl sm:text-4xl font-black transition-all">🎲</div>
+                <button id="btn-roll" onclick="rollDice3D()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-sm tracking-widest uppercase border border-brand-600">
                     KOCOK
                 </button>
             </div>
 
-        </div>
+            <!-- BOARD WRAPPER -->
+            <div class="board-wrapper flex-grow max-w-[min(78vw,80vh)] relative">
+                <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-3 rounded-2xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
+                    <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
+                        
+                        <!-- SVG LAYER -->
+                        <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
 
+                        <!-- GRID KOTAK 10x10 -->
+                        <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full">
+                            <!-- Sel (Kotak) di-generate oleh JS -->
+                        </div>
+
+                        <!-- PION PEMAIN -->
+                        <div id="tokens-container">
+                            <div id="player-token-0" class="player-token hidden"></div>
+                            <div id="player-token-1" class="player-token hidden"></div>
+                            <div id="player-token-2" class="player-token hidden"></div>
+                            <div id="player-token-3" class="player-token hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <!-- OVERLAY ANIMASI DADU 3D YANG DILEMPAR (TERLEMPAR DARI KIRI BAWAH) -->
+    <!-- UI: BOTTOM CENTER (GAME LOG FLOAT) -->
+    <div class="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-white/90 backdrop-blur-md px-6 py-2.5 sm:py-3 rounded-full shadow-lg border-2 border-cyan-100 text-center min-w-[280px] transition-colors pointer-events-none" id="log-container">
+        <span id="game-log" class="text-xs sm:text-sm font-bold text-slate-600">Tentukan jumlah pemain 🎲</span>
+    </div>
+
+    <!-- OVERLAY ANIMASI DADU 3D (TERLEMPAR DARI KIRI BAWAH MENUJU TENGAH PAPAN) -->
     <div id="dice-3d-overlay" class="fixed inset-0 z-[1000] perspective-1000 pointer-events-none flex items-center justify-center opacity-0 hidden transition-opacity duration-300">
         <div id="dice-wrapper" class="flex flex-col items-center">
             <div id="dice-cube" class="dice-cube shadow-xl rounded-2xl">
@@ -419,7 +418,7 @@
             document.getElementById('mini-dice-visual').innerHTML = '🎲';
             document.getElementById('btn-roll').disabled = false;
 
-            console.log(`Mulai! Giliran P${currentPlayer + 1}`);
+            setLog(`Mulai! Giliran <b>${playerNames[currentPlayer]}</b>`);
         }
 
         // ==========================================
@@ -603,8 +602,23 @@
             }, stepDelay);
         }
 
+        function setLog(message, isAlert = false) {
+            const logBox = document.getElementById('log-container');
+            const logText = document.getElementById('game-log');
+            logText.innerHTML = message;
+            
+            if (isAlert) {
+                logBox.classList.remove('border-cyan-100');
+                logBox.classList.add('bg-yellow-100', 'border-yellow-400');
+                setTimeout(() => {
+                    logBox.classList.remove('bg-yellow-100', 'border-yellow-400');
+                    logBox.classList.add('border-cyan-100');
+                }, 2500);
+            }
+        }
+
         // ==========================================
-        // ANIMASI DADU 3D DILEMPAR DARI KIRI BAWAH
+        // ANIMASI DADU 3D DILEMPAR (DARI KIRI BAWAH)
         // ==========================================
         function rollDice3D() {
             if (isMoving) return;
@@ -612,7 +626,6 @@
             
             const btn = document.getElementById('btn-roll');
             btn.disabled = true;
-            console.log(`Mengocok dadu...`);
 
             // Persiapan Animasi Overlay 3D
             const overlay = document.getElementById('dice-3d-overlay');
@@ -632,8 +645,8 @@
             cube.style.transition = 'none';
             shadow.style.transition = 'none';
             
-            // Posisi AWAL dadu: Kiri Bawah (Di area tombol kocok yang baru)
-            wrapper.style.transform = 'translate(-35vmin, 35vmin) scale(0.2)';
+            // Posisi AWAL dadu: Kiri Bawah (Dekat Kotak Nomor 1 dan Tombol Kocok)
+            wrapper.style.transform = 'translate(-40vmin, 35vmin) scale(0.2)';
             cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
             shadow.style.transform = 'scale(0.2)';
             shadow.style.opacity = '0';
@@ -641,7 +654,7 @@
             // Hasil random (1-6)
             const result = Math.floor(Math.random() * 6) + 1;
             
-            // Konfigurasi Sudut Akhir (Sumbu X & Y) agar angka yang benar berada di atas
+            // Konfigurasi Sudut Akhir
             let targetRotX = 0, targetRotY = 0;
             switch(result) {
                 case 1: targetRotX = 0; targetRotY = 0; break;
@@ -652,14 +665,14 @@
                 case 6: targetRotX = 180; targetRotY = 0; break;
             }
 
-            // Tambahkan putaran ekstra (spinning effect) agar berputar kencang di udara
-            let extraSpinsX = (Math.floor(Math.random() * 3) + 3) * 360; // 3-5 Putaran penuh
+            // Putaran ekstra agar berputar kencang di udara
+            let extraSpinsX = (Math.floor(Math.random() * 3) + 3) * 360; 
             let extraSpinsY = (Math.floor(Math.random() * 3) + 3) * 360; 
             let extraSpinsZ = (Math.floor(Math.random() * 2) + 1) * 360; 
 
-            // Trigger Animasi Lempar (Bouncing Drop & Spin ke arah tengah)
+            // Trigger Animasi Lempar (Bouncing Drop & Spin menuju tengah)
             setTimeout(() => {
-                // Kubus dilempar (Bergerak ke tengah layar dengan curve melambung)
+                // Kubus dilempar (Bergerak ke tengah layar)
                 wrapper.style.transition = 'transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                 wrapper.style.transform = 'translate(0, 0) scale(1)';
                 
@@ -667,18 +680,18 @@
                 cube.style.transition = 'transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)';
                 cube.style.transform = `rotateX(${targetRotX + extraSpinsX}deg) rotateY(${targetRotY + extraSpinsY}deg) rotateZ(${extraSpinsZ}deg)`;
                 
-                // Bayangan menyesuaikan
+                // Bayangan
                 shadow.style.transition = 'transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease-in';
                 shadow.style.transform = 'scale(1)';
                 shadow.style.opacity = '1';
                 
-                // Update dadu mini berkedip saat dadu asli memutar
+                // Dadu mini berkedip saat dadu asli memutar
                 let blinkInterval = setInterval(() => {
                     const rnd = Math.floor(Math.random() * 6) + 1;
                     miniVisual.innerHTML = `<span class="text-slate-400 opacity-50">${rnd}</span>`;
                 }, 100);
 
-                // Setelah putaran kubus utama selesai (1.2 detik)
+                // Setelah putaran kubus utama selesai
                 setTimeout(() => {
                     clearInterval(blinkInterval);
                     miniVisual.innerHTML = `<span class="text-brand-600">${result}</span>`;
@@ -695,12 +708,10 @@
                         let targetPos = currentPosTemp + result;
                         
                         if (targetPos > 100) {
-                            console.log(`Dapat ${result}, butuh angka pas. Tetap di tempat.`);
+                            setLog(`Dapat ${result}, butuh angka pas. Tetap di tempat.`);
                             setTimeout(nextTurn, 1500);
                             return;
                         }
-
-                        console.log(`Maju ${result} langkah!`);
                         
                         // Mulai lompatan step by step (satu per satu)
                         moveTokenStepByStep(currentPlayer, currentPosTemp, targetPos, 400, () => {
@@ -711,7 +722,7 @@
 
                 }, 1200); // 1.2s Durasi Spin 3D
 
-            }, 50); // Delay kecil untuk memastikan CSS mereset reflow
+            }, 50); 
         }
 
         function checkSnakesLadders(pIndex, pos) {
@@ -721,12 +732,12 @@
             }
 
             if (ladders[pos]) {
-                console.log(`TANGGA! Naik.`);
+                setLog(`🎉 TANGGA! Naik.`);
                 playerPositions[pIndex] = ladders[pos];
                 updatePlayerPosition(pIndex, ladders[pos]);
                 setTimeout(nextTurn, 1200);
             } else if (snakes[pos]) {
-                console.log(`ULAR! Turun.`);
+                setLog(`🐍 WADUH! Digigit ular, Turun.`);
                 playerPositions[pIndex] = snakes[pos];
                 updatePlayerPosition(pIndex, snakes[pos]);
                 setTimeout(nextTurn, 1200);
@@ -741,6 +752,7 @@
             currentPlayer = (currentPlayer + 1) % numPlayers;
             updateTurnUI();
             
+            setLog(`Giliran <b>${playerNames[currentPlayer]}</b>!`);
             isMoving = false;
             document.getElementById('btn-roll').disabled = false;
         }
@@ -780,9 +792,7 @@
         // ==========================================
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Gagal membuka layar penuh.`);
-                });
+                document.documentElement.requestFullscreen().catch(err => {});
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
