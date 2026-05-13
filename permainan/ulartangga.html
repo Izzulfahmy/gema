@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ular Tangga Seru! 🐍🪜</title>
+    
+    <!-- Favicon Logo -->
+    <link rel="icon" href="../aset/Logo.png" type="image/png">
+    
+    <!-- Google Fonts: Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#ecfdf5', 500: '#10b981', 600: '#059669', 900: '#064e3b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Animasi Latar Belakang Minimalis */
+        .animated-bg {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #f0fdfa 100%);
+            background-size: 200% 200%;
+            animation: gradientMove 15s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Kotak Grid Ular Tangga */
+        .board-container {
+            aspect-ratio: 1 / 1;
+            position: relative;
+        }
+
+        .cell {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+            transition: transform 0.2s;
+        }
+
+        .cell-number {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        @media (min-width: 640px) {
+            .cell-number { font-size: 0.9rem; top: 6px; left: 8px; }
+        }
+
+        /* Pion Pemain */
+        #player-token {
+            position: absolute;
+            width: 5%;
+            height: 5%;
+            background: radial-gradient(circle at 30% 30%, #6366f1, #312e81);
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transform: translate(-50%, -50%);
+            transition: top 0.4s ease-in-out, left 0.4s ease-in-out;
+            z-index: 50;
+        }
+
+        /* Animasi Dadu Kocok */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-10deg); }
+            20% { transform: translate(-3px, 0px) rotate(10deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(10deg); }
+            50% { transform: translate(-1px, 2px) rotate(-10deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-10deg); }
+            80% { transform: translate(-1px, -1px) rotate(10deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-10deg); }
+        }
+        .shaking { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+
+        /* Gaya Tombol Mainan */
+        .toy-btn {
+            box-shadow: 0 6px 0 #059669; 
+            transition: all 0.1s;
+        }
+        .toy-btn:active {
+            box-shadow: 0 0px 0 #059669; 
+            transform: translateY(6px); 
+        }
+        .toy-btn:disabled {
+            box-shadow: 0 2px 0 #059669;
+            transform: translateY(4px);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="animated-bg min-h-screen text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
+
+    <!-- WADAH TOMBOL KIRI ATAS (HOME) -->
+    <div class="fixed top-3 left-3 sm:top-5 sm:left-5 z-[100]">
+        <a href="../index.html" class="bg-white/90 backdrop-blur-md border-2 border-brand-200 text-brand-600 p-2 sm:px-3 sm:py-2.5 rounded-2xl shadow-md hover:bg-brand-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Kembali ke Beranda">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- TOMBOL LAYAR PENUH (KANAN ATAS) -->
+    <button onclick="toggleFullScreen()" class="fixed top-3 right-3 sm:top-5 sm:right-5 z-[100] bg-white/90 backdrop-blur-md border-2 border-brand-200 text-brand-600 p-2.5 sm:p-3 rounded-2xl shadow-md hover:bg-brand-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Layar Penuh">
+        <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
+    </button>
+
+    <div class="max-w-6xl mx-auto py-6 px-4 sm:px-8 w-full">
+        
+        <header class="mb-6 lg:mb-8 text-center pt-14 sm:pt-0">
+            <h1 class="text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 drop-shadow-sm tracking-tight mb-2">
+                Ular Tangga Seru! 🐍🪜
+            </h1>
+            <p class="text-slate-600 text-sm sm:text-lg font-bold max-w-xl mx-auto bg-white/50 inline-block px-4 py-1.5 rounded-full shadow-sm border border-white">
+                Siapa yang paling cepat sampai ke angka 100? 🏁
+            </p>
+        </header>
+
+        <main class="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
+            
+            <!-- AREA KIRI: PAPAN PERMAINAN -->
+            <section class="w-full lg:w-2/3 bg-white p-3 sm:p-5 rounded-[2rem] shadow-xl border-4 border-brand-100 relative order-2 lg:order-1">
+                <div class="board-container bg-slate-50 rounded-xl overflow-hidden shadow-inner border-2 border-slate-200">
+                    
+                    <!-- SVG LAYER: Untuk Menggambar Garis Ular & Tangga -->
+                    <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+
+                    <!-- GRID KOTAK 10x10 -->
+                    <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-0.5 sm:gap-1 p-0.5 sm:p-1 w-full h-full">
+                        <!-- Sel (Kotak) akan di-generate oleh JavaScript -->
+                    </div>
+
+                    <!-- PION PEMAIN -->
+                    <div id="player-token" style="left: 5%; top: 95%;"></div>
+                </div>
+            </section>
+
+            <!-- AREA KANAN: KONTROL & INFO -->
+            <section class="w-full lg:w-1/3 flex flex-col gap-5 order-1 lg:order-2 lg:sticky lg:top-6">
+                
+                <!-- Kotak Dadu & Tombol -->
+                <div class="bg-white rounded-[2rem] shadow-xl border-4 border-brand-100 p-6 flex flex-col items-center">
+                    
+                    <div class="w-full flex justify-between items-center mb-6">
+                        <span class="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Kocok Dadu</span>
+                        <div class="px-3 py-1 bg-brand-100 text-brand-700 text-xs font-black rounded-lg border border-brand-200">
+                            Posisi: <span id="pos-indicator">1</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Dadu 2D Sederhana -->
+                    <div id="dice-visual" class="w-24 h-24 sm:w-28 sm:h-28 bg-slate-50 border-4 border-slate-200 rounded-3xl shadow-inner flex items-center justify-center text-4xl sm:text-5xl font-black text-slate-700 mb-6 transition-all duration-200">
+                        🎲
+                    </div>
+
+                    <button id="btn-roll" onclick="rollDice()" class="toy-btn w-full py-4 bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl text-xl sm:text-2xl border-2 border-brand-600 flex items-center justify-center gap-2">
+                        🎲 K O C O K !
+                    </button>
+                </div>
+
+                <!-- Papan Log Informasi -->
+                <div class="bg-white rounded-[2rem] shadow-xl border-4 border-cyan-100 p-6 flex flex-col h-full min-h-[150px]">
+                    <h3 class="font-extrabold text-cyan-700 mb-3 flex items-center gap-2">
+                        <span>📢</span> Informasi Kabar
+                    </h3>
+                    <div id="game-log" class="flex-grow bg-cyan-50 rounded-xl p-4 border border-cyan-100 text-sm sm:text-base font-bold text-slate-600 flex items-center justify-center text-center">
+                        Ayo mulai! Klik tombol kocok untuk jalan pertama.
+                    </div>
+                </div>
+
+                <!-- Tombol Reset -->
+                <button onclick="resetGame()" class="w-full py-3 bg-white hover:bg-rose-50 text-rose-500 font-bold rounded-xl transition-colors border-2 border-rose-200 text-sm shadow-sm">
+                    🔄 Mulai Permainan Baru
+                </button>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- EFEK KONFETI (MUNCUL SAAT MENANG) -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
+        <div class="bg-white/90 backdrop-blur-sm p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500" id="win-modal">
+            <div class="text-7xl mb-4">🏆</div>
+            <h2 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">SELAMAT!</h2>
+            <p class="text-lg font-bold text-slate-600 mb-6">Kamu berhasil mencapai garis akhir (100).</p>
+            <button onclick="resetGame()" class="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-black rounded-xl border-2 border-yellow-600 shadow-md transition-all">
+                Main Lagi!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // DATA ULAR & TANGGA
+        // ==========================================
+        const ladders = { 
+            4: 14, 
+            9: 31, 
+            20: 38, 
+            28: 84, 
+            40: 59, 
+            51: 67, 
+            63: 81, 
+            71: 91 
+        };
+        const snakes = { 
+            17: 7, 
+            54: 34, 
+            62: 19, 
+            64: 60, 
+            87: 24, 
+            93: 73, 
+            95: 75, 
+            99: 78 
+        };
+
+        // Palet warna untuk kotak-kotak papan
+        const cellColors = [
+            'bg-red-100 text-red-600', 'bg-blue-100 text-blue-600', 
+            'bg-green-100 text-green-600', 'bg-yellow-100 text-yellow-600', 
+            'bg-purple-100 text-purple-600', 'bg-pink-100 text-pink-600'
+        ];
+
+        let currentPos = 1;
+        let isMoving = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            buildBoard();
+            drawSnakesAndLadders();
+            updatePlayerPosition(currentPos);
+            
+            // Fullscreen auto-trigger on first click (Browser Security workaround)
+            document.addEventListener('click', function initFS() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(e => {});
+                }
+                document.removeEventListener('click', initFS);
+            });
+        });
+
+        // ==========================================
+        // FUNGSI MEMBANGUN PAPAN
+        // ==========================================
+        function buildBoard() {
+            const grid = document.getElementById('board-grid');
+            grid.innerHTML = '';
+
+            for (let row = 9; row >= 0; row--) {
+                for (let col = 0; col < 10; col++) {
+                    // Logika pola Boustrophedon (kiri-kanan, kanan-kiri)
+                    let num;
+                    if (row % 2 === 0) {
+                        num = (row * 10) + col + 1; // Baris genap: Kiri ke Kanan
+                    } else {
+                        num = (row * 10) + (9 - col) + 1; // Baris ganjil: Kanan ke Kiri
+                    }
+
+                    const cell = document.createElement('div');
+                    cell.className = `cell ${cellColors[num % cellColors.length]}`;
+                    cell.innerHTML = `
+                        <span class="cell-number">${num}</span>
+                        ${getIconForCell(num)}
+                    `;
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        // Tampilkan emoji kecil di sel yang memiliki ujung tangga atau kepala ular
+        function getIconForCell(num) {
+            if (ladders[num]) return '<span class="text-xl sm:text-3xl drop-shadow-md">🪜</span>';
+            if (snakes[num]) return '<span class="text-xl sm:text-3xl drop-shadow-md">🐍</span>';
+            return '';
+        }
+
+        // ==========================================
+        // FUNGSI MENGHITUNG KORDINAT (100% Responsif)
+        // ==========================================
+        // Mengembalikan koordinat x dan y dalam bentuk persentase (0-100)
+        function getCoordinates(num) {
+            let row = Math.floor((num - 1) / 10);
+            let col = (num - 1) % 10;
+            
+            // Jika baris ganjil (1, 3, 5...), hitungan kolom dibalik
+            if (row % 2 !== 0) {
+                col = 9 - col;
+            }
+
+            // Pusat sel (grid 10x10, tiap sel 10%)
+            let x = (col * 10) + 5; 
+            let y = 95 - (row * 10); // 95 karena row 0 ada di bawah
+
+            return { x, y };
+        }
+
+        // ==========================================
+        // MENGGAMBAR ULAR DAN TANGGA DENGAN SVG
+        // ==========================================
+        function drawSnakesAndLadders() {
+            const svg = document.getElementById('svg-layer');
+            let svgContent = '';
+
+            // Gambar Tangga (Garis Putus-putus Hijau/Coklat)
+            for (const [start, end] of Object.entries(ladders)) {
+                const pos1 = getCoordinates(parseInt(start));
+                const pos2 = getCoordinates(end);
+                
+                svgContent += `
+                    <line x1="${pos1.x}" y1="${pos1.y}" x2="${pos2.x}" y2="${pos2.y}" 
+                          stroke="#b45309" stroke-width="1.8" stroke-dasharray="2 2" stroke-linecap="round"/>
+                    <line x1="${pos1.x}" y1="${pos1.y}" x2="${pos2.x}" y2="${pos2.y}" 
+                          stroke="#d97706" stroke-width="0.8" stroke-dasharray="2 2" stroke-linecap="round"/>
+                `;
+            }
+
+            // Gambar Ular (Garis Melengkung Merah)
+            for (const [head, tail] of Object.entries(snakes)) {
+                const pos1 = getCoordinates(parseInt(head));
+                const pos2 = getCoordinates(tail);
+                
+                // Buat titik kontrol untuk kurva (agar melengkung seperti ular)
+                const cx = (pos1.x + pos2.x) / 2 + (Math.random() > 0.5 ? 15 : -15);
+                const cy = (pos1.y + pos2.y) / 2;
+
+                svgContent += `
+                    <path d="M ${pos1.x} ${pos1.y} Q ${cx} ${cy} ${pos2.x} ${pos2.y}" 
+                          stroke="rgba(225, 29, 72, 0.7)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    <circle cx="${pos1.x}" cy="${pos1.y}" r="0.8" fill="#e11d48"/> <!-- Kepala Ular -->
+                `;
+            }
+
+            svg.innerHTML = svgContent;
+        }
+
+        // ==========================================
+        // LOGIKA PERMAINAN
+        // ==========================================
+        function updatePlayerPosition(num) {
+            const pos = getCoordinates(num);
+            const player = document.getElementById('player-token');
+            // Update CSS berdasarkan persentase
+            player.style.left = `${pos.x}%`;
+            player.style.top = `${pos.y}%`;
+            document.getElementById('pos-indicator').innerText = num;
+        }
+
+        function setLog(message, isAlert = false) {
+            const logBox = document.getElementById('game-log');
+            logBox.innerHTML = message;
+            if (isAlert) {
+                logBox.classList.remove('bg-cyan-50', 'border-cyan-100', 'text-slate-600');
+                logBox.classList.add('bg-yellow-100', 'border-yellow-400', 'text-yellow-800');
+                setTimeout(() => {
+                    logBox.classList.add('bg-cyan-50', 'border-cyan-100', 'text-slate-600');
+                    logBox.classList.remove('bg-yellow-100', 'border-yellow-400', 'text-yellow-800');
+                }, 2000);
+            }
+        }
+
+        function rollDice() {
+            if (isMoving) return;
+            isMoving = true;
+            
+            const btn = document.getElementById('btn-roll');
+            const diceVis = document.getElementById('dice-visual');
+            
+            btn.disabled = true;
+            diceVis.classList.add('shaking');
+            setLog('Mengocok dadu... ⏳');
+
+            // Simulasi animasi dadu selama 500ms
+            setTimeout(() => {
+                diceVis.classList.remove('shaking');
+                const roll = Math.floor(Math.random() * 6) + 1;
+                diceVis.innerHTML = `<span class="text-6xl text-brand-600">${roll}</span>`;
+                
+                let targetPos = currentPos + roll;
+                
+                if (targetPos > 100) {
+                    // Jika melebihi 100, tidak bisa jalan
+                    setLog(`Dapat ${roll}, tapi butuh pas untuk ke 100. Coba lagi nanti!`);
+                    isMoving = false;
+                    btn.disabled = false;
+                    return;
+                }
+
+                setLog(`Maju ${roll} langkah ke kotak <b>${targetPos}</b> 🚶‍♂️`);
+                currentPos = targetPos;
+                updatePlayerPosition(currentPos);
+
+                // Cek status setelah pion selesai bergeser (delay 500ms karena CSS transition 0.4s)
+                setTimeout(() => {
+                    checkSnakesLadders(currentPos);
+                }, 500);
+
+            }, 500);
+        }
+
+        function checkSnakesLadders(pos) {
+            const btn = document.getElementById('btn-roll');
+
+            if (pos === 100) {
+                triggerWin();
+                return;
+            }
+
+            if (ladders[pos]) {
+                setLog(`🎉 Wah ada TANGGA! Naik dari ${pos} ke <b>${ladders[pos]}</b>!`, true);
+                currentPos = ladders[pos];
+                updatePlayerPosition(currentPos);
+                
+                setTimeout(() => { isMoving = false; btn.disabled = false; }, 500);
+            } else if (snakes[pos]) {
+                setLog(`🐍 WADUH! Digigit ular, turun dari ${pos} ke <b>${snakes[pos]}</b>!`, true);
+                currentPos = snakes[pos];
+                updatePlayerPosition(currentPos);
+                
+                setTimeout(() => { isMoving = false; btn.disabled = false; }, 500);
+            } else {
+                // Aman, giliran selesai
+                isMoving = false;
+                btn.disabled = false;
+            }
+        }
+
+        function triggerWin() {
+            const modalContainer = document.getElementById('confetti-container');
+            const winModal = document.getElementById('win-modal');
+            
+            modalContainer.classList.remove('hidden');
+            setTimeout(() => {
+                winModal.classList.remove('scale-0');
+                winModal.classList.add('scale-100');
+            }, 50);
+        }
+
+        function resetGame() {
+            currentPos = 1;
+            isMoving = false;
+            
+            updatePlayerPosition(currentPos);
+            document.getElementById('dice-visual').innerHTML = '🎲';
+            setLog('Permainan diulang! Ayo coba lagi capai garis akhir.');
+            document.getElementById('btn-roll').disabled = false;
+
+            // Tutup modal jika sedang terbuka
+            const modalContainer = document.getElementById('confetti-container');
+            const winModal = document.getElementById('win-modal');
+            winModal.classList.remove('scale-100');
+            winModal.classList.add('scale-0');
+            setTimeout(() => {
+                modalContainer.classList.add('hidden');
+            }, 300);
+        }
+
+        // ==========================================
+        // LOGIKA FULLSCREEN
+        // ==========================================
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Gagal membuka layar penuh: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            const enterIcon = document.getElementById('fs-icon-enter');
+            const exitIcon = document.getElementById('fs-icon-exit');
+            
+            if (document.fullscreenElement) {
+                enterIcon.classList.add('hidden');
+                exitIcon.classList.remove('hidden');
+            } else {
+                enterIcon.classList.remove('hidden');
+                exitIcon.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
