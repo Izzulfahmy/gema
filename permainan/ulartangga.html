@@ -45,8 +45,8 @@
         /* Wrapper Papan (Dioptimalkan agar sangat luas dan memenuhi layar) */
         .board-wrapper {
             width: 100%;
-            /* Kalkulasi pintar: lebar maksimal adalah ukuran layar dikurangi ruang untuk tombol kocok (100px) */
-            max-width: min(calc(100vw - 100px), calc(100vh - 60px)); 
+            /* Kalkulasi pintar: lebar maksimal layar dikurangi ruang untuk tombol kocok di kiri (sekitar 110px) */
+            max-width: min(calc(100vw - 110px), calc(100vh - 100px)); 
             position: relative;
             margin: auto;
         }
@@ -286,39 +286,38 @@
         </div>
     </div>
 
-    <!-- WRAPPER UTAMA PAPAN & TOMBOL (FLEX ROW) -->
-    <!-- Padding atas dan bawah dikurangi agar papan bisa membesar maksimal -->
-    <div class="w-full h-full flex flex-row justify-center items-end sm:items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
+    <!-- WRAPPER UTAMA PAPAN -->
+    <div class="w-full h-full flex justify-center items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
         
-        <div class="flex items-end gap-2 sm:gap-4 w-full justify-center">
+        <!-- WRAPPER BERISI PAPAN & TOMBOL DI SAMPINGNYA -->
+        <div class="board-wrapper">
             
-            <!-- TOMBOL KOCOK (SAMPING KIRI PAPAN, MEPEK KOTAK 1) -->
-            <div class="z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 transition-transform mb-2 shrink-0">
-                <div id="mini-dice-visual" class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-3xl sm:text-4xl font-black transition-all">🎲</div>
-                <button id="btn-roll" onclick="rollDice3D()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-sm tracking-widest uppercase border border-brand-600">
+            <!-- TOMBOL KOCOK (Menempel tepat di kiri bawah papan - Kotak 1) -->
+            <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 transition-transform w-[60px] sm:w-[80px]">
+                <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black transition-all">🎲</div>
+                <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-xs tracking-widest uppercase border border-brand-600">
                     KOCOK
                 </button>
             </div>
 
-            <!-- BOARD WRAPPER -->
-            <div class="board-wrapper flex-grow relative">
-                <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
-                    <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
-                        
-                        <!-- SVG LAYER -->
-                        <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+            <!-- BOARD CONTAINER -->
+            <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
+                <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
+                    
+                    <!-- SVG LAYER -->
+                    <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
 
-                        <!-- GRID KOTAK 10x10 -->
-                        <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full">
-                            <!-- Sel (Kotak) di-generate oleh JS -->
-                        </div>
+                    <!-- GRID KOTAK 10x10 -->
+                    <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full">
+                        <!-- Sel (Kotak) di-generate oleh JS -->
+                    </div>
 
-                        <!-- PION PEMAIN -->
-                        <div id="tokens-container">
-                            <div id="player-token-0" class="player-token hidden"></div>
-                            <div id="player-token-1" class="player-token hidden"></div>
-                            <div id="player-token-2" class="player-token hidden"></div>
-                            <div id="player-token-3" class="player-token hidden"></div>
+                    <!-- PION PEMAIN -->
+                    <div id="tokens-container">
+                        <div id="player-token-0" class="player-token hidden"></div>
+                        <div id="player-token-1" class="player-token hidden"></div>
+                        <div id="player-token-2" class="player-token hidden"></div>
+                        <div id="player-token-3" class="player-token hidden"></div>
                     </div>
                 </div>
             </div>
@@ -422,7 +421,7 @@
             document.getElementById('mini-dice-visual').innerHTML = '🎲';
             document.getElementById('btn-roll').disabled = false;
 
-            setLog(`Mulai! Giliran <b>${playerNames[currentPlayer]}</b>`);
+            setLog(`Mulai! Giliran P${currentPlayer + 1}`);
         }
 
         // ==========================================
@@ -640,7 +639,7 @@
             shadow.style.transition = 'none';
             
             // Posisi AWAL dadu: Kiri Bawah (Dekat Kotak Nomor 1 dan Tombol Kocok)
-            wrapper.style.transform = 'translate(-40vmin, 35vmin) scale(0.2)';
+            wrapper.style.transform = 'translate(-45vmin, 45vmin) scale(0.2)';
             cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
             shadow.style.transform = 'scale(0.2)';
             shadow.style.opacity = '0';
@@ -702,10 +701,12 @@
                         let targetPos = currentPosTemp + result;
                         
                         if (targetPos > 100) {
-                            setLog(`Dapat ${result}, butuh angka pas. Tetap di tempat.`);
+                            console.log(`Dapat ${result}, butuh angka pas. Tetap di tempat.`);
                             setTimeout(nextTurn, 1500);
                             return;
                         }
+
+                        console.log(`Maju ${result} langkah!`);
                         
                         // Mulai lompatan step by step (satu per satu)
                         moveTokenStepByStep(currentPlayer, currentPosTemp, targetPos, 400, () => {
@@ -726,12 +727,12 @@
             }
 
             if (ladders[pos]) {
-                setLog(`🎉 TANGGA! Naik.`);
+                console.log(`TANGGA! Naik.`);
                 playerPositions[pIndex] = ladders[pos];
                 updatePlayerPosition(pIndex, ladders[pos]);
                 setTimeout(nextTurn, 1200);
             } else if (snakes[pos]) {
-                setLog(`🐍 WADUH! Digigit ular, Turun.`);
+                console.log(`ULAR! Turun.`);
                 playerPositions[pIndex] = snakes[pos];
                 updatePlayerPosition(pIndex, snakes[pos]);
                 setTimeout(nextTurn, 1200);
@@ -746,7 +747,6 @@
             currentPlayer = (currentPlayer + 1) % numPlayers;
             updateTurnUI();
             
-            setLog(`Giliran <b>${playerNames[currentPlayer]}</b>!`);
             isMoving = false;
             document.getElementById('btn-roll').disabled = false;
         }
