@@ -42,16 +42,15 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Kotak Grid Ular Tangga - Super Presisi */
+        /* Kotak Grid Ular Tangga - Super Presisi (DIperbaiki agar tidak hilang) */
         .board-container {
-            width: auto;
-            height: auto;
-            max-width: 100%;
-            max-height: 100%;
-            aspect-ratio: 1 / 1;
+            width: 85vmin;
+            height: 85vmin;
+            max-width: 750px;
+            max-height: 750px;
             position: relative;
             z-index: 10;
-            flex-shrink: 1;
+            margin: auto;
         }
 
         .cell {
@@ -77,7 +76,7 @@
             .cell { border-radius: 12px; }
         }
 
-        /* Pion Pemain (Bisa Banyak) */
+        /* Pion Pemain */
         .player-token {
             position: absolute;
             width: 4.5%;
@@ -204,11 +203,10 @@
             position: absolute;
             bottom: -30px;
             filter: blur(8px);
-            transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
     </style>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col justify-center items-center">
 
     <!-- MODAL PILIH PEMAIN (STARTUP) -->
     <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
@@ -228,75 +226,72 @@
 
     <!-- ABSOLUTE CORNER BUTTONS (Z-INDEX TINGGI) -->
     <!-- Kiri Atas (Home & Reset) -->
-    <div class="absolute top-3 left-3 sm:top-5 sm:left-5 z-[100] flex gap-2 sm:gap-3">
-        <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none" title="Beranda">
+    <div class="absolute top-4 left-4 z-[100] flex flex-col sm:flex-row gap-2 sm:gap-3">
+        <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
         </a>
-        <button onclick="resetGame()" class="bg-white/80 backdrop-blur-md border border-white/60 text-rose-500 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none" title="Ulang Permainan">
+        <button onclick="resetGame()" class="bg-white/80 backdrop-blur-md border border-white/60 text-rose-500 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Ulang Permainan">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
         </button>
     </div>
 
     <!-- Kanan Atas (Fullscreen) -->
-    <div class="absolute top-3 right-3 sm:top-5 sm:right-5 z-[100]">
+    <div class="absolute top-4 right-4 z-[100]">
         <button onclick="toggleFullScreen()" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none" title="Layar Penuh">
             <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
             <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
         </button>
     </div>
 
-    <!-- HEADER: TOMBOL KOCOK (Diletakkan di aliran flex agar tidak menutupi papan) -->
-    <header class="w-full pt-4 sm:pt-6 pb-2 flex justify-center items-center z-[90] shrink-0 min-h-[70px]">
-        <div class="bg-white/90 backdrop-blur-md p-1.5 pr-2 sm:p-2 sm:pr-3 rounded-full shadow-xl border-2 border-emerald-100 flex items-center gap-2 sm:gap-3 transition-transform">
-            <div id="mini-dice-visual" class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-full shadow-inner flex items-center justify-center text-2xl sm:text-3xl font-black transition-all">🎲</div>
-            <button id="btn-roll" onclick="rollDice3D()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-full px-5 py-2 sm:px-8 sm:py-3 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm sm:text-lg tracking-wide uppercase">
-                KOCOK!
-            </button>
+    <!-- HUD PEMAIN DI 4 SUDUT -->
+    <!-- P1 (Kiri Atas - Di bawah menu Home/Reset) -->
+    <div id="card-p0" class="absolute top-20 left-4 sm:top-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 transition-all duration-300 hidden origin-top-left">
+        <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-blue-600 text-sm shadow-inner">P1</div>
+        <div class="pr-2">
+            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
+            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p0">1</div>
         </div>
-    </header>
+    </div>
+    
+    <!-- P2 (Kanan Atas) -->
+    <div id="card-p1" class="absolute top-20 right-4 sm:top-24 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-red-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-top-right">
+        <div class="w-10 h-10 rounded-full bg-red-100 border border-red-400 flex items-center justify-center font-black text-red-600 text-sm shadow-inner">P2</div>
+        <div class="pl-2 text-right">
+            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
+            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p1">1</div>
+        </div>
+    </div>
+
+    <!-- P3 (Kiri Bawah - Agak ke atas agar tidak tumpang tindih dengan dadu) -->
+    <div id="card-p2" class="absolute bottom-32 left-4 sm:bottom-40 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
+        <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-emerald-600 text-sm shadow-inner">P3</div>
+        <div class="pr-2">
+            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
+            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p2">1</div>
+        </div>
+    </div>
+
+    <!-- P4 (Kanan Bawah) -->
+    <div id="card-p3" class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-bottom-right">
+        <div class="w-10 h-10 rounded-full bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-yellow-600 text-sm shadow-inner">P4</div>
+        <div class="pl-2 text-right">
+            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
+            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p3">1</div>
+        </div>
+    </div>
+
+    <!-- TOMBOL KOCOK DI POJOK KIRI BAWAH -->
+    <div class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[100] flex flex-col items-center gap-2 bg-white/80 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-xl border-2 border-emerald-100">
+        <div id="mini-dice-visual" class="w-12 h-12 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-3xl font-black transition-all">🎲</div>
+        <button id="btn-roll" onclick="rollDice3D()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-4 py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm tracking-widest uppercase border border-brand-600">
+            KOCOK
+        </button>
+    </div>
 
     <!-- WRAPPER UTAMA PAPAN (Flex-grow agar mengisi sisa ruang) -->
-    <main class="flex-grow w-full relative flex justify-center items-center p-3 sm:p-6 min-h-0">
-        
-        <!-- HUD PEMAIN (Sudut-sudut dari Wrapper ini) -->
-        <!-- P1 (Kiri Atas) -->
-        <div id="card-p0" class="absolute top-1 left-2 sm:top-4 sm:left-4 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 transition-all duration-300 hidden origin-top-left">
-            <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-blue-600 text-sm shadow-inner">P1</div>
-            <div class="pr-2">
-                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-                <div class="text-xl font-black text-slate-700 leading-none" id="pos-p0">1</div>
-            </div>
-        </div>
-        
-        <!-- P2 (Kanan Atas) -->
-        <div id="card-p1" class="absolute top-1 right-2 sm:top-4 sm:right-4 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-red-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-top-right">
-            <div class="w-10 h-10 rounded-full bg-red-100 border border-red-400 flex items-center justify-center font-black text-red-600 text-sm shadow-inner">P2</div>
-            <div class="pl-2 text-right">
-                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-                <div class="text-xl font-black text-slate-700 leading-none" id="pos-p1">1</div>
-            </div>
-        </div>
-
-        <!-- P3 (Kiri Bawah) -->
-        <div id="card-p2" class="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
-            <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-emerald-600 text-sm shadow-inner">P3</div>
-            <div class="pr-2">
-                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-                <div class="text-xl font-black text-slate-700 leading-none" id="pos-p2">1</div>
-            </div>
-        </div>
-
-        <!-- P4 (Kanan Bawah) -->
-        <div id="card-p3" class="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-bottom-right">
-            <div class="w-10 h-10 rounded-full bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-yellow-600 text-sm shadow-inner">P4</div>
-            <div class="pl-2 text-right">
-                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-                <div class="text-xl font-black text-slate-700 leading-none" id="pos-p3">1</div>
-            </div>
-        </div>
-
-        <!-- BOARD CONTAINER (Membesar menyesuaikan ruang Flex) -->
-        <div class="board-container bg-white/60 backdrop-blur-sm p-1.5 sm:p-3 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
+    <div class="w-full h-full flex justify-center items-center p-4">
+        <!-- BOARD CONTAINER (Kotak Sempurna, Presisi, Anti-Hilang) -->
+        <div class="board-container bg-white/80 backdrop-blur-sm p-2 sm:p-3 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
             <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
                 
                 <!-- SVG LAYER -->
@@ -316,10 +311,9 @@
                 </div>
             </div>
         </div>
+    </div>
 
-    </main>
-
-    <!-- OVERLAY ANIMASI DADU 3D YANG MENGGELINDING -->
+    <!-- OVERLAY ANIMASI DADU 3D YANG DILEMPAR DARI POJOK KIRI BAWAH -->
     <div id="dice-3d-overlay" class="fixed inset-0 z-[1000] perspective-1000 pointer-events-none flex items-center justify-center opacity-0 hidden transition-opacity duration-300">
         <div id="dice-wrapper" class="flex flex-col items-center">
             <div id="dice-cube" class="dice-cube shadow-xl rounded-2xl">
@@ -415,7 +409,7 @@
             document.getElementById('mini-dice-visual').innerHTML = '🎲';
             document.getElementById('btn-roll').disabled = false;
 
-            setLog(`Mulai! Giliran P${currentPlayer + 1}`);
+            console.log(`Mulai! Giliran P${currentPlayer + 1}`);
         }
 
         // ==========================================
@@ -599,13 +593,8 @@
             }, stepDelay);
         }
 
-        // Modifikasi fungsi setLog agar hanya melakukan pencatatan di dalam konsol (Log UI telah dihapus)
-        function setLog(message, isAlert = false) {
-            console.log("Game Update: ", message);
-        }
-
         // ==========================================
-        // ANIMASI DADU 3D MENGGELINDING KETENGAH
+        // ANIMASI DADU 3D DILEMPAR DARI KIRI BAWAH
         // ==========================================
         function rollDice3D() {
             if (isMoving) return;
@@ -613,8 +602,7 @@
             
             const btn = document.getElementById('btn-roll');
             btn.disabled = true;
-            
-            setLog(`Mengocok...`);
+            console.log(`Mengocok dadu...`);
 
             // Persiapan Animasi Overlay 3D
             const overlay = document.getElementById('dice-3d-overlay');
@@ -623,17 +611,19 @@
             const shadow = document.getElementById('dice-shadow');
             const miniVisual = document.getElementById('mini-dice-visual');
 
-            // Reset rotasi awal (seakan datang dari atas)
+            // Tampilkan layar overlay
             overlay.classList.remove('hidden');
             void overlay.offsetWidth; // force reflow
             overlay.classList.remove('opacity-0');
             overlay.classList.add('opacity-100');
 
+            // Matikan transisi untuk reset posisi dengan instan
             wrapper.style.transition = 'none';
             cube.style.transition = 'none';
             shadow.style.transition = 'none';
             
-            wrapper.style.transform = 'translateY(-60vh) scale(0.5)';
+            // Posisi AWAL dadu: Pojok Kiri Bawah (Di area tombol kocok)
+            wrapper.style.transform = 'translate(-35vw, 35vh) scale(0.2)';
             cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
             shadow.style.transform = 'scale(0.2)';
             shadow.style.opacity = '0';
@@ -641,7 +631,7 @@
             // Hasil random (1-6)
             const result = Math.floor(Math.random() * 6) + 1;
             
-            // Konfigurasi Sudut Akhir (Sumbu X & Y) agar angka yang benar berada di depan
+            // Konfigurasi Sudut Akhir (Sumbu X & Y) agar angka yang benar berada di atas
             let targetRotX = 0, targetRotY = 0;
             switch(result) {
                 case 1: targetRotX = 0; targetRotY = 0; break;
@@ -652,23 +642,24 @@
                 case 6: targetRotX = 180; targetRotY = 0; break;
             }
 
-            // Tambahkan putaran ekstra (spinning effect)
+            // Tambahkan putaran ekstra (spinning effect) agar berputar kencang di udara
             let extraSpinsX = (Math.floor(Math.random() * 3) + 3) * 360; // 3-5 Putaran penuh
             let extraSpinsY = (Math.floor(Math.random() * 3) + 3) * 360; 
             let extraSpinsZ = (Math.floor(Math.random() * 2) + 1) * 360; 
 
-            // Trigger Animasi Lempar (Bouncing Drop & Spin)
+            // Trigger Animasi Lempar (Bouncing Drop & Spin ke arah tengah)
             setTimeout(() => {
-                // Kubus jatuh (Bouncing Curve)
-                wrapper.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                wrapper.style.transform = 'translateY(0) scale(1)';
+                // Kubus dilempar (Bergerak ke tengah [0,0] dengan ukuran membesar)
+                // Curve custom agar terlihat melambung melengkung
+                wrapper.style.transition = 'transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                wrapper.style.transform = 'translate(0, 0) scale(1)';
                 
                 // Kubus berputar
                 cube.style.transition = 'transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)';
                 cube.style.transform = `rotateX(${targetRotX + extraSpinsX}deg) rotateY(${targetRotY + extraSpinsY}deg) rotateZ(${extraSpinsZ}deg)`;
                 
                 // Bayangan menyesuaikan
-                shadow.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease-in';
+                shadow.style.transition = 'transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease-in';
                 shadow.style.transform = 'scale(1)';
                 shadow.style.opacity = '1';
                 
@@ -695,12 +686,12 @@
                         let targetPos = currentPosTemp + result;
                         
                         if (targetPos > 100) {
-                            setLog(`Dapat ${result}, butuh angka pas. Tetap di tempat.`);
+                            console.log(`Dapat ${result}, butuh angka pas. Tetap di tempat.`);
                             setTimeout(nextTurn, 1500);
                             return;
                         }
 
-                        setLog(`Maju ${result} langkah!`);
+                        console.log(`Maju ${result} langkah!`);
                         
                         // Mulai lompatan step by step (satu per satu)
                         moveTokenStepByStep(currentPlayer, currentPosTemp, targetPos, 400, () => {
@@ -721,12 +712,12 @@
             }
 
             if (ladders[pos]) {
-                setLog(`TANGGA! Naik.`);
+                console.log(`TANGGA! Naik.`);
                 playerPositions[pIndex] = ladders[pos];
                 updatePlayerPosition(pIndex, ladders[pos]);
                 setTimeout(nextTurn, 1200);
             } else if (snakes[pos]) {
-                setLog(`ULAR! Turun.`);
+                console.log(`ULAR! Turun.`);
                 playerPositions[pIndex] = snakes[pos];
                 updatePlayerPosition(pIndex, snakes[pos]);
                 setTimeout(nextTurn, 1200);
