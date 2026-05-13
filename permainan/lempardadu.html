@@ -6,7 +6,7 @@
     <title>Ayo Main Lempar Dadu! 🎲</title>
     
     <!-- Favicon Logo -->
-    <link rel="icon" href="Logo.png" type="image/png">
+    <link rel="icon" href="../Logo.png" type="image/png">
     
     <!-- Google Fonts: Nunito -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -187,13 +187,23 @@
     <!-- OVERLAY LAYAR BURAM -->
     <div id="overlay"></div>
 
-    <!-- TOMBOL SETTING (PENGATURAN) -->
-    <button onclick="toggleSettings()" class="fixed top-3 left-3 sm:top-5 sm:left-5 z-[100] bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2.5 rounded-2xl shadow-md hover:bg-indigo-50 hover:scale-105 font-black flex items-center justify-center transition-all">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-    </button>
+    <!-- WADAH TOMBOL KIRI ATAS (HOME & SETTING) -->
+    <div class="fixed top-3 left-3 sm:top-5 sm:left-5 z-[100] flex gap-2 sm:gap-3">
+        <!-- TOMBOL HOME -->
+        <a href="../index.html" class="bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2.5 rounded-2xl shadow-md hover:bg-indigo-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Kembali ke Beranda">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+
+        <!-- TOMBOL SETTING (PENGATURAN) -->
+        <button onclick="toggleSettings()" class="bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2.5 rounded-2xl shadow-md hover:bg-indigo-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Pengaturan Dadu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </button>
+    </div>
 
     <!-- TOMBOL LAYAR PENUH (KANAN ATAS) -->
     <button onclick="toggleFullScreen()" class="fixed top-3 right-3 sm:top-5 sm:right-5 z-[100] bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-4 sm:py-2.5 rounded-2xl shadow-md hover:bg-indigo-50 hover:scale-105 font-black flex items-center gap-2 transition-all">
@@ -231,29 +241,29 @@
                     <div id="dice-scene" class="dice-scene">
                         <div id="dice-scaler" class="dice-scaler">
                             <div id="dice-cube" class="dice-cube">
-                                <!-- Perhatikan penambahan gambar tema di sini -->
+                                <!-- PATH GAMBAR TELAH DIPERBARUI MENGGUNAKAN FOLDER ASET -->
                                 <div class="dice-face front face-1">
-                                    <img src="1.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar dadu/1.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip"></div>
                                 </div>
                                 <div class="dice-face right face-2">
-                                    <img src="2.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar dadu/2.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div>
                                 </div>
                                 <div class="dice-face top face-3">
-                                    <img src="3.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar dadu/3.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div><div class="pip p3"></div>
                                 </div>
                                 <div class="dice-face bottom face-4">
-                                    <img src="4.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar dadu/4.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div><div class="pip p3"></div><div class="pip p4"></div>
                                 </div>
                                 <div class="dice-face left face-5">
-                                    <img src="5.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar dadu/5.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div><div class="pip p3"></div><div class="pip p4"></div><div class="pip p5"></div>
                                 </div>
                                 <div class="dice-face back face-6">
-                                    <img src="6.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar dadu/6.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div><div class="pip p3"></div><div class="pip p4"></div><div class="pip p5"></div><div class="pip p6"></div>
                                 </div>
                             </div>
