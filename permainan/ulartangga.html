@@ -42,11 +42,11 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Kotak Grid Ular Tangga */
+        /* Kotak Grid Ular Tangga - Dimaksimalkan */
         .board-container {
             width: 100%;
-            /* Membatasi ukuran berdasarkan tinggi layar agar tidak memanjang/perlu scroll */
-            max-width: min(100%, 65vh); 
+            /* Memaksimalkan ukuran papan hingga hampir menyentuh batas layar (85vh) */
+            max-width: min(95vw, 88vh); 
             aspect-ratio: 1 / 1;
             position: relative;
             margin: 0 auto;
@@ -119,22 +119,23 @@
 
         /* Gaya Tombol Mainan */
         .toy-btn {
-            box-shadow: 0 6px 0 #059669; 
             transition: all 0.1s;
         }
         .toy-btn:active {
-            box-shadow: 0 0px 0 #059669; 
-            transform: translateY(6px); 
+            transform: translateY(4px);
+            border-bottom-width: 0px !important;
+            margin-top: 4px;
         }
         .toy-btn:disabled {
-            box-shadow: 0 2px 0 #059669;
-            transform: translateY(4px);
-            opacity: 0.7;
+            opacity: 0.6;
             cursor: not-allowed;
+            transform: translateY(4px);
+            border-bottom-width: 0px !important;
+            margin-top: 4px;
         }
     </style>
 </head>
-<body class="animated-bg min-h-screen text-slate-800 antialiased selection:bg-brand-200 flex flex-col justify-center">
+<body class="animated-bg min-h-screen text-slate-800 antialiased selection:bg-brand-200 flex flex-col justify-center overflow-x-hidden">
 
     <!-- MODAL PILIH PEMAIN (STARTUP) -->
     <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
@@ -154,41 +155,39 @@
 
     <!-- WADAH TOMBOL KIRI ATAS (HOME) -->
     <div class="fixed top-3 left-3 sm:top-5 sm:left-5 z-[100]">
-        <a href="../index.html" class="bg-white/90 backdrop-blur-md border-2 border-brand-200 text-brand-600 p-2 sm:px-3 sm:py-2.5 rounded-2xl shadow-md hover:bg-brand-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Kembali ke Beranda">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:px-3 sm:py-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 font-black flex items-center justify-center transition-all" title="Kembali ke Beranda">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
         </a>
     </div>
 
     <!-- TOMBOL LAYAR PENUH (KANAN ATAS) -->
-    <button onclick="toggleFullScreen()" class="fixed top-3 right-3 sm:top-5 sm:right-5 z-[100] bg-white/90 backdrop-blur-md border-2 border-brand-200 text-brand-600 p-2.5 sm:p-3 rounded-2xl shadow-md hover:bg-brand-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Layar Penuh">
-        <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
+    <button onclick="toggleFullScreen()" class="fixed top-3 right-3 sm:top-5 sm:right-5 z-[100] bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2.5 sm:p-3 rounded-xl shadow-sm hover:bg-white hover:scale-105 font-black flex items-center justify-center transition-all focus:outline-none" title="Layar Penuh">
+        <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
     </button>
 
-    <div class="max-w-6xl mx-auto py-4 px-4 sm:px-8 w-full flex-grow flex flex-col justify-center">
-        
-        <header class="mb-4 lg:mb-6 text-center pt-10 sm:pt-0">
-            <h1 class="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 drop-shadow-sm tracking-tight mb-2">
-                Ular Tangga Seru! 🐍🪜
-            </h1>
-            <p class="text-slate-600 text-xs sm:text-sm font-bold max-w-xl mx-auto bg-white/50 inline-block px-4 py-1.5 rounded-full shadow-sm border border-white">
-                Siapa yang paling cepat sampai ke angka 100? 🏁
-            </p>
-        </header>
+    <!-- FLOATING TITLE -->
+    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-[50] pointer-events-none hidden md:block">
+        <h1 class="text-xl sm:text-2xl font-black text-emerald-700 bg-white/60 backdrop-blur-md px-6 py-1.5 rounded-full border border-white shadow-sm tracking-tight flex items-center gap-2">
+            🐍 Ular Tangga Seru! 🪜
+        </h1>
+    </div>
 
-        <main class="flex flex-col lg:flex-row gap-4 lg:gap-8 items-center lg:items-start justify-center">
-            
-            <!-- AREA KIRI: PAPAN PERMAINAN -->
-            <section class="w-full lg:w-7/12 flex justify-center bg-white p-2 sm:p-4 rounded-[2rem] shadow-xl border-4 border-brand-100 relative order-2 lg:order-1">
-                <div class="board-container bg-slate-50 rounded-xl overflow-hidden shadow-inner border-2 border-slate-200">
+    <!-- MAIN LAYOUT -->
+    <div class="w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-4 lg:gap-6 items-center lg:items-stretch justify-center pt-16 sm:pt-6">
+        
+        <!-- AREA KIRI: PAPAN PERMAINAN (Ukuran Maksimal) -->
+        <section class="w-full flex-grow flex justify-center items-center order-2 lg:order-1">
+            <div class="bg-white p-2 sm:p-3 rounded-3xl shadow-xl border-4 border-white/60 board-container">
+                <div class="w-full h-full bg-slate-50 rounded-xl overflow-hidden shadow-inner border border-slate-200 relative">
                     
-                    <!-- SVG LAYER: Untuk Menggambar Garis Ular & Tangga -->
+                    <!-- SVG LAYER -->
                     <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
 
                     <!-- GRID KOTAK 10x10 -->
-                    <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px sm:gap-0.5 p-0.5 w-full h-full">
+                    <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full">
                         <!-- Sel (Kotak) akan di-generate oleh JavaScript -->
                     </div>
 
@@ -200,54 +199,52 @@
                         <div id="player-token-3" class="player-token hidden"></div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- AREA KANAN: KONTROL & INFO -->
-            <section class="w-full lg:w-5/12 flex flex-col gap-4 order-1 lg:order-2 lg:sticky lg:top-6">
+        <!-- AREA KANAN: KONTROL MINIMALIS -->
+        <section class="w-full lg:w-80 flex-shrink-0 flex flex-col gap-4 order-1 lg:order-2">
+            
+            <!-- Panel Utama: Dadu & Giliran -->
+            <div class="bg-white/80 backdrop-blur-md p-5 rounded-3xl shadow-lg border border-white/60 flex flex-col items-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-full blur-3xl opacity-50 -mr-10 -mt-10"></div>
                 
-                <!-- Kotak Dadu & Tombol -->
-                <div class="bg-white rounded-[2rem] shadow-xl border-4 border-brand-100 p-4 sm:p-5 flex flex-col items-center">
-                    
-                    <div class="w-full flex justify-between items-center mb-4">
-                        <span class="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Posisi:</span>
-                        <div class="px-3 py-1 bg-brand-100 text-brand-700 text-[10px] sm:text-xs font-black rounded-lg border border-brand-200 whitespace-nowrap overflow-x-auto w-full max-w-[70%] text-right" id="pos-indicator">
-                            -
-                        </div>
-                    </div>
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 relative z-10">Giliran Pemain</span>
+                <div id="current-player-name" class="text-xl font-black text-slate-700 mb-5 relative z-10">Pilih Pemain</div>
 
-                    <!-- INDIKATOR GILIRAN -->
-                    <div id="turn-indicator" class="mb-4 bg-slate-50 px-4 py-2 rounded-xl border-2 border-slate-200 text-center w-full hidden">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Giliran Mengocok:</span>
-                        <span id="current-player-name" class="font-black text-base sm:text-lg">Pemain</span>
-                    </div>
-
-                    <!-- Visual Dadu 2D Sederhana -->
-                    <div id="dice-visual" class="w-20 h-20 sm:w-24 sm:h-24 bg-slate-50 border-4 border-slate-200 rounded-3xl shadow-inner flex items-center justify-center text-4xl font-black text-slate-700 mb-4 transition-all duration-200">
-                        🎲
-                    </div>
-
-                    <button id="btn-roll" onclick="rollDice()" class="toy-btn w-full py-3 sm:py-4 bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl text-lg sm:text-xl border-2 border-brand-600 flex items-center justify-center gap-2">
-                        🎲 K O C O K !
-                    </button>
+                <!-- Visual Dadu 2D Sederhana -->
+                <div id="dice-visual" class="w-20 h-20 bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-200 rounded-2xl shadow-inner flex items-center justify-center text-4xl font-black text-slate-700 mb-6 relative z-10">
+                    🎲
                 </div>
 
-                <!-- Papan Log Informasi -->
-                <div class="bg-white rounded-[2rem] shadow-xl border-4 border-cyan-100 p-4 sm:p-5 flex flex-col h-full min-h-[120px]">
-                    <h3 class="font-extrabold text-cyan-700 mb-2 flex items-center gap-2 text-sm sm:text-base">
-                        <span>📢</span> Informasi Kabar
-                    </h3>
-                    <div id="game-log" class="flex-grow bg-cyan-50 rounded-xl p-3 border border-cyan-100 text-xs sm:text-sm font-bold text-slate-600 flex items-center justify-center text-center">
-                        Tentukan jumlah pemain terlebih dahulu!
-                    </div>
-                </div>
-
-                <!-- Tombol Reset -->
-                <button onclick="resetGame()" class="w-full py-2.5 sm:py-3 bg-white hover:bg-rose-50 text-rose-500 font-bold rounded-xl transition-colors border-2 border-rose-200 text-xs sm:text-sm shadow-sm">
-                    🔄 Mulai Permainan Baru
+                <button id="btn-roll" onclick="rollDice()" class="toy-btn relative z-10 w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl text-lg border-b-4 border-brand-700 flex items-center justify-center gap-2">
+                    K O C O K !
                 </button>
+            </div>
 
-            </section>
-        </main>
+            <!-- Panel Posisi Pemain -->
+            <div class="bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-lg border border-white/60">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block flex items-center gap-1">📍 Posisi Saat Ini</span>
+                <div class="grid grid-cols-2 gap-2 text-xs font-bold" id="pos-indicator-container">
+                    <!-- Data posisi akan diisi JS -->
+                </div>
+            </div>
+
+            <!-- Panel Log Informasi -->
+            <div class="bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-lg border border-white/60 flex-grow flex flex-col min-h-[100px]">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block flex items-center gap-1">📢 Kabar Permainan</span>
+                <div id="game-log" class="flex-grow bg-slate-50/50 rounded-xl p-3 border border-slate-100/50 text-sm font-bold text-slate-600 flex items-center justify-center text-center">
+                    Tentukan jumlah pemain terlebih dahulu!
+                </div>
+            </div>
+
+            <!-- Tombol Reset Minimalis -->
+            <button onclick="resetGame()" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold rounded-xl transition-colors border border-rose-100 text-sm shadow-sm flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                Ulang Permainan
+            </button>
+
+        </section>
     </div>
 
     <!-- EFEK KONFETI (MUNCUL SAAT MENANG) -->
@@ -269,11 +266,11 @@
         const ladders = { 4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91 };
         const snakes = { 17: 7, 54: 34, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 99: 78 };
 
-        // Palet warna untuk kotak-kotak papan
+        // Palet warna pastel untuk kotak-kotak papan
         const cellColors = [
-            'bg-red-100 text-red-600', 'bg-blue-100 text-blue-600', 
-            'bg-green-100 text-green-600', 'bg-yellow-100 text-yellow-600', 
-            'bg-purple-100 text-purple-600', 'bg-pink-100 text-pink-600'
+            'bg-red-50 text-red-500', 'bg-blue-50 text-blue-500', 
+            'bg-green-50 text-green-500', 'bg-yellow-50 text-yellow-500', 
+            'bg-purple-50 text-purple-500', 'bg-pink-50 text-pink-500'
         ];
 
         // State Multiplayer
@@ -284,6 +281,7 @@
 
         const playerNames = ['P1 (Biru)', 'P2 (Merah)', 'P3 (Hijau)', 'P4 (Kuning)'];
         const playerColorClasses = ['text-blue-600', 'text-red-600', 'text-emerald-600', 'text-yellow-600'];
+        const playerBgClasses = ['bg-blue-50 border-blue-100', 'bg-red-50 border-red-100', 'bg-emerald-50 border-emerald-100', 'bg-yellow-50 border-yellow-100'];
 
         // Offset (Geser Sedikit) agar pion tidak tertumpuk di kotak yang sama
         const posOffsets = [
@@ -321,20 +319,13 @@
                 }
             }
 
-            // Tampilkan & Update Indikator Giliran jika multiplayer
-            const turnIndicator = document.getElementById('turn-indicator');
-            if (numPlayers > 1) {
-                turnIndicator.classList.remove('hidden');
-                updateTurnUI();
-            } else {
-                turnIndicator.classList.add('hidden');
-            }
+            updateTurnUI();
+            updatePosIndicator();
 
             document.getElementById('dice-visual').innerHTML = '🎲';
             document.getElementById('btn-roll').disabled = false;
 
-            setLog(`Permainan dimulai! Silakan <b>${playerNames[currentPlayer]}</b> untuk kocok dadu.`);
-            updatePosIndicator();
+            setLog(`Permainan dimulai! Silakan <b>${playerNames[currentPlayer]}</b> untuk mengocok.`);
         }
 
         // ==========================================
@@ -486,15 +477,21 @@
         function updateTurnUI() {
             const nameEl = document.getElementById('current-player-name');
             nameEl.innerText = playerNames[currentPlayer];
-            nameEl.className = `font-black text-base sm:text-lg ${playerColorClasses[currentPlayer]}`;
+            nameEl.className = `text-xl font-black transition-colors ${playerColorClasses[currentPlayer]}`;
         }
 
         function updatePosIndicator() {
-            let info = '';
+            let container = document.getElementById('pos-indicator-container');
+            let html = '';
             for (let i = 0; i < numPlayers; i++) {
-                info += `P${i+1}: ${playerPositions[i]} &nbsp;|&nbsp; `;
+                html += `
+                    <div class="p-2 rounded-xl border flex justify-between items-center ${playerBgClasses[i]}">
+                        <span class="${playerColorClasses[i]}">P${i+1}</span>
+                        <span class="text-base text-slate-700">${playerPositions[i]}</span>
+                    </div>
+                `;
             }
-            document.getElementById('pos-indicator').innerHTML = info.slice(0, -14); 
+            container.innerHTML = html; 
         }
 
         function updatePlayerPosition(pIndex, num) {
@@ -514,7 +511,7 @@
             updatePosIndicator();
         }
 
-        // FUNGSI BARU: Jalan selangkah demi selangkah
+        // FUNGSI: Jalan selangkah demi selangkah
         function moveTokenStepByStep(pIndex, startPos, endPos, stepDelay, onComplete) {
             if (startPos >= endPos) {
                 if (onComplete) onComplete();
@@ -535,11 +532,11 @@
             const logBox = document.getElementById('game-log');
             logBox.innerHTML = message;
             if (isAlert) {
-                logBox.classList.remove('bg-cyan-50', 'border-cyan-100', 'text-slate-600');
-                logBox.classList.add('bg-yellow-100', 'border-yellow-400', 'text-yellow-800');
+                logBox.classList.remove('bg-slate-50/50', 'border-slate-100/50', 'text-slate-600');
+                logBox.classList.add('bg-yellow-50', 'border-yellow-200', 'text-yellow-700');
                 setTimeout(() => {
-                    logBox.classList.add('bg-cyan-50', 'border-cyan-100', 'text-slate-600');
-                    logBox.classList.remove('bg-yellow-100', 'border-yellow-400', 'text-yellow-800');
+                    logBox.classList.add('bg-slate-50/50', 'border-slate-100/50', 'text-slate-600');
+                    logBox.classList.remove('bg-yellow-50', 'border-yellow-200', 'text-yellow-700');
                 }, 2000);
             }
         }
@@ -557,7 +554,7 @@
 
             let rollInterval = setInterval(() => {
                 const randomAngka = Math.floor(Math.random() * 6) + 1;
-                diceVis.innerHTML = `<span class="text-4xl sm:text-6xl text-brand-400 opacity-60">${randomAngka}</span>`;
+                diceVis.innerHTML = `<span class="text-3xl sm:text-5xl text-slate-400 opacity-50">${randomAngka}</span>`;
             }, 80);
 
             setTimeout(() => {
@@ -571,12 +568,12 @@
                 let targetPos = currentPosTemp + roll;
                 
                 if (targetPos > 100) {
-                    setLog(`Dapat ${roll}, tapi butuh pas untuk ke 100. ${playerNames[currentPlayer]} menetap di posisinya.`);
-                    setTimeout(nextTurn, 1000);
+                    setLog(`Dapat ${roll}, butuh angka pas. ${playerNames[currentPlayer]} tetap di tempat.`);
+                    setTimeout(nextTurn, 1500);
                     return;
                 }
 
-                setLog(`${playerNames[currentPlayer]} maju ${roll} langkah ke kotak <b>${targetPos}</b> 🚶‍♂️`);
+                setLog(`${playerNames[currentPlayer]} maju ${roll} langkah ke <b>${targetPos}</b> 🚶‍♂️`);
                 
                 // Mulai lompatan step by step (satu per satu)
                 moveTokenStepByStep(currentPlayer, currentPosTemp, targetPos, 400, () => {
@@ -594,17 +591,17 @@
             }
 
             if (ladders[pos]) {
-                setLog(`🎉 Wah ada TANGGA! ${playerNames[pIndex]} naik dari ${pos} ke <b>${ladders[pos]}</b>!`, true);
+                setLog(`🎉 Wah ada TANGGA! ${playerNames[pIndex]} naik ke <b>${ladders[pos]}</b>!`, true);
                 playerPositions[pIndex] = ladders[pos];
                 updatePlayerPosition(pIndex, ladders[pos]);
-                setTimeout(nextTurn, 1000);
+                setTimeout(nextTurn, 1200);
             } else if (snakes[pos]) {
-                setLog(`🐍 WADUH! Digigit ular, ${playerNames[pIndex]} turun dari ${pos} ke <b>${snakes[pos]}</b>!`, true);
+                setLog(`🐍 WADUH! Digigit ular, ${playerNames[pIndex]} turun ke <b>${snakes[pos]}</b>!`, true);
                 playerPositions[pIndex] = snakes[pos];
                 updatePlayerPosition(pIndex, snakes[pos]);
-                setTimeout(nextTurn, 1000);
+                setTimeout(nextTurn, 1200);
             } else {
-                setTimeout(nextTurn, 400);
+                setTimeout(nextTurn, 500);
             }
         }
 
@@ -615,11 +612,9 @@
             // Ganti pemain (berputar berdasarkan jumlah pemain)
             currentPlayer = (currentPlayer + 1) % numPlayers;
             
-            if (numPlayers > 1) {
-                updateTurnUI();
-            }
+            updateTurnUI();
             
-            setLog(`Sekarang giliran <b>${playerNames[currentPlayer]}</b>!`);
+            setLog(`Giliran <b>${playerNames[currentPlayer]}</b> mengocok dadu!`);
             isMoving = false;
             document.getElementById('btn-roll').disabled = false;
         }
