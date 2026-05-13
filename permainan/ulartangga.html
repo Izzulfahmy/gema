@@ -81,8 +81,18 @@
             border-radius: 50%;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             transform: translate(-50%, -50%);
-            transition: top 0.4s ease-in-out, left 0.4s ease-in-out;
+            transition: top 0.5s ease-in-out, left 0.5s ease-in-out;
             z-index: 50;
+        }
+
+        /* Animasi Lompat Pion */
+        @keyframes jump-arc {
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+            50% { transform: translate(-50%, -150%) scale(1.3); box-shadow: 0 20px 15px rgba(0,0,0,0.15); }
+            100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        }
+        .jumping {
+            animation: jump-arc 0.5s ease-in-out;
         }
 
         /* Animasi Dadu Berguling */
@@ -254,14 +264,6 @@
             buildBoard();
             drawSnakesAndLadders();
             updatePlayerPosition(currentPos);
-            
-            // Fullscreen auto-trigger on first click (Browser Security workaround)
-            document.addEventListener('click', function initFS() {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(e => {});
-                }
-                document.removeEventListener('click', initFS);
-            });
         });
 
         // ==========================================
@@ -442,6 +444,12 @@
         function updatePlayerPosition(num) {
             const pos = getCoordinates(num);
             const player = document.getElementById('player-token');
+            
+            // Hapus dan tambahkan ulang class jumping untuk me-reset animasi lompat
+            player.classList.remove('jumping');
+            void player.offsetWidth; // Trigger reflow browser agar animasi bisa diulang
+            player.classList.add('jumping');
+
             // Update CSS berdasarkan persentase
             player.style.left = `${pos.x}%`;
             player.style.top = `${pos.y}%`;
@@ -502,10 +510,10 @@
                 currentPos = targetPos;
                 updatePlayerPosition(currentPos);
 
-                // Cek status setelah pion selesai bergeser (delay 500ms karena CSS transition 0.4s)
+                // Cek status setelah pion selesai bergeser (delay 550ms karena CSS transition 0.5s)
                 setTimeout(() => {
                     checkSnakesLadders(currentPos);
-                }, 500);
+                }, 550);
 
             }, 600); // 600ms = 0.6 detik sesuai durasi di @keyframes
         }
@@ -523,13 +531,13 @@
                 currentPos = ladders[pos];
                 updatePlayerPosition(currentPos);
                 
-                setTimeout(() => { isMoving = false; btn.disabled = false; }, 500);
+                setTimeout(() => { isMoving = false; btn.disabled = false; }, 550);
             } else if (snakes[pos]) {
                 setLog(`🐍 WADUH! Digigit ular, turun dari ${pos} ke <b>${snakes[pos]}</b>!`, true);
                 currentPos = snakes[pos];
                 updatePlayerPosition(currentPos);
                 
-                setTimeout(() => { isMoving = false; btn.disabled = false; }, 500);
+                setTimeout(() => { isMoving = false; btn.disabled = false; }, 550);
             } else {
                 // Aman, giliran selesai
                 isMoving = false;
