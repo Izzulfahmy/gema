@@ -42,12 +42,11 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Kotak Grid Ular Tangga - Super Presisi (DIperbaiki agar tidak hilang) */
+        /* Kotak Grid Ular Tangga - Diperbesar & Responsif */
         .board-container {
-            width: 85vmin;
-            height: 85vmin;
-            max-width: 750px;
-            max-height: 750px;
+            width: 100%;
+            max-width: min(95vw, 75vh); /* Memaksimalkan ukuran, namun sisakan ruang 25vh untuk UI atas/bawah */
+            aspect-ratio: 1 / 1;
             position: relative;
             z-index: 10;
             margin: auto;
@@ -244,7 +243,7 @@
     </div>
 
     <!-- HUD PEMAIN DI 4 SUDUT -->
-    <!-- P1 (Kiri Atas - Di bawah menu Home/Reset) -->
+    <!-- P1 (Kiri Atas) -->
     <div id="card-p0" class="absolute top-20 left-4 sm:top-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 transition-all duration-300 hidden origin-top-left">
         <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-blue-600 text-sm shadow-inner">P1</div>
         <div class="pr-2">
@@ -262,8 +261,8 @@
         </div>
     </div>
 
-    <!-- P3 (Kiri Bawah - Agak ke atas agar tidak tumpang tindih dengan dadu) -->
-    <div id="card-p2" class="absolute bottom-32 left-4 sm:bottom-40 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
+    <!-- P3 (Kiri Bawah) - Kembali ke sudut asli -->
+    <div id="card-p2" class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
         <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-emerald-600 text-sm shadow-inner">P3</div>
         <div class="pr-2">
             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
@@ -280,18 +279,11 @@
         </div>
     </div>
 
-    <!-- TOMBOL KOCOK DI POJOK KIRI BAWAH -->
-    <div class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[100] flex flex-col items-center gap-2 bg-white/80 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-xl border-2 border-emerald-100">
-        <div id="mini-dice-visual" class="w-12 h-12 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-3xl font-black transition-all">🎲</div>
-        <button id="btn-roll" onclick="rollDice3D()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-4 py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm tracking-widest uppercase border border-brand-600">
-            KOCOK
-        </button>
-    </div>
-
-    <!-- WRAPPER UTAMA PAPAN (Flex-grow agar mengisi sisa ruang) -->
-    <div class="w-full h-full flex justify-center items-center p-4">
-        <!-- BOARD CONTAINER (Kotak Sempurna, Presisi, Anti-Hilang) -->
-        <div class="board-container bg-white/80 backdrop-blur-sm p-2 sm:p-3 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
+    <!-- WRAPPER UTAMA PAPAN -->
+    <!-- Diberi padding-bottom besar (pb-24) agar visual papan terdorong agak ke atas -->
+    <div class="w-full h-full flex justify-center items-center p-4 pt-16 pb-28 sm:pb-32">
+        <!-- BOARD CONTAINER (Memaksimalkan layar namun aman dari tombol) -->
+        <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-3 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
             <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
                 
                 <!-- SVG LAYER -->
@@ -313,7 +305,16 @@
         </div>
     </div>
 
-    <!-- OVERLAY ANIMASI DADU 3D YANG DILEMPAR DARI POJOK KIRI BAWAH -->
+    <!-- TOMBOL KOCOK HORIZONTAL DI TENGAH BAWAH -->
+    <!-- Dibuat lebih ringkas (compact) dan horizontal -->
+    <div class="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[100] flex flex-row items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 pr-2 sm:pr-3 rounded-full shadow-xl border-2 border-emerald-100 transition-transform">
+        <div id="mini-dice-visual" class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-full shadow-inner flex items-center justify-center text-2xl sm:text-3xl font-black transition-all">🎲</div>
+        <button id="btn-roll" onclick="rollDice3D()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-full px-5 py-2 sm:px-6 sm:py-2.5 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm tracking-widest uppercase border border-brand-600">
+            KOCOK
+        </button>
+    </div>
+
+    <!-- OVERLAY ANIMASI DADU 3D YANG DILEMPAR DARI BAWAH TENGAH -->
     <div id="dice-3d-overlay" class="fixed inset-0 z-[1000] perspective-1000 pointer-events-none flex items-center justify-center opacity-0 hidden transition-opacity duration-300">
         <div id="dice-wrapper" class="flex flex-col items-center">
             <div id="dice-cube" class="dice-cube shadow-xl rounded-2xl">
@@ -594,7 +595,7 @@
         }
 
         // ==========================================
-        // ANIMASI DADU 3D DILEMPAR DARI KIRI BAWAH
+        // ANIMASI DADU 3D DILEMPAR DARI BAWAH TENGAH
         // ==========================================
         function rollDice3D() {
             if (isMoving) return;
@@ -622,8 +623,8 @@
             cube.style.transition = 'none';
             shadow.style.transition = 'none';
             
-            // Posisi AWAL dadu: Pojok Kiri Bawah (Di area tombol kocok)
-            wrapper.style.transform = 'translate(-35vw, 35vh) scale(0.2)';
+            // Posisi AWAL dadu: Bawah Tengah (Di area tombol kocok horizontal)
+            wrapper.style.transform = 'translate(0, 40vh) scale(0.2)';
             cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
             shadow.style.transform = 'scale(0.2)';
             shadow.style.opacity = '0';
@@ -649,8 +650,7 @@
 
             // Trigger Animasi Lempar (Bouncing Drop & Spin ke arah tengah)
             setTimeout(() => {
-                // Kubus dilempar (Bergerak ke tengah [0,0] dengan ukuran membesar)
-                // Curve custom agar terlihat melambung melengkung
+                // Kubus dilempar (Bergerak ke tengah layar dengan curve melambung)
                 wrapper.style.transition = 'transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                 wrapper.style.transform = 'translate(0, 0) scale(1)';
                 
