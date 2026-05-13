@@ -28,6 +28,16 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Error Handler Script dipindah ke head -->
+    <script>
+        // Tangani Error Jika Gambar Tidak Ada
+        // Fungsi ini dipindah ke <head> agar siap sebelum elemen <img> dirender di body
+        function handleImgError(imgElement) {
+            imgElement.classList.add('failed'); // Tandai error
+            imgElement.parentElement.classList.add('fallback-pips'); // Munculkan titik pips
+        }
+    </script>
+
     <style>
         /* =========================================
            DICE 3D STYLES
@@ -241,29 +251,29 @@
                     <div id="dice-scene" class="dice-scene">
                         <div id="dice-scaler" class="dice-scaler">
                             <div id="dice-cube" class="dice-cube">
-                                <!-- PATH GAMBAR TELAH DIPERBARUI MENGGUNAKAN FOLDER ASET -->
+                                <!-- PATH GAMBAR TELAH DIPERBARUI MENGGUNAKAN FOLDER ASET/BENTANG_ALAM -->
                                 <div class="dice-face front face-1">
-                                    <img src="../aset/lempar dadu/1.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar_dadu/bentang_alam/1.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip"></div>
                                 </div>
                                 <div class="dice-face right face-2">
-                                    <img src="../aset/lempar dadu/2.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar_dadu/bentang_alam/2.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div>
                                 </div>
                                 <div class="dice-face top face-3">
-                                    <img src="../aset/lempar dadu/3.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar_dadu/bentang_alam/3.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div><div class="pip p3"></div>
                                 </div>
                                 <div class="dice-face bottom face-4">
-                                    <img src="../aset/lempar dadu/4.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar_dadu/bentang_alam/4.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div><div class="pip p3"></div><div class="pip p4"></div>
                                 </div>
                                 <div class="dice-face left face-5">
-                                    <img src="../aset/lempar dadu/5.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar_dadu/bentang_alam/5.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div><div class="pip p3"></div><div class="pip p4"></div><div class="pip p5"></div>
                                 </div>
                                 <div class="dice-face back face-6">
-                                    <img src="../aset/lempar dadu/6.jpeg" class="dice-img" onerror="handleImgError(this)">
+                                    <img src="../aset/lempar_dadu/bentang_alam/6.jpeg" class="dice-img" onerror="handleImgError(this)">
                                     <div class="pip p1"></div><div class="pip p2"></div><div class="pip p3"></div><div class="pip p4"></div><div class="pip p5"></div><div class="pip p6"></div>
                                 </div>
                             </div>
@@ -465,12 +475,6 @@
             } else {
                 diceCube.classList.remove('theme-alam');
             }
-        }
-
-        // Tangani Error Jika Gambar Tidak Ada
-        function handleImgError(imgElement) {
-            imgElement.classList.add('failed'); // Tandai error
-            imgElement.parentElement.classList.add('fallback-pips'); // Munculkan titik pips
         }
 
         // ==========================================
