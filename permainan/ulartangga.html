@@ -80,7 +80,7 @@
             border-radius: 50%;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             transform: translate(-50%, -50%);
-            transition: top 0.5s ease-in-out, left 0.5s ease-in-out;
+            transition: top 0.4s ease-in-out, left 0.4s ease-in-out;
             z-index: 50;
         }
 
@@ -97,7 +97,7 @@
             100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         }
         .jumping {
-            animation: jump-arc 0.5s ease-in-out;
+            animation: jump-arc 0.4s ease-in-out;
         }
 
         /* Animasi Dadu Berguling */
@@ -481,7 +481,6 @@
         function updateTurnUI() {
             const nameEl = document.getElementById('current-player-name');
             nameEl.innerText = playerNames[currentPlayer];
-            // Bersihkan kelas warna sebelumnya dan set yang baru
             nameEl.className = `font-black text-lg ${playerColorClasses[currentPlayer]}`;
         }
 
@@ -490,7 +489,6 @@
             for (let i = 0; i < numPlayers; i++) {
                 info += `P${i+1}: ${playerPositions[i]} &nbsp;|&nbsp; `;
             }
-            // Hapus separator terakhir
             document.getElementById('pos-indicator').innerHTML = info.slice(0, -14); 
         }
 
@@ -500,15 +498,32 @@
             
             // Animasi lompat
             playerToken.classList.remove('jumping');
-            void playerToken.offsetWidth;
+            void playerToken.offsetWidth; // Memicu reflow
             playerToken.classList.add('jumping');
 
-            // Set posisi ditambah offset agar tidak bertumpuk sempurna jika di satu sel
+            // Set posisi ditambah offset
             const offset = posOffsets[pIndex];
             playerToken.style.left = `calc(${pos.x}% + ${offset.dx}%)`;
             playerToken.style.top = `calc(${pos.y}% + ${offset.dy}%)`;
             
             updatePosIndicator();
+        }
+
+        // FUNGSI BARU: Jalan selangkah demi selangkah
+        function moveTokenStepByStep(pIndex, startPos, endPos, stepDelay, onComplete) {
+            if (startPos >= endPos) {
+                if (onComplete) onComplete();
+                return;
+            }
+            
+            let nextPos = startPos + 1;
+            playerPositions[pIndex] = nextPos;
+            updatePlayerPosition(pIndex, nextPos);
+            
+            // Tunggu lompatan selesai lalu lanjut ke langkah berikutnya
+            setTimeout(() => {
+                moveTokenStepByStep(pIndex, nextPos, endPos, stepDelay, onComplete);
+            }, stepDelay);
         }
 
         function setLog(message, isAlert = false) {
@@ -547,7 +562,8 @@
                 const roll = Math.floor(Math.random() * 6) + 1;
                 diceVis.innerHTML = `<span class="text-6xl text-brand-600">${roll}</span>`;
                 
-                let targetPos = playerPositions[currentPlayer] + roll;
+                let currentPosTemp = playerPositions[currentPlayer];
+                let targetPos = currentPosTemp + roll;
                 
                 if (targetPos > 100) {
                     setLog(`Dapat ${roll}, tapi butuh pas untuk ke 100. ${playerNames[currentPlayer]} menetap di posisinya.`);
@@ -556,12 +572,12 @@
                 }
 
                 setLog(`${playerNames[currentPlayer]} maju ${roll} langkah ke kotak <b>${targetPos}</b> 🚶‍♂️`);
-                playerPositions[currentPlayer] = targetPos;
-                updatePlayerPosition(currentPlayer, targetPos);
-
-                setTimeout(() => {
+                
+                // Mulai lompatan step by step (satu per satu)
+                moveTokenStepByStep(currentPlayer, currentPosTemp, targetPos, 400, () => {
+                    // Setelah sampai tujuan, cek ular tangga
                     checkSnakesLadders(currentPlayer, targetPos);
-                }, 550);
+                });
 
             }, 600);
         }
@@ -583,7 +599,7 @@
                 updatePlayerPosition(pIndex, snakes[pos]);
                 setTimeout(nextTurn, 1000);
             } else {
-                setTimeout(nextTurn, 600);
+                setTimeout(nextTurn, 400);
             }
         }
 
