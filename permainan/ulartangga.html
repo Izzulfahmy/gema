@@ -289,18 +289,10 @@
                     cell.className = `cell ${cellColors[num % cellColors.length]}`;
                     cell.innerHTML = `
                         <span class="cell-number">${num}</span>
-                        ${getIconForCell(num)}
                     `;
                     grid.appendChild(cell);
                 }
             }
-        }
-
-        // Tampilkan emoji kecil di sel yang memiliki ujung tangga atau kepala ular
-        function getIconForCell(num) {
-            if (ladders[num]) return '<span class="text-xl sm:text-3xl drop-shadow-md">🪜</span>';
-            if (snakes[num]) return '<span class="text-xl sm:text-3xl drop-shadow-md">🐍</span>';
-            return '';
         }
 
         // ==========================================
@@ -324,38 +316,124 @@
         }
 
         // ==========================================
-        // MENGGAMBAR ULAR DAN TANGGA DENGAN SVG
+        // MENGGAMBAR ULAR DAN TANGGA REALISTIS (SVG)
         // ==========================================
         function drawSnakesAndLadders() {
             const svg = document.getElementById('svg-layer');
             let svgContent = '';
 
-            // Gambar Tangga (Garis Putus-putus Hijau/Coklat)
+            // 1. GAMBAR TANGGA (Lebih Realistis & Memiliki Detail)
             for (const [start, end] of Object.entries(ladders)) {
-                const pos1 = getCoordinates(parseInt(start));
-                const pos2 = getCoordinates(end);
+                const pos1 = getCoordinates(parseInt(start)); // Bawah
+                const pos2 = getCoordinates(end); // Atas
                 
+                const dx = pos2.x - pos1.x;
+                const dy = pos2.y - pos1.y;
+                const length = Math.sqrt(dx*dx + dy*dy);
+                const ux = dx/length;
+                const uy = dy/length;
+                // Vektor tegak lurus untuk ketebalan tangga
+                const px = -uy;
+                const py = ux;
+                const w = 1.8; // Lebar tiang tangga dari pusat (persen)
+
+                // Posisi tiang kiri & kanan
+                const r1x1 = pos1.x + px*w; const r1y1 = pos1.y + py*w;
+                const r1x2 = pos2.x + px*w; const r1y2 = pos2.y + py*w;
+                const r2x1 = pos1.x - px*w; const r2y1 = pos1.y - py*w;
+                const r2x2 = pos2.x - px*w; const r2y2 = pos2.y - py*w;
+
+                // Bayangan Tiang (Efek Depth)
                 svgContent += `
-                    <line x1="${pos1.x}" y1="${pos1.y}" x2="${pos2.x}" y2="${pos2.y}" 
-                          stroke="#b45309" stroke-width="1.8" stroke-dasharray="2 2" stroke-linecap="round"/>
-                    <line x1="${pos1.x}" y1="${pos1.y}" x2="${pos2.x}" y2="${pos2.y}" 
-                          stroke="#d97706" stroke-width="0.8" stroke-dasharray="2 2" stroke-linecap="round"/>
+                    <line x1="${r1x1+0.4}" y1="${r1y1+0.4}" x2="${r1x2+0.4}" y2="${r1y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>
+                    <line x1="${r2x1+0.4}" y1="${r2y1+0.4}" x2="${r2x2+0.4}" y2="${r2y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>
                 `;
+                // Tiang Asli
+                svgContent += `
+                    <line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>
+                    <line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>
+                    <!-- Highlight Kayu pada Tiang -->
+                    <line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#b45309" stroke-width="0.6" stroke-linecap="round"/>
+                    <line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#b45309" stroke-width="0.6" stroke-linecap="round"/>
+                `;
+
+                // Anak Tangga (Rungs)
+                const rungCount = Math.floor(length / 3); // Jarak antar anak tangga
+                for(let i=1; i<=rungCount; i++) {
+                    const t = i / (rungCount + 1);
+                    const rx1 = r1x1 + (r1x2 - r1x1)*t;
+                    const ry1 = r1y1 + (r1y2 - r1y1)*t;
+                    const rx2 = r2x1 + (r2x2 - r2x1)*t;
+                    const ry2 = r2y1 + (r2y2 - r2y1)*t;
+                    svgContent += `<line x1="${rx1}" y1="${ry1}" x2="${rx2}" y2="${ry2}" stroke="#92400e" stroke-width="1" stroke-linecap="round"/>`;
+                }
             }
 
-            // Gambar Ular (Garis Melengkung Merah)
-            for (const [head, tail] of Object.entries(snakes)) {
-                const pos1 = getCoordinates(parseInt(head));
-                const pos2 = getCoordinates(tail);
-                
-                // Buat titik kontrol untuk kurva (agar melengkung seperti ular)
-                const cx = (pos1.x + pos2.x) / 2 + (Math.random() > 0.5 ? 15 : -15);
-                const cy = (pos1.y + pos2.y) / 2;
+            // Pilihan warna-warni untuk ular
+            const snakeColors = [
+                { body: '#ef4444', belly: '#fca5a5' }, // Merah
+                { body: '#10b981', belly: '#6ee7b7' }, // Hijau Emerald
+                { body: '#3b82f6', belly: '#93c5fd' }, // Biru
+                { body: '#8b5cf6', belly: '#c4b5fd' }, // Ungu
+                { body: '#f59e0b', belly: '#fcd34d' }, // Oranye/Amber
+                { body: '#ec4899', belly: '#f9a8d4' }  // Pink
+            ];
+            let colorIdx = 0;
 
+            // 2. GAMBAR ULAR (Bentuk meliuk, tebal, dan punya kepala/lidah)
+            for (const [head, tail] of Object.entries(snakes)) {
+                const hPos = getCoordinates(parseInt(head)); // Kepala (Atas)
+                const tPos = getCoordinates(tail); // Ekor (Bawah)
+                
+                const dx = tPos.x - hPos.x;
+                const dy = tPos.y - hPos.y;
+                const length = Math.sqrt(dx*dx + dy*dy);
+                const px = -dy/length;
+                const py = dx/length;
+
+                // Memberi lekukan pada tubuh ular (melengkung membentuk huruf S atau kurva)
+                const curveOffset = length > 30 ? 15 : 8; // Semakin panjang ular, semakin melengkung
+                const cx1 = hPos.x + dx*0.3 + px*curveOffset;
+                const cy1 = hPos.y + dy*0.3 + py*curveOffset;
+                const cx2 = hPos.x + dx*0.7 - px*curveOffset;
+                const cy2 = hPos.y + dy*0.7 - py*curveOffset;
+
+                // Path kurva Bezier Cubic untuk tubuh
+                const pathData = `M ${hPos.x} ${hPos.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tPos.x} ${tPos.y}`;
+                
+                const color = snakeColors[colorIdx % snakeColors.length];
+                colorIdx++;
+
+                // Bayangan ular (Depth)
+                svgContent += `<path d="${pathData}" stroke="rgba(0,0,0,0.3)" stroke-width="3.5" fill="none" stroke-linecap="round" transform="translate(0.5, 0.8)"/>`;
+                
+                // Tubuh Ular Utama
+                svgContent += `<path d="${pathData}" stroke="${color.body}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+                
+                // Pola Perut/Sisik Ular (Garis putus-putus tebal)
+                svgContent += `<path d="${pathData}" stroke="${color.belly}" stroke-width="1.5" stroke-dasharray="1.5 2.5" fill="none" stroke-linecap="round"/>`;
+
+                // Menghitung arah pandangan (sudut) kepala ular
+                // Kepala memandang berlawanan dari lengkungan tubuh pertamanya
+                const hdx = hPos.x - cx1;
+                const hdy = hPos.y - cy1;
+                const hAngle = Math.atan2(hdy, hdx) * 180 / Math.PI;
+
+                // Menggambar Kepala, Mata, dan Lidah Ular
                 svgContent += `
-                    <path d="M ${pos1.x} ${pos1.y} Q ${cx} ${cy} ${pos2.x} ${pos2.y}" 
-                          stroke="rgba(225, 29, 72, 0.7)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                    <circle cx="${pos1.x}" cy="${pos1.y}" r="0.8" fill="#e11d48"/> <!-- Kepala Ular -->
+                    <g transform="translate(${hPos.x}, ${hPos.y}) rotate(${hAngle})">
+                        <!-- Bentuk Kepala -->
+                        <ellipse cx="-1.5" cy="0" rx="3" ry="2.2" fill="${color.body}"/>
+                        
+                        <!-- Mata Kiri & Kanan -->
+                        <circle cx="-0.5" cy="-1.2" r="0.8" fill="white"/>
+                        <circle cx="-0.2" cy="-1.2" r="0.4" fill="black"/>
+                        <circle cx="-0.5" cy="1.2" r="0.8" fill="white"/>
+                        <circle cx="-0.2" cy="1.2" r="0.4" fill="black"/>
+                        
+                        <!-- Lidah Bercabang (Desis) -->
+                        <path d="M 1.5 0 L 3.5 -0.8 M 1.5 0 L 3.5 0.8 M 1.5 0 L 2.5 0" stroke="#e11d48" stroke-width="0.4" fill="none" stroke-linecap="round"/>
+                    </g>
                 `;
             }
 
