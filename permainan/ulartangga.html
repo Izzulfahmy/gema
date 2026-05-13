@@ -71,12 +71,11 @@
             .cell-number { font-size: 0.9rem; top: 6px; left: 8px; }
         }
 
-        /* Pion Pemain */
-        #player-token {
+        /* Pion Pemain (Bisa Banyak) */
+        .player-token {
             position: absolute;
-            width: 5%;
-            height: 5%;
-            background: radial-gradient(circle at 30% 30%, #6366f1, #312e81);
+            width: 4.5%;
+            height: 4.5%;
             border: 2px solid white;
             border-radius: 50%;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
@@ -84,6 +83,12 @@
             transition: top 0.5s ease-in-out, left 0.5s ease-in-out;
             z-index: 50;
         }
+
+        /* Warna Pion Spesifik */
+        #player-token-0 { background: radial-gradient(circle at 30% 30%, #60a5fa, #1e3a8a); } /* Biru */
+        #player-token-1 { background: radial-gradient(circle at 30% 30%, #f87171, #7f1d1d); } /* Merah */
+        #player-token-2 { background: radial-gradient(circle at 30% 30%, #34d399, #064e3b); } /* Hijau */
+        #player-token-3 { background: radial-gradient(circle at 30% 30%, #fbbf24, #78350f); } /* Kuning */
 
         /* Animasi Lompat Pion */
         @keyframes jump-arc {
@@ -126,6 +131,22 @@
 </head>
 <body class="animated-bg min-h-screen text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
 
+    <!-- MODAL PILIH PEMAIN (STARTUP) -->
+    <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-md w-[90%] text-center transform transition-all border-4 border-emerald-100">
+            <div class="text-6xl mb-4 drop-shadow-md">🐍🪜</div>
+            <h2 class="text-3xl font-black text-emerald-600 mb-2">Berapa Pemain?</h2>
+            <p class="text-slate-500 mb-6 font-bold text-sm sm:text-base">Pilih jumlah teman yang ikut main. Semakin ramai, semakin seru!</p>
+            
+            <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                <button onclick="startGame(1)" class="py-4 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-2xl font-black text-lg transition-all border-2 border-blue-200 hover:-translate-y-1 hover:shadow-md">1 Orang</button>
+                <button onclick="startGame(2)" class="py-4 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl font-black text-lg transition-all border-2 border-red-200 hover:-translate-y-1 hover:shadow-md">2 Orang</button>
+                <button onclick="startGame(3)" class="py-4 bg-green-50 hover:bg-green-100 text-green-600 rounded-2xl font-black text-lg transition-all border-2 border-green-200 hover:-translate-y-1 hover:shadow-md">3 Orang</button>
+                <button onclick="startGame(4)" class="py-4 bg-yellow-50 hover:bg-yellow-100 text-yellow-600 rounded-2xl font-black text-lg transition-all border-2 border-yellow-200 hover:-translate-y-1 hover:shadow-md">4 Orang</button>
+            </div>
+        </div>
+    </div>
+
     <!-- WADAH TOMBOL KIRI ATAS (HOME) -->
     <div class="fixed top-3 left-3 sm:top-5 sm:left-5 z-[100]">
         <a href="../index.html" class="bg-white/90 backdrop-blur-md border-2 border-brand-200 text-brand-600 p-2 sm:px-3 sm:py-2.5 rounded-2xl shadow-md hover:bg-brand-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Kembali ke Beranda">
@@ -167,7 +188,12 @@
                     </div>
 
                     <!-- PION PEMAIN -->
-                    <div id="player-token" style="left: 5%; top: 95%;"></div>
+                    <div id="tokens-container">
+                        <div id="player-token-0" class="player-token hidden"></div>
+                        <div id="player-token-1" class="player-token hidden"></div>
+                        <div id="player-token-2" class="player-token hidden"></div>
+                        <div id="player-token-3" class="player-token hidden"></div>
+                    </div>
                 </div>
             </section>
 
@@ -177,11 +203,17 @@
                 <!-- Kotak Dadu & Tombol -->
                 <div class="bg-white rounded-[2rem] shadow-xl border-4 border-brand-100 p-6 flex flex-col items-center">
                     
-                    <div class="w-full flex justify-between items-center mb-6">
-                        <span class="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Kocok Dadu</span>
-                        <div class="px-3 py-1 bg-brand-100 text-brand-700 text-xs font-black rounded-lg border border-brand-200">
-                            Posisi: <span id="pos-indicator">1</span>
+                    <div class="w-full flex justify-between items-center mb-4">
+                        <span class="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Posisi:</span>
+                        <div class="px-3 py-1 bg-brand-100 text-brand-700 text-[10px] sm:text-xs font-black rounded-lg border border-brand-200 whitespace-nowrap overflow-x-auto w-full max-w-[70%] text-right" id="pos-indicator">
+                            -
                         </div>
+                    </div>
+
+                    <!-- INDIKATOR GILIRAN -->
+                    <div id="turn-indicator" class="mb-4 bg-slate-50 px-4 py-2 rounded-xl border-2 border-slate-200 text-center w-full hidden">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">Giliran Mengocok:</span>
+                        <span id="current-player-name" class="font-black text-lg">Pemain</span>
                     </div>
 
                     <!-- Visual Dadu 2D Sederhana -->
@@ -200,7 +232,7 @@
                         <span>📢</span> Informasi Kabar
                     </h3>
                     <div id="game-log" class="flex-grow bg-cyan-50 rounded-xl p-4 border border-cyan-100 text-sm sm:text-base font-bold text-slate-600 flex items-center justify-center text-center">
-                        Ayo mulai! Klik tombol kocok untuk jalan pertama.
+                        Tentukan jumlah pemain terlebih dahulu!
                     </div>
                 </div>
 
@@ -217,9 +249,9 @@
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
         <div class="bg-white/90 backdrop-blur-sm p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500" id="win-modal">
             <div class="text-7xl mb-4">🏆</div>
-            <h2 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">SELAMAT!</h2>
-            <p class="text-lg font-bold text-slate-600 mb-6">Kamu berhasil mencapai garis akhir (100).</p>
-            <button onclick="resetGame()" class="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-black rounded-xl border-2 border-yellow-600 shadow-md transition-all">
+            <h2 id="win-title" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">SELAMAT!</h2>
+            <p id="win-desc" class="text-lg font-bold text-slate-600 mb-6">Kamu berhasil mencapai garis akhir (100).</p>
+            <button onclick="resetGame()" class="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-black rounded-xl border-2 border-yellow-600 shadow-md transition-all pointer-events-auto">
                 Main Lagi!
             </button>
         </div>
@@ -229,26 +261,8 @@
         // ==========================================
         // DATA ULAR & TANGGA
         // ==========================================
-        const ladders = { 
-            4: 14, 
-            9: 31, 
-            20: 38, 
-            28: 84, 
-            40: 59, 
-            51: 67, 
-            63: 81, 
-            71: 91 
-        };
-        const snakes = { 
-            17: 7, 
-            54: 34, 
-            62: 19, 
-            64: 60, 
-            87: 24, 
-            93: 73, 
-            95: 75, 
-            99: 78 
-        };
+        const ladders = { 4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91 };
+        const snakes = { 17: 7, 54: 34, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 99: 78 };
 
         // Palet warna untuk kotak-kotak papan
         const cellColors = [
@@ -257,14 +271,66 @@
             'bg-purple-100 text-purple-600', 'bg-pink-100 text-pink-600'
         ];
 
-        let currentPos = 1;
+        // State Multiplayer
+        let numPlayers = 1;
+        let currentPlayer = 0;
+        let playerPositions = [1, 1, 1, 1];
         let isMoving = false;
+
+        const playerNames = ['P1 (Biru)', 'P2 (Merah)', 'P3 (Hijau)', 'P4 (Kuning)'];
+        const playerColorClasses = ['text-blue-600', 'text-red-600', 'text-emerald-600', 'text-yellow-600'];
+
+        // Offset (Geser Sedikit) agar pion tidak tertumpuk di kotak yang sama
+        const posOffsets = [
+            { dx: -1.5, dy: -1.5 }, // P1: Kiri Atas
+            { dx: 1.5, dy: -1.5 },  // P2: Kanan Atas
+            { dx: -1.5, dy: 1.5 },  // P3: Kiri Bawah
+            { dx: 1.5, dy: 1.5 }    // P4: Kanan Bawah
+        ];
 
         document.addEventListener('DOMContentLoaded', () => {
             buildBoard();
             drawSnakesAndLadders();
-            updatePlayerPosition(currentPos);
         });
+
+        // ==========================================
+        // FUNGSI MEMULAI GAME (STARTUP)
+        // ==========================================
+        function startGame(playersCount) {
+            numPlayers = playersCount;
+            currentPlayer = 0;
+            playerPositions = [1, 1, 1, 1];
+            isMoving = false;
+            
+            // Sembunyikan Modal Startup
+            document.getElementById('startup-modal').classList.add('hidden');
+            
+            // Tampilkan jumlah pion sesuai pemain yang dipilih
+            for (let i = 0; i < 4; i++) {
+                const token = document.getElementById(`player-token-${i}`);
+                if (i < numPlayers) {
+                    token.classList.remove('hidden');
+                    updatePlayerPosition(i, 1);
+                } else {
+                    token.classList.add('hidden');
+                }
+            }
+
+            // Tampilkan & Update Indikator Giliran jika multiplayer
+            const turnIndicator = document.getElementById('turn-indicator');
+            if (numPlayers > 1) {
+                turnIndicator.classList.remove('hidden');
+                updateTurnUI();
+            } else {
+                turnIndicator.classList.add('hidden');
+            }
+
+            document.getElementById('dice-visual').innerHTML = '🎲';
+            document.getElementById('btn-roll').disabled = false;
+
+            setLog(`Permainan dimulai! Silakan <b>${playerNames[currentPlayer]}</b> untuk kocok dadu.`);
+            updatePosIndicator();
+        }
 
         // ==========================================
         // FUNGSI MEMBANGUN PAPAN
@@ -275,19 +341,16 @@
 
             for (let row = 9; row >= 0; row--) {
                 for (let col = 0; col < 10; col++) {
-                    // Logika pola Boustrophedon (kiri-kanan, kanan-kiri)
                     let num;
                     if (row % 2 === 0) {
-                        num = (row * 10) + col + 1; // Baris genap: Kiri ke Kanan
+                        num = (row * 10) + col + 1; 
                     } else {
-                        num = (row * 10) + (9 - col) + 1; // Baris ganjil: Kanan ke Kiri
+                        num = (row * 10) + (9 - col) + 1; 
                     }
 
                     const cell = document.createElement('div');
                     cell.className = `cell ${cellColors[num % cellColors.length]}`;
-                    cell.innerHTML = `
-                        <span class="cell-number">${num}</span>
-                    `;
+                    cell.innerHTML = `<span class="cell-number">${num}</span>`;
                     grid.appendChild(cell);
                 }
             }
@@ -296,19 +359,16 @@
         // ==========================================
         // FUNGSI MENGHITUNG KORDINAT (100% Responsif)
         // ==========================================
-        // Mengembalikan koordinat x dan y dalam bentuk persentase (0-100)
         function getCoordinates(num) {
             let row = Math.floor((num - 1) / 10);
             let col = (num - 1) % 10;
             
-            // Jika baris ganjil (1, 3, 5...), hitungan kolom dibalik
             if (row % 2 !== 0) {
                 col = 9 - col;
             }
 
-            // Pusat sel (grid 10x10, tiap sel 10%)
             let x = (col * 10) + 5; 
-            let y = 95 - (row * 10); // 95 karena row 0 ada di bawah
+            let y = 95 - (row * 10);
 
             return { x, y };
         }
@@ -320,43 +380,37 @@
             const svg = document.getElementById('svg-layer');
             let svgContent = '';
 
-            // 1. GAMBAR TANGGA (Lebih Realistis & Memiliki Detail)
+            // 1. GAMBAR TANGGA
             for (const [start, end] of Object.entries(ladders)) {
-                const pos1 = getCoordinates(parseInt(start)); // Bawah
-                const pos2 = getCoordinates(end); // Atas
+                const pos1 = getCoordinates(parseInt(start));
+                const pos2 = getCoordinates(end);
                 
                 const dx = pos2.x - pos1.x;
                 const dy = pos2.y - pos1.y;
                 const length = Math.sqrt(dx*dx + dy*dy);
                 const ux = dx/length;
                 const uy = dy/length;
-                // Vektor tegak lurus untuk ketebalan tangga
                 const px = -uy;
                 const py = ux;
-                const w = 1.8; // Lebar tiang tangga dari pusat (persen)
+                const w = 1.8;
 
-                // Posisi tiang kiri & kanan
                 const r1x1 = pos1.x + px*w; const r1y1 = pos1.y + py*w;
                 const r1x2 = pos2.x + px*w; const r1y2 = pos2.y + py*w;
                 const r2x1 = pos1.x - px*w; const r2y1 = pos1.y - py*w;
                 const r2x2 = pos2.x - px*w; const r2y2 = pos2.y - py*w;
 
-                // Bayangan Tiang (Efek Depth)
                 svgContent += `
                     <line x1="${r1x1+0.4}" y1="${r1y1+0.4}" x2="${r1x2+0.4}" y2="${r1y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>
                     <line x1="${r2x1+0.4}" y1="${r2y1+0.4}" x2="${r2x2+0.4}" y2="${r2y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>
                 `;
-                // Tiang Asli
                 svgContent += `
                     <line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>
                     <line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>
-                    <!-- Highlight Kayu pada Tiang -->
                     <line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#b45309" stroke-width="0.6" stroke-linecap="round"/>
                     <line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#b45309" stroke-width="0.6" stroke-linecap="round"/>
                 `;
 
-                // Anak Tangga (Rungs)
-                const rungCount = Math.floor(length / 3); // Jarak antar anak tangga
+                const rungCount = Math.floor(length / 3); 
                 for(let i=1; i<=rungCount; i++) {
                     const t = i / (rungCount + 1);
                     const rx1 = r1x1 + (r1x2 - r1x1)*t;
@@ -367,21 +421,20 @@
                 }
             }
 
-            // Pilihan warna-warni untuk ular
             const snakeColors = [
-                { body: '#ef4444', belly: '#fca5a5' }, // Merah
-                { body: '#10b981', belly: '#6ee7b7' }, // Hijau Emerald
-                { body: '#3b82f6', belly: '#93c5fd' }, // Biru
-                { body: '#8b5cf6', belly: '#c4b5fd' }, // Ungu
-                { body: '#f59e0b', belly: '#fcd34d' }, // Oranye/Amber
-                { body: '#ec4899', belly: '#f9a8d4' }  // Pink
+                { body: '#ef4444', belly: '#fca5a5' },
+                { body: '#10b981', belly: '#6ee7b7' },
+                { body: '#3b82f6', belly: '#93c5fd' },
+                { body: '#8b5cf6', belly: '#c4b5fd' },
+                { body: '#f59e0b', belly: '#fcd34d' },
+                { body: '#ec4899', belly: '#f9a8d4' }
             ];
             let colorIdx = 0;
 
-            // 2. GAMBAR ULAR (Bentuk meliuk, tebal, dan punya kepala/lidah)
+            // 2. GAMBAR ULAR
             for (const [head, tail] of Object.entries(snakes)) {
-                const hPos = getCoordinates(parseInt(head)); // Kepala (Atas)
-                const tPos = getCoordinates(tail); // Ekor (Bawah)
+                const hPos = getCoordinates(parseInt(head));
+                const tPos = getCoordinates(tail);
                 
                 const dx = tPos.x - hPos.x;
                 const dy = tPos.y - hPos.y;
@@ -389,47 +442,31 @@
                 const px = -dy/length;
                 const py = dx/length;
 
-                // Memberi lekukan pada tubuh ular (melengkung membentuk huruf S atau kurva)
-                const curveOffset = length > 30 ? 15 : 8; // Semakin panjang ular, semakin melengkung
+                const curveOffset = length > 30 ? 15 : 8; 
                 const cx1 = hPos.x + dx*0.3 + px*curveOffset;
                 const cy1 = hPos.y + dy*0.3 + py*curveOffset;
                 const cx2 = hPos.x + dx*0.7 - px*curveOffset;
                 const cy2 = hPos.y + dy*0.7 - py*curveOffset;
 
-                // Path kurva Bezier Cubic untuk tubuh
                 const pathData = `M ${hPos.x} ${hPos.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tPos.x} ${tPos.y}`;
-                
                 const color = snakeColors[colorIdx % snakeColors.length];
                 colorIdx++;
 
-                // Bayangan ular (Depth)
                 svgContent += `<path d="${pathData}" stroke="rgba(0,0,0,0.3)" stroke-width="3.5" fill="none" stroke-linecap="round" transform="translate(0.5, 0.8)"/>`;
-                
-                // Tubuh Ular Utama
                 svgContent += `<path d="${pathData}" stroke="${color.body}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-                
-                // Pola Perut/Sisik Ular (Garis putus-putus tebal)
                 svgContent += `<path d="${pathData}" stroke="${color.belly}" stroke-width="1.5" stroke-dasharray="1.5 2.5" fill="none" stroke-linecap="round"/>`;
 
-                // Menghitung arah pandangan (sudut) kepala ular
-                // Kepala memandang berlawanan dari lengkungan tubuh pertamanya
                 const hdx = hPos.x - cx1;
                 const hdy = hPos.y - cy1;
                 const hAngle = Math.atan2(hdy, hdx) * 180 / Math.PI;
 
-                // Menggambar Kepala, Mata, dan Lidah Ular
                 svgContent += `
                     <g transform="translate(${hPos.x}, ${hPos.y}) rotate(${hAngle})">
-                        <!-- Bentuk Kepala -->
                         <ellipse cx="-1.5" cy="0" rx="3" ry="2.2" fill="${color.body}"/>
-                        
-                        <!-- Mata Kiri & Kanan -->
                         <circle cx="-0.5" cy="-1.2" r="0.8" fill="white"/>
                         <circle cx="-0.2" cy="-1.2" r="0.4" fill="black"/>
                         <circle cx="-0.5" cy="1.2" r="0.8" fill="white"/>
                         <circle cx="-0.2" cy="1.2" r="0.4" fill="black"/>
-                        
-                        <!-- Lidah Bercabang (Desis) -->
                         <path d="M 1.5 0 L 3.5 -0.8 M 1.5 0 L 3.5 0.8 M 1.5 0 L 2.5 0" stroke="#e11d48" stroke-width="0.4" fill="none" stroke-linecap="round"/>
                     </g>
                 `;
@@ -439,21 +476,39 @@
         }
 
         // ==========================================
-        // LOGIKA PERMAINAN
+        // LOGIKA PERMAINAN (MULTIPLAYER)
         // ==========================================
-        function updatePlayerPosition(num) {
-            const pos = getCoordinates(num);
-            const player = document.getElementById('player-token');
-            
-            // Hapus dan tambahkan ulang class jumping untuk me-reset animasi lompat
-            player.classList.remove('jumping');
-            void player.offsetWidth; // Trigger reflow browser agar animasi bisa diulang
-            player.classList.add('jumping');
+        function updateTurnUI() {
+            const nameEl = document.getElementById('current-player-name');
+            nameEl.innerText = playerNames[currentPlayer];
+            // Bersihkan kelas warna sebelumnya dan set yang baru
+            nameEl.className = `font-black text-lg ${playerColorClasses[currentPlayer]}`;
+        }
 
-            // Update CSS berdasarkan persentase
-            player.style.left = `${pos.x}%`;
-            player.style.top = `${pos.y}%`;
-            document.getElementById('pos-indicator').innerText = num;
+        function updatePosIndicator() {
+            let info = '';
+            for (let i = 0; i < numPlayers; i++) {
+                info += `P${i+1}: ${playerPositions[i]} &nbsp;|&nbsp; `;
+            }
+            // Hapus separator terakhir
+            document.getElementById('pos-indicator').innerHTML = info.slice(0, -14); 
+        }
+
+        function updatePlayerPosition(pIndex, num) {
+            const pos = getCoordinates(num);
+            const playerToken = document.getElementById(`player-token-${pIndex}`);
+            
+            // Animasi lompat
+            playerToken.classList.remove('jumping');
+            void playerToken.offsetWidth;
+            playerToken.classList.add('jumping');
+
+            // Set posisi ditambah offset agar tidak bertumpuk sempurna jika di satu sel
+            const offset = posOffsets[pIndex];
+            playerToken.style.left = `calc(${pos.x}% + ${offset.dx}%)`;
+            playerToken.style.top = `calc(${pos.y}% + ${offset.dy}%)`;
+            
+            updatePosIndicator();
         }
 
         function setLog(message, isAlert = false) {
@@ -477,18 +532,14 @@
             const diceVis = document.getElementById('dice-visual');
             
             btn.disabled = true;
-            
-            // Tambahkan kelas animasi guling (rolling)
             diceVis.classList.add('rolling');
-            setLog('Mengocok dadu... ⏳');
+            setLog(`${playerNames[currentPlayer]} mengocok dadu... ⏳`);
 
-            // Ganti-ganti angka secara cepat untuk simulasi dadu yang berputar
             let rollInterval = setInterval(() => {
                 const randomAngka = Math.floor(Math.random() * 6) + 1;
                 diceVis.innerHTML = `<span class="text-6xl text-brand-400 opacity-60">${randomAngka}</span>`;
             }, 80);
 
-            // Tunggu animasi berguling (600ms) selesai
             setTimeout(() => {
                 clearInterval(rollInterval);
                 diceVis.classList.remove('rolling');
@@ -496,59 +547,72 @@
                 const roll = Math.floor(Math.random() * 6) + 1;
                 diceVis.innerHTML = `<span class="text-6xl text-brand-600">${roll}</span>`;
                 
-                let targetPos = currentPos + roll;
+                let targetPos = playerPositions[currentPlayer] + roll;
                 
                 if (targetPos > 100) {
-                    // Jika melebihi 100, tidak bisa jalan
-                    setLog(`Dapat ${roll}, tapi butuh pas untuk ke 100. Coba lagi nanti!`);
-                    isMoving = false;
-                    btn.disabled = false;
+                    setLog(`Dapat ${roll}, tapi butuh pas untuk ke 100. ${playerNames[currentPlayer]} menetap di posisinya.`);
+                    setTimeout(nextTurn, 1000);
                     return;
                 }
 
-                setLog(`Maju ${roll} langkah ke kotak <b>${targetPos}</b> 🚶‍♂️`);
-                currentPos = targetPos;
-                updatePlayerPosition(currentPos);
+                setLog(`${playerNames[currentPlayer]} maju ${roll} langkah ke kotak <b>${targetPos}</b> 🚶‍♂️`);
+                playerPositions[currentPlayer] = targetPos;
+                updatePlayerPosition(currentPlayer, targetPos);
 
-                // Cek status setelah pion selesai bergeser (delay 550ms karena CSS transition 0.5s)
                 setTimeout(() => {
-                    checkSnakesLadders(currentPos);
+                    checkSnakesLadders(currentPlayer, targetPos);
                 }, 550);
 
-            }, 600); // 600ms = 0.6 detik sesuai durasi di @keyframes
+            }, 600);
         }
 
-        function checkSnakesLadders(pos) {
-            const btn = document.getElementById('btn-roll');
-
+        function checkSnakesLadders(pIndex, pos) {
             if (pos === 100) {
-                triggerWin();
+                triggerWin(pIndex);
                 return;
             }
 
             if (ladders[pos]) {
-                setLog(`🎉 Wah ada TANGGA! Naik dari ${pos} ke <b>${ladders[pos]}</b>!`, true);
-                currentPos = ladders[pos];
-                updatePlayerPosition(currentPos);
-                
-                setTimeout(() => { isMoving = false; btn.disabled = false; }, 550);
+                setLog(`🎉 Wah ada TANGGA! ${playerNames[pIndex]} naik dari ${pos} ke <b>${ladders[pos]}</b>!`, true);
+                playerPositions[pIndex] = ladders[pos];
+                updatePlayerPosition(pIndex, ladders[pos]);
+                setTimeout(nextTurn, 1000);
             } else if (snakes[pos]) {
-                setLog(`🐍 WADUH! Digigit ular, turun dari ${pos} ke <b>${snakes[pos]}</b>!`, true);
-                currentPos = snakes[pos];
-                updatePlayerPosition(currentPos);
-                
-                setTimeout(() => { isMoving = false; btn.disabled = false; }, 550);
+                setLog(`🐍 WADUH! Digigit ular, ${playerNames[pIndex]} turun dari ${pos} ke <b>${snakes[pos]}</b>!`, true);
+                playerPositions[pIndex] = snakes[pos];
+                updatePlayerPosition(pIndex, snakes[pos]);
+                setTimeout(nextTurn, 1000);
             } else {
-                // Aman, giliran selesai
-                isMoving = false;
-                btn.disabled = false;
+                setTimeout(nextTurn, 600);
             }
         }
 
-        function triggerWin() {
+        function nextTurn() {
+            // Jika ada yang menang (posisi = 100), game over, tidak ada next turn
+            if(playerPositions.includes(100)) return; 
+
+            // Ganti pemain (berputar berdasarkan jumlah pemain)
+            currentPlayer = (currentPlayer + 1) % numPlayers;
+            
+            if (numPlayers > 1) {
+                updateTurnUI();
+            }
+            
+            setLog(`Sekarang giliran <b>${playerNames[currentPlayer]}</b>!`);
+            isMoving = false;
+            document.getElementById('btn-roll').disabled = false;
+        }
+
+        function triggerWin(pIndex) {
             const modalContainer = document.getElementById('confetti-container');
             const winModal = document.getElementById('win-modal');
+            const titleEl = document.getElementById('win-title');
             
+            titleEl.innerHTML = `${playerNames[pIndex]} MENANG!`;
+            titleEl.className = `text-3xl sm:text-4xl font-black mb-2 ${playerColorClasses[pIndex]}`;
+            
+            document.getElementById('win-desc').innerHTML = `Luar biasa! <b>${playerNames[pIndex]}</b> berhasil mencapai garis akhir (100) lebih dulu.`;
+
             modalContainer.classList.remove('hidden');
             setTimeout(() => {
                 winModal.classList.remove('scale-0');
@@ -557,21 +621,16 @@
         }
 
         function resetGame() {
-            currentPos = 1;
-            isMoving = false;
-            
-            updatePlayerPosition(currentPos);
-            document.getElementById('dice-visual').innerHTML = '🎲';
-            setLog('Permainan diulang! Ayo coba lagi capai garis akhir.');
-            document.getElementById('btn-roll').disabled = false;
-
-            // Tutup modal jika sedang terbuka
+            // Kembalikan modal awal (Pilih Jumlah Pemain)
             const modalContainer = document.getElementById('confetti-container');
             const winModal = document.getElementById('win-modal');
+            
             winModal.classList.remove('scale-100');
             winModal.classList.add('scale-0');
+            
             setTimeout(() => {
                 modalContainer.classList.add('hidden');
+                document.getElementById('startup-modal').classList.remove('hidden');
             }, 300);
         }
 
