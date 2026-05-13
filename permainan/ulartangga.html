@@ -42,14 +42,14 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Kotak Grid Ular Tangga - Dimaksimalkan */
+        /* Kotak Grid Ular Tangga - Posisi Tengah Penuh */
         .board-container {
-            width: 100%;
-            /* Memaksimalkan ukuran papan hingga hampir menyentuh batas layar (85vh) */
-            max-width: min(95vw, 88vh); 
-            aspect-ratio: 1 / 1;
+            width: 95vmin;
+            height: 95vmin;
+            max-width: 800px;
+            max-height: 800px;
             position: relative;
-            margin: 0 auto;
+            z-index: 10;
         }
 
         .cell {
@@ -60,7 +60,6 @@
             font-weight: 900;
             border-radius: 6px;
             box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
-            transition: transform 0.2s;
         }
 
         .cell-number {
@@ -73,7 +72,7 @@
 
         @media (min-width: 640px) {
             .cell-number { font-size: 0.8rem; top: 4px; left: 6px; }
-            .cell { border-radius: 8px; }
+            .cell { border-radius: 12px; }
         }
 
         /* Pion Pemain (Bisa Banyak) */
@@ -108,34 +107,28 @@
         /* Animasi Dadu Berguling */
         @keyframes roll-dice {
             0% { transform: translateY(0) rotate(0deg) scale(1); }
-            25% { transform: translateY(-20px) rotate(180deg) scale(1.1); box-shadow: 0 15px 10px rgba(0,0,0,0.1); }
-            50% { transform: translateY(0) rotate(360deg) scale(1); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-            75% { transform: translateY(-10px) rotate(540deg) scale(1.05); box-shadow: 0 10px 8px rgba(0,0,0,0.1); }
-            100% { transform: translateY(0) rotate(720deg) scale(1); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+            25% { transform: translateY(-10px) rotate(180deg) scale(1.1); }
+            50% { transform: translateY(0) rotate(360deg) scale(1); }
+            75% { transform: translateY(-5px) rotate(540deg) scale(1.05); }
+            100% { transform: translateY(0) rotate(720deg) scale(1); }
         }
         .rolling { 
             animation: roll-dice 0.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) both; 
         }
 
-        /* Gaya Tombol Mainan */
-        .toy-btn {
-            transition: all 0.1s;
+        /* Efek Active Turn (Kartu Menyala) */
+        .card-active {
+            transform: scale(1.05);
+            opacity: 1 !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
-        .toy-btn:active {
-            transform: translateY(4px);
-            border-bottom-width: 0px !important;
-            margin-top: 4px;
-        }
-        .toy-btn:disabled {
+        .card-inactive {
+            transform: scale(0.95);
             opacity: 0.6;
-            cursor: not-allowed;
-            transform: translateY(4px);
-            border-bottom-width: 0px !important;
-            margin-top: 4px;
         }
     </style>
 </head>
-<body class="animated-bg min-h-screen text-slate-800 antialiased selection:bg-brand-200 flex flex-col justify-center overflow-x-hidden">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex justify-center items-center">
 
     <!-- MODAL PILIH PEMAIN (STARTUP) -->
     <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
@@ -147,109 +140,106 @@
             <div class="grid grid-cols-2 gap-3 sm:gap-4">
                 <button onclick="startGame(1)" class="py-4 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-2xl font-black text-lg transition-all border-2 border-blue-200 hover:-translate-y-1 hover:shadow-md">1 Orang</button>
                 <button onclick="startGame(2)" class="py-4 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl font-black text-lg transition-all border-2 border-red-200 hover:-translate-y-1 hover:shadow-md">2 Orang</button>
-                <button onclick="startGame(3)" class="py-4 bg-green-50 hover:bg-green-100 text-green-600 rounded-2xl font-black text-lg transition-all border-2 border-green-200 hover:-translate-y-1 hover:shadow-md">3 Orang</button>
+                <button onclick="startGame(3)" class="py-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-2xl font-black text-lg transition-all border-2 border-emerald-200 hover:-translate-y-1 hover:shadow-md">3 Orang</button>
                 <button onclick="startGame(4)" class="py-4 bg-yellow-50 hover:bg-yellow-100 text-yellow-600 rounded-2xl font-black text-lg transition-all border-2 border-yellow-200 hover:-translate-y-1 hover:shadow-md">4 Orang</button>
             </div>
         </div>
     </div>
 
-    <!-- WADAH TOMBOL KIRI ATAS (HOME) -->
-    <div class="fixed top-3 left-3 sm:top-5 sm:left-5 z-[100]">
-        <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:px-3 sm:py-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 font-black flex items-center justify-center transition-all" title="Kembali ke Beranda">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
+    <!-- UI: TOP LEFT (HOME & RESET) -->
+    <div class="absolute top-4 left-4 z-[100] flex gap-2">
+        <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none" title="Beranda">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
         </a>
+        <button onclick="resetGame()" class="bg-white/80 backdrop-blur-md border border-white/60 text-rose-500 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none" title="Ulang Permainan">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+        </button>
     </div>
 
-    <!-- TOMBOL LAYAR PENUH (KANAN ATAS) -->
-    <button onclick="toggleFullScreen()" class="fixed top-3 right-3 sm:top-5 sm:right-5 z-[100] bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2.5 sm:p-3 rounded-xl shadow-sm hover:bg-white hover:scale-105 font-black flex items-center justify-center transition-all focus:outline-none" title="Layar Penuh">
-        <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
-    </button>
-
-    <!-- FLOATING TITLE -->
-    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-[50] pointer-events-none hidden md:block">
-        <h1 class="text-xl sm:text-2xl font-black text-emerald-700 bg-white/60 backdrop-blur-md px-6 py-1.5 rounded-full border border-white shadow-sm tracking-tight flex items-center gap-2">
-            🐍 Ular Tangga Seru! 🪜
-        </h1>
+    <!-- UI: TOP RIGHT (FULLSCREEN) -->
+    <div class="absolute top-4 right-4 z-[100]">
+        <button onclick="toggleFullScreen()" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none" title="Layar Penuh">
+            <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+            <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
+        </button>
     </div>
 
-    <!-- MAIN LAYOUT -->
-    <div class="w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-4 lg:gap-6 items-center lg:items-stretch justify-center pt-16 sm:pt-6">
-        
-        <!-- AREA KIRI: PAPAN PERMAINAN (Ukuran Maksimal) -->
-        <section class="w-full flex-grow flex justify-center items-center order-2 lg:order-1">
-            <div class="bg-white p-2 sm:p-3 rounded-3xl shadow-xl border-4 border-white/60 board-container">
-                <div class="w-full h-full bg-slate-50 rounded-xl overflow-hidden shadow-inner border border-slate-200 relative">
-                    
-                    <!-- SVG LAYER -->
-                    <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+    <!-- UI: TOP CENTER (DICE & ROLL) -->
+    <div class="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] bg-white/90 backdrop-blur-md p-1.5 pr-2 sm:p-2 sm:pr-3 rounded-full shadow-xl border-2 border-emerald-100 flex items-center gap-2 sm:gap-3 transition-transform">
+        <div id="dice-visual" class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-full shadow-inner flex items-center justify-center text-2xl sm:text-3xl font-black transition-all">🎲</div>
+        <button id="btn-roll" onclick="rollDice()" class="bg-brand-500 hover:bg-brand-600 text-white font-black rounded-full px-5 py-2 sm:px-8 sm:py-3 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm sm:text-lg tracking-wide uppercase">
+            KOCOK!
+        </button>
+    </div>
 
-                    <!-- GRID KOTAK 10x10 -->
-                    <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full">
-                        <!-- Sel (Kotak) akan di-generate oleh JavaScript -->
-                    </div>
+    <!-- UI: BOTTOM CENTER (GAME LOG) -->
+    <div class="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-white/90 backdrop-blur-md px-6 py-2.5 sm:py-3 rounded-full shadow-lg border-2 border-cyan-100 text-center min-w-[280px] transition-colors pointer-events-none" id="log-container">
+        <span id="game-log" class="text-xs sm:text-sm font-bold text-slate-600">Tentukan jumlah pemain 🎲</span>
+    </div>
 
-                    <!-- PION PEMAIN -->
-                    <div id="tokens-container">
-                        <div id="player-token-0" class="player-token hidden"></div>
-                        <div id="player-token-1" class="player-token hidden"></div>
-                        <div id="player-token-2" class="player-token hidden"></div>
-                        <div id="player-token-3" class="player-token hidden"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- UI: CORNERS (PLAYERS HUD) -->
+    <!-- Player 1 (Kiri Atas) -->
+    <div id="card-p0" class="absolute top-20 left-4 sm:top-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 sm:gap-3 transition-all duration-300 hidden origin-top-left">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-blue-600 text-sm sm:text-base shadow-inner">P1</div>
+        <div class="pr-2 sm:pr-3">
+            <div class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
+            <div class="text-xl sm:text-2xl font-black text-slate-700 leading-none" id="pos-p0">1</div>
+        </div>
+    </div>
+    
+    <!-- Player 2 (Kanan Atas) -->
+    <div id="card-p1" class="absolute top-20 right-4 sm:top-24 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-red-200 flex flex-row-reverse items-center gap-2 sm:gap-3 transition-all duration-300 hidden origin-top-right">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-100 border border-red-400 flex items-center justify-center font-black text-red-600 text-sm sm:text-base shadow-inner">P2</div>
+        <div class="pl-2 sm:pl-3 text-right">
+            <div class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
+            <div class="text-xl sm:text-2xl font-black text-slate-700 leading-none" id="pos-p1">1</div>
+        </div>
+    </div>
 
-        <!-- AREA KANAN: KONTROL MINIMALIS -->
-        <section class="w-full lg:w-80 flex-shrink-0 flex flex-col gap-4 order-1 lg:order-2">
+    <!-- Player 3 (Kiri Bawah) -->
+    <div id="card-p2" class="absolute bottom-20 left-4 sm:bottom-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 sm:gap-3 transition-all duration-300 hidden origin-bottom-left">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-emerald-600 text-sm sm:text-base shadow-inner">P3</div>
+        <div class="pr-2 sm:pr-3">
+            <div class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
+            <div class="text-xl sm:text-2xl font-black text-slate-700 leading-none" id="pos-p2">1</div>
+        </div>
+    </div>
+
+    <!-- Player 4 (Kanan Bawah) -->
+    <div id="card-p3" class="absolute bottom-20 right-4 sm:bottom-24 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 sm:gap-3 transition-all duration-300 hidden origin-bottom-right">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-yellow-600 text-sm sm:text-base shadow-inner">P4</div>
+        <div class="pl-2 sm:pl-3 text-right">
+            <div class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
+            <div class="text-xl sm:text-2xl font-black text-slate-700 leading-none" id="pos-p3">1</div>
+        </div>
+    </div>
+
+
+    <!-- MAIN BOARD -->
+    <div class="board-container bg-white/60 backdrop-blur-sm p-1.5 sm:p-3 rounded-3xl sm:rounded-[2.5rem] shadow-2xl border-4 sm:border-8 border-white">
+        <div class="w-full h-full bg-slate-50 rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
             
-            <!-- Panel Utama: Dadu & Giliran -->
-            <div class="bg-white/80 backdrop-blur-md p-5 rounded-3xl shadow-lg border border-white/60 flex flex-col items-center relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-full blur-3xl opacity-50 -mr-10 -mt-10"></div>
-                
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 relative z-10">Giliran Pemain</span>
-                <div id="current-player-name" class="text-xl font-black text-slate-700 mb-5 relative z-10">Pilih Pemain</div>
+            <!-- SVG LAYER -->
+            <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
 
-                <!-- Visual Dadu 2D Sederhana -->
-                <div id="dice-visual" class="w-20 h-20 bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-200 rounded-2xl shadow-inner flex items-center justify-center text-4xl font-black text-slate-700 mb-6 relative z-10">
-                    🎲
-                </div>
-
-                <button id="btn-roll" onclick="rollDice()" class="toy-btn relative z-10 w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl text-lg border-b-4 border-brand-700 flex items-center justify-center gap-2">
-                    K O C O K !
-                </button>
+            <!-- GRID KOTAK 10x10 -->
+            <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full">
+                <!-- Sel (Kotak) di-generate oleh JS -->
             </div>
 
-            <!-- Panel Posisi Pemain -->
-            <div class="bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-lg border border-white/60">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block flex items-center gap-1">📍 Posisi Saat Ini</span>
-                <div class="grid grid-cols-2 gap-2 text-xs font-bold" id="pos-indicator-container">
-                    <!-- Data posisi akan diisi JS -->
-                </div>
+            <!-- PION PEMAIN -->
+            <div id="tokens-container">
+                <div id="player-token-0" class="player-token hidden"></div>
+                <div id="player-token-1" class="player-token hidden"></div>
+                <div id="player-token-2" class="player-token hidden"></div>
+                <div id="player-token-3" class="player-token hidden"></div>
             </div>
-
-            <!-- Panel Log Informasi -->
-            <div class="bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-lg border border-white/60 flex-grow flex flex-col min-h-[100px]">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block flex items-center gap-1">📢 Kabar Permainan</span>
-                <div id="game-log" class="flex-grow bg-slate-50/50 rounded-xl p-3 border border-slate-100/50 text-sm font-bold text-slate-600 flex items-center justify-center text-center">
-                    Tentukan jumlah pemain terlebih dahulu!
-                </div>
-            </div>
-
-            <!-- Tombol Reset Minimalis -->
-            <button onclick="resetGame()" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold rounded-xl transition-colors border border-rose-100 text-sm shadow-sm flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                Ulang Permainan
-            </button>
-
-        </section>
+        </div>
     </div>
 
     <!-- EFEK KONFETI (MUNCUL SAAT MENANG) -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
-        <div class="bg-white/90 backdrop-blur-sm p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500" id="win-modal">
+        <div class="bg-white/90 backdrop-blur-md p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500" id="win-modal">
             <div class="text-7xl mb-4">🏆</div>
             <h2 id="win-title" class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">SELAMAT!</h2>
             <p id="win-desc" class="text-base sm:text-lg font-bold text-slate-600 mb-6">Kamu berhasil mencapai garis akhir (100).</p>
@@ -269,7 +259,7 @@
         // Palet warna pastel untuk kotak-kotak papan
         const cellColors = [
             'bg-red-50 text-red-500', 'bg-blue-50 text-blue-500', 
-            'bg-green-50 text-green-500', 'bg-yellow-50 text-yellow-500', 
+            'bg-emerald-50 text-emerald-500', 'bg-yellow-50 text-yellow-600', 
             'bg-purple-50 text-purple-500', 'bg-pink-50 text-pink-500'
         ];
 
@@ -281,7 +271,7 @@
 
         const playerNames = ['P1 (Biru)', 'P2 (Merah)', 'P3 (Hijau)', 'P4 (Kuning)'];
         const playerColorClasses = ['text-blue-600', 'text-red-600', 'text-emerald-600', 'text-yellow-600'];
-        const playerBgClasses = ['bg-blue-50 border-blue-100', 'bg-red-50 border-red-100', 'bg-emerald-50 border-emerald-100', 'bg-yellow-50 border-yellow-100'];
+        const playerRingClasses = ['ring-blue-400', 'ring-red-400', 'ring-emerald-400', 'ring-yellow-400'];
 
         // Offset (Geser Sedikit) agar pion tidak tertumpuk di kotak yang sama
         const posOffsets = [
@@ -305,27 +295,30 @@
             playerPositions = [1, 1, 1, 1];
             isMoving = false;
             
-            // Sembunyikan Modal Startup
             document.getElementById('startup-modal').classList.add('hidden');
             
-            // Tampilkan jumlah pion sesuai pemain yang dipilih
             for (let i = 0; i < 4; i++) {
                 const token = document.getElementById(`player-token-${i}`);
+                const card = document.getElementById(`card-p${i}`);
+                
                 if (i < numPlayers) {
                     token.classList.remove('hidden');
+                    card.classList.remove('hidden');
+                    card.classList.add('flex');
                     updatePlayerPosition(i, 1);
                 } else {
                     token.classList.add('hidden');
+                    card.classList.add('hidden');
+                    card.classList.remove('flex');
                 }
             }
 
             updateTurnUI();
-            updatePosIndicator();
-
+            
             document.getElementById('dice-visual').innerHTML = '🎲';
             document.getElementById('btn-roll').disabled = false;
 
-            setLog(`Permainan dimulai! Silakan <b>${playerNames[currentPlayer]}</b> untuk mengocok.`);
+            setLog(`Mulai! Giliran <b>${playerNames[currentPlayer]}</b>`);
         }
 
         // ==========================================
@@ -337,12 +330,7 @@
 
             for (let row = 9; row >= 0; row--) {
                 for (let col = 0; col < 10; col++) {
-                    let num;
-                    if (row % 2 === 0) {
-                        num = (row * 10) + col + 1; 
-                    } else {
-                        num = (row * 10) + (9 - col) + 1; 
-                    }
+                    let num = (row % 2 === 0) ? (row * 10) + col + 1 : (row * 10) + (9 - col) + 1; 
 
                     const cell = document.createElement('div');
                     cell.className = `cell ${cellColors[num % cellColors.length]}`;
@@ -358,14 +346,10 @@
         function getCoordinates(num) {
             let row = Math.floor((num - 1) / 10);
             let col = (num - 1) % 10;
-            
-            if (row % 2 !== 0) {
-                col = 9 - col;
-            }
+            if (row % 2 !== 0) col = 9 - col;
 
             let x = (col * 10) + 5; 
             let y = 95 - (row * 10);
-
             return { x, y };
         }
 
@@ -395,16 +379,12 @@
                 const r2x1 = pos1.x - px*w; const r2y1 = pos1.y - py*w;
                 const r2x2 = pos2.x - px*w; const r2y2 = pos2.y - py*w;
 
-                svgContent += `
-                    <line x1="${r1x1+0.4}" y1="${r1y1+0.4}" x2="${r1x2+0.4}" y2="${r1y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>
-                    <line x1="${r2x1+0.4}" y1="${r2y1+0.4}" x2="${r2x2+0.4}" y2="${r2y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>
-                `;
-                svgContent += `
-                    <line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>
-                    <line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>
-                    <line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#b45309" stroke-width="0.6" stroke-linecap="round"/>
-                    <line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#b45309" stroke-width="0.6" stroke-linecap="round"/>
-                `;
+                svgContent += `<line x1="${r1x1+0.4}" y1="${r1y1+0.4}" x2="${r1x2+0.4}" y2="${r1y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>`;
+                svgContent += `<line x1="${r2x1+0.4}" y1="${r2y1+0.4}" x2="${r2x2+0.4}" y2="${r2y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>`;
+                svgContent += `<line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>`;
+                svgContent += `<line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>`;
+                svgContent += `<line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#b45309" stroke-width="0.6" stroke-linecap="round"/>`;
+                svgContent += `<line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#b45309" stroke-width="0.6" stroke-linecap="round"/>`;
 
                 const rungCount = Math.floor(length / 3); 
                 for(let i=1; i<=rungCount; i++) {
@@ -472,72 +452,68 @@
         }
 
         // ==========================================
-        // LOGIKA PERMAINAN (MULTIPLAYER)
+        // LOGIKA PERMAINAN HUD & TURN
         // ==========================================
         function updateTurnUI() {
-            const nameEl = document.getElementById('current-player-name');
-            nameEl.innerText = playerNames[currentPlayer];
-            nameEl.className = `text-xl font-black transition-colors ${playerColorClasses[currentPlayer]}`;
-        }
-
-        function updatePosIndicator() {
-            let container = document.getElementById('pos-indicator-container');
-            let html = '';
+            // Update Card di 4 sudut
             for (let i = 0; i < numPlayers; i++) {
-                html += `
-                    <div class="p-2 rounded-xl border flex justify-between items-center ${playerBgClasses[i]}">
-                        <span class="${playerColorClasses[i]}">P${i+1}</span>
-                        <span class="text-base text-slate-700">${playerPositions[i]}</span>
-                    </div>
-                `;
+                const card = document.getElementById(`card-p${i}`);
+                if (card) {
+                    if (i === currentPlayer) {
+                        card.classList.add('card-active', 'ring-4', playerRingClasses[i]);
+                        card.classList.remove('card-inactive');
+                    } else {
+                        card.classList.add('card-inactive');
+                        card.classList.remove('card-active', 'ring-4', playerRingClasses[i]);
+                    }
+                }
             }
-            container.innerHTML = html; 
         }
 
         function updatePlayerPosition(pIndex, num) {
             const pos = getCoordinates(num);
             const playerToken = document.getElementById(`player-token-${pIndex}`);
             
-            // Animasi lompat
+            // Animasi lompat pion
             playerToken.classList.remove('jumping');
-            void playerToken.offsetWidth; // Memicu reflow
+            void playerToken.offsetWidth; 
             playerToken.classList.add('jumping');
 
-            // Set posisi ditambah offset
+            // Posisi + Offset
             const offset = posOffsets[pIndex];
             playerToken.style.left = `calc(${pos.x}% + ${offset.dx}%)`;
             playerToken.style.top = `calc(${pos.y}% + ${offset.dy}%)`;
             
-            updatePosIndicator();
+            // Update Teks Posisi di Kartu Pemain
+            document.getElementById(`pos-p${pIndex}`).innerText = num;
         }
 
-        // FUNGSI: Jalan selangkah demi selangkah
         function moveTokenStepByStep(pIndex, startPos, endPos, stepDelay, onComplete) {
             if (startPos >= endPos) {
                 if (onComplete) onComplete();
                 return;
             }
-            
             let nextPos = startPos + 1;
             playerPositions[pIndex] = nextPos;
             updatePlayerPosition(pIndex, nextPos);
             
-            // Tunggu lompatan selesai lalu lanjut ke langkah berikutnya
             setTimeout(() => {
                 moveTokenStepByStep(pIndex, nextPos, endPos, stepDelay, onComplete);
             }, stepDelay);
         }
 
         function setLog(message, isAlert = false) {
-            const logBox = document.getElementById('game-log');
-            logBox.innerHTML = message;
+            const logBox = document.getElementById('log-container');
+            const logText = document.getElementById('game-log');
+            logText.innerHTML = message;
+            
             if (isAlert) {
-                logBox.classList.remove('bg-slate-50/50', 'border-slate-100/50', 'text-slate-600');
-                logBox.classList.add('bg-yellow-50', 'border-yellow-200', 'text-yellow-700');
+                logBox.classList.remove('border-cyan-100');
+                logBox.classList.add('bg-yellow-100', 'border-yellow-400');
                 setTimeout(() => {
-                    logBox.classList.add('bg-slate-50/50', 'border-slate-100/50', 'text-slate-600');
-                    logBox.classList.remove('bg-yellow-50', 'border-yellow-200', 'text-yellow-700');
-                }, 2000);
+                    logBox.classList.remove('bg-yellow-100', 'border-yellow-400');
+                    logBox.classList.add('border-cyan-100');
+                }, 2500);
             }
         }
 
@@ -550,11 +526,11 @@
             
             btn.disabled = true;
             diceVis.classList.add('rolling');
-            setLog(`${playerNames[currentPlayer]} mengocok dadu... ⏳`);
+            setLog(`<b>${playerNames[currentPlayer]}</b> sedang mengocok... ⏳`);
 
             let rollInterval = setInterval(() => {
                 const randomAngka = Math.floor(Math.random() * 6) + 1;
-                diceVis.innerHTML = `<span class="text-3xl sm:text-5xl text-slate-400 opacity-50">${randomAngka}</span>`;
+                diceVis.innerHTML = `<span class="text-2xl sm:text-3xl text-slate-400 opacity-50">${randomAngka}</span>`;
             }, 80);
 
             setTimeout(() => {
@@ -562,22 +538,20 @@
                 diceVis.classList.remove('rolling');
                 
                 const roll = Math.floor(Math.random() * 6) + 1;
-                diceVis.innerHTML = `<span class="text-4xl sm:text-6xl text-brand-600">${roll}</span>`;
+                diceVis.innerHTML = `<span class="text-3xl sm:text-4xl text-brand-600">${roll}</span>`;
                 
                 let currentPosTemp = playerPositions[currentPlayer];
                 let targetPos = currentPosTemp + roll;
                 
                 if (targetPos > 100) {
-                    setLog(`Dapat ${roll}, butuh angka pas. ${playerNames[currentPlayer]} tetap di tempat.`);
+                    setLog(`Dapat ${roll}, butuh angka pas. Tetap di tempat.`);
                     setTimeout(nextTurn, 1500);
                     return;
                 }
 
-                setLog(`${playerNames[currentPlayer]} maju ${roll} langkah ke <b>${targetPos}</b> 🚶‍♂️`);
+                setLog(`Maju ${roll} langkah! 🚶‍♂️`);
                 
-                // Mulai lompatan step by step (satu per satu)
                 moveTokenStepByStep(currentPlayer, currentPosTemp, targetPos, 400, () => {
-                    // Setelah sampai tujuan, cek ular tangga
                     checkSnakesLadders(currentPlayer, targetPos);
                 });
 
@@ -591,12 +565,12 @@
             }
 
             if (ladders[pos]) {
-                setLog(`🎉 Wah ada TANGGA! ${playerNames[pIndex]} naik ke <b>${ladders[pos]}</b>!`, true);
+                setLog(`🎉 TANGGA! Naik ke kotak <b>${ladders[pos]}</b>!`, true);
                 playerPositions[pIndex] = ladders[pos];
                 updatePlayerPosition(pIndex, ladders[pos]);
                 setTimeout(nextTurn, 1200);
             } else if (snakes[pos]) {
-                setLog(`🐍 WADUH! Digigit ular, ${playerNames[pIndex]} turun ke <b>${snakes[pos]}</b>!`, true);
+                setLog(`🐍 WADUH! Digigit ular, turun ke <b>${snakes[pos]}</b>!`, true);
                 playerPositions[pIndex] = snakes[pos];
                 updatePlayerPosition(pIndex, snakes[pos]);
                 setTimeout(nextTurn, 1200);
@@ -606,15 +580,12 @@
         }
 
         function nextTurn() {
-            // Jika ada yang menang (posisi = 100), game over, tidak ada next turn
             if(playerPositions.includes(100)) return; 
 
-            // Ganti pemain (berputar berdasarkan jumlah pemain)
             currentPlayer = (currentPlayer + 1) % numPlayers;
-            
             updateTurnUI();
             
-            setLog(`Giliran <b>${playerNames[currentPlayer]}</b> mengocok dadu!`);
+            setLog(`Giliran <b>${playerNames[currentPlayer]}</b>!`);
             isMoving = false;
             document.getElementById('btn-roll').disabled = false;
         }
@@ -627,7 +598,7 @@
             titleEl.innerHTML = `${playerNames[pIndex]} MENANG!`;
             titleEl.className = `text-3xl sm:text-4xl font-black mb-2 ${playerColorClasses[pIndex]}`;
             
-            document.getElementById('win-desc').innerHTML = `Luar biasa! <b>${playerNames[pIndex]}</b> berhasil mencapai garis akhir (100) lebih dulu.`;
+            document.getElementById('win-desc').innerHTML = `Luar biasa! <b>${playerNames[pIndex]}</b> berhasil mencapai garis akhir (100).`;
 
             modalContainer.classList.remove('hidden');
             setTimeout(() => {
@@ -637,7 +608,6 @@
         }
 
         function resetGame() {
-            // Kembalikan modal awal (Pilih Jumlah Pemain)
             const modalContainer = document.getElementById('confetti-container');
             const winModal = document.getElementById('win-modal');
             
@@ -656,7 +626,7 @@
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Gagal membuka layar penuh: ${err.message}`);
+                    console.log(`Gagal membuka layar penuh.`);
                 });
             } else {
                 if (document.exitFullscreen) {
@@ -668,13 +638,10 @@
         document.addEventListener('fullscreenchange', () => {
             const enterIcon = document.getElementById('fs-icon-enter');
             const exitIcon = document.getElementById('fs-icon-exit');
-            
             if (document.fullscreenElement) {
-                enterIcon.classList.add('hidden');
-                exitIcon.classList.remove('hidden');
+                enterIcon.classList.add('hidden'); exitIcon.classList.remove('hidden');
             } else {
-                enterIcon.classList.remove('hidden');
-                exitIcon.classList.add('hidden');
+                enterIcon.classList.remove('hidden'); exitIcon.classList.add('hidden');
             }
         });
     </script>
