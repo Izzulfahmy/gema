@@ -186,15 +186,15 @@
         }
     </style>
 </head>
-<body class="animated-bg h-screen w-screen overflow-x-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
+<body class="animated-bg min-h-screen w-full overflow-x-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
 
-    <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN -->
-    <header class="w-full flex justify-between items-center p-3 sm:p-5 z-[100] relative shrink-0">
+    <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN (Diperkecil tinggi/paddingnya) -->
+    <header class="w-full flex justify-between items-center py-2 px-3 sm:py-3 sm:px-5 z-[100] relative shrink-0">
         <div class="flex items-center gap-2 sm:gap-3">
-            <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
+            <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
             </a>
-            <button onclick="openSettings()" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Pengaturan">
+            <button onclick="openSettings()" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Pengaturan">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -203,19 +203,19 @@
         </div>
 
         <div class="absolute left-1/2 -translate-x-1/2 pointer-events-none text-center">
-            <h1 class="text-xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 drop-shadow-sm tracking-tight">
+            <h1 class="text-lg sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 drop-shadow-sm tracking-tight">
                 Penyajian Data
             </h1>
         </div>
 
-        <button onclick="toggleFullScreen()" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Layar Penuh">
+        <button onclick="toggleFullScreen()" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Layar Penuh">
             <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
             <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
         </button>
     </header>
 
     <!-- AREA UTAMA PERMAINAN -->
-    <main class="w-full flex-grow flex flex-col lg:flex-row p-3 sm:p-4 lg:p-6 pb-12 max-w-[1400px] mx-auto z-10 gap-4 sm:gap-6 min-h-0">
+    <main class="w-full flex-grow flex flex-col lg:flex-row px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4 max-w-[1400px] mx-auto z-10 gap-4 sm:gap-6 min-h-0">
         
         <!-- BAGIAN KIRI: MEJA BELAJAR -->
         <section class="flex flex-col w-full lg:w-7/12 flex-grow lg:flex-grow-0 min-h-[40vh] lg:h-full gap-2 sm:gap-3">
@@ -226,7 +226,7 @@
                     </span> 
                     <span id="meja-title">Meja Belajar</span>
                 </h2>
-                <button onclick="acakBenda()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-4 py-2 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all text-xs sm:text-sm tracking-widest uppercase border border-brand-600 flex items-center gap-1.5">
+                <button onclick="acakBenda()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-3 py-1.5 sm:px-4 sm:py-2 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all text-[10px] sm:text-sm tracking-widest uppercase border border-brand-600 flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> Acak Benda
                 </button>
             </div>
@@ -249,11 +249,18 @@
             <div id="dropzones-container" class="grid grid-cols-2 gap-2 sm:gap-4 w-full flex-grow"></div>
 
             <!-- TOMBOL SELESAI -->
-            <button onclick="checkGameFinish()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl px-4 py-3 sm:py-4 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm sm:text-base tracking-widest uppercase border border-emerald-600 flex items-center justify-center gap-2 w-full mt-2">
+            <button onclick="checkGameFinish()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl px-4 py-3 sm:py-4 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm sm:text-base tracking-widest uppercase border border-emerald-600 flex items-center justify-center gap-2 w-full mt-2 shrink-0">
                 ✅ Selesai
             </button>
         </section>
     </main>
+
+    <!-- FOOTER MINIMALIS -->
+    <footer class="w-full py-4 mt-auto shrink-0 flex justify-center items-center opacity-70">
+        <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">
+            &copy; 2026 GEMA Project
+        </p>
+    </footer>
 
     <!-- MODAL PENGATURAN -->
     <div id="settings-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center">
