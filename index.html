@@ -23,17 +23,6 @@
                     fontFamily: { 
                         sans: ['Inter', 'sans-serif'],
                         display: ['Nunito', 'sans-serif']
-                    },
-                    animation: {
-                        blob: "blob 10s infinite",
-                    },
-                    keyframes: {
-                        blob: {
-                            "0%": { transform: "translate(0px, 0px) scale(1)" },
-                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
-                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
-                            "100%": { transform: "translate(0px, 0px) scale(1)" },
-                        }
                     }
                 }
             }
@@ -41,41 +30,38 @@
     </script>
 
     <style>
-        /* Base background */
+        /* Latar Belakang Pola Titik (Sangat Ringan) */
         body { 
             background-color: #f8fafc; 
-            transition: background-color 0.5s ease;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+            transition: background-color 0.3s ease;
         }
 
         .dark body { 
             background-color: #0f172a; 
+            background-image: radial-gradient(#334155 1px, transparent 1px);
         }
-
-        /* Ambient Animated Blobs Helper */
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
         
-        /* Pengaturan logo: Colorfull, Sleek, Profesional */
+        /* Pengaturan logo yang bersih dan berwarna */
         .logo-row img {
-            height: 22px;
+            height: 24px;
             object-fit: contain;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
+            transition: transform 0.2s ease-in-out;
         }
         .logo-row img:hover {
-            transform: scale(1.15) rotate(2deg);
-            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.15));
+            transform: scale(1.1);
         }
 
         @media (min-width: 640px) {
             .logo-row img { height: 32px; }
         }
 
-        /* Animasi masuk perlahan */
+        /* Animasi masuk sederhana (Sangat ringan di GPU) */
         .fade-in-up {
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeInUp 0.6s ease-out forwards;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(15px);
         }
 
         @keyframes fadeInUp {
@@ -83,36 +69,25 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased text-slate-800 dark:text-slate-100 selection:bg-pink-200 dark:selection:bg-pink-900 overflow-x-hidden relative">
-
-    <!-- AMBIENT COLORFUL BACKGROUND -->
-    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none transition-opacity duration-500">
-        <!-- Blobs Warna-Warni -->
-        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] max-w-[500px] max-h-[500px] rounded-full bg-pink-300/40 dark:bg-pink-600/20 blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob"></div>
-        <div class="absolute top-[10%] right-[-10%] w-[45vw] h-[45vw] max-w-[450px] max-h-[450px] rounded-full bg-cyan-300/40 dark:bg-cyan-600/20 blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000"></div>
-        <div class="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-purple-300/40 dark:bg-purple-600/20 blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000"></div>
-        
-        <!-- Pola Polka Dot Halus -->
-        <div class="absolute inset-0 opacity-[0.15] dark:opacity-[0.05]" style="background-image: radial-gradient(#000 2px, transparent 2px); background-size: 24px 24px;"></div>
-    </div>
+<body class="min-h-screen flex flex-col antialiased text-slate-800 dark:text-slate-100 selection:bg-pink-200 dark:selection:bg-pink-900 overflow-x-hidden">
 
     <!-- TOMBOL TEMA GELAP/TERANG (Kiri Atas) -->
-    <button onclick="toggleTheme()" class="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] w-10 h-10 sm:w-12 sm:h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border border-white/60 dark:border-slate-700/60 text-pink-500 dark:text-yellow-400 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:bg-white dark:hover:bg-slate-700 hover:text-purple-600 dark:hover:text-yellow-300 hover:shadow-lg hover:scale-110 transition-all duration-300 focus:outline-none flex items-center justify-center group" title="Ubah Tema">
+    <button onclick="toggleTheme()" class="fixed top-4 left-4 sm:top-6 sm:left-6 z-[100] w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-pink-500 dark:text-yellow-400 rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all focus:outline-none flex items-center justify-center group" title="Ubah Tema">
         <!-- Icon Matahari (Tampil saat mode dark) -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden dark:block group-hover:rotate-45 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden dark:block group-hover:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
         <!-- Icon Bulan (Tampil saat mode light) -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 block dark:hidden group-hover:-rotate-12 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 block dark:hidden group-hover:-rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
     </button>
 
     <!-- TOMBOL LAYAR PENUH (Kanan Atas) -->
-    <button onclick="toggleFullScreen()" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100] w-10 h-10 sm:w-12 sm:h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border border-white/60 dark:border-slate-700/60 text-cyan-600 dark:text-cyan-400 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:bg-white dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-lg hover:scale-110 transition-all duration-300 focus:outline-none flex items-center justify-center group" title="Layar Penuh">
-        <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
+    <button onclick="toggleFullScreen()" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100] w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-cyan-600 dark:text-cyan-400 rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all focus:outline-none flex items-center justify-center group" title="Layar Penuh">
+        <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
     </button>
 
-    <!-- HEADER / FLOATING PILL NAVBAR -->
-    <div class="w-full fixed top-0 left-0 z-50 pt-4 sm:pt-6 px-4 pointer-events-none flex justify-center fade-in-up" style="animation-delay: 0.1s;">
-        <nav class="bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/60 dark:border-slate-700/60 py-3 px-6 sm:px-10 rounded-full pointer-events-auto transition-colors duration-500">
+    <!-- HEADER / PILL NAVBAR -->
+    <div class="w-full pt-6 px-4 flex justify-center fade-in-up">
+        <nav class="bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700 py-3 px-6 sm:px-10 rounded-full transition-colors duration-300">
             <div class="flex items-center justify-center gap-5 sm:gap-8 logo-row">
                 <img src="aset/tutwuri.png" alt="Tut Wuri Handayani" title="Tut Wuri Handayani">
                 <img src="aset/Logo.png" alt="Logo GEMA" title="GEMA">
@@ -122,79 +97,73 @@
         </nav>
     </div>
 
-    <!-- HERO SECTION (Colorfull & Profesional) -->
-    <header class="relative text-center pt-32 sm:pt-44 pb-16 px-4 flex flex-col items-center justify-center fade-in-up" style="animation-delay: 0.2s;">
-        <!-- Latar belakang glowing khusus teks (lebih tajam) -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[150px] bg-white/40 dark:bg-black/20 rounded-full blur-[40px] pointer-events-none transition-colors duration-500"></div>
-        
-        <h1 class="relative z-10 font-display text-5xl sm:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 dark:from-pink-400 dark:via-purple-400 dark:to-cyan-400 tracking-tight mb-4 sm:mb-6 pb-2 transition-all duration-500 drop-shadow-sm">
+    <!-- HERO SECTION -->
+    <header class="text-center pt-24 pb-16 px-4 flex flex-col items-center justify-center fade-in-up" style="animation-delay: 0.1s;">
+        <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 dark:from-pink-400 dark:via-purple-400 dark:to-cyan-400 tracking-tight mb-4 sm:mb-6 pb-2 transition-colors duration-300">
             GEMA
         </h1>
-        <p class="relative z-10 text-sm sm:text-lg text-slate-600 dark:text-slate-300 font-medium max-w-xl mx-auto leading-relaxed transition-colors duration-500 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm px-6 py-2 rounded-full border border-white/50 dark:border-slate-700/50 shadow-sm">
-            <span class="font-extrabold text-purple-700 dark:text-purple-300">Generasi Matematika:</span> Bermain, Belajar, dan Berkembang!
+        <p class="text-sm sm:text-lg text-slate-600 dark:text-slate-300 font-medium max-w-xl mx-auto leading-relaxed bg-white/80 dark:bg-slate-800/80 px-6 py-2.5 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm transition-colors duration-300">
+            <span class="font-extrabold text-purple-700 dark:text-purple-400">Generasi Matematika:</span> Bermain, Belajar, dan Berkembang!
         </p>
     </header>
 
     <!-- GAMES GRID SECTION -->
-    <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 pb-24 relative z-10">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 fade-in-up" style="animation-delay: 0.3s;">
+    <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 pb-24 z-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 fade-in-up" style="animation-delay: 0.2s;">
             
             <!-- CARD: LEMPAR DADU -->
-            <a href="permainan/lempardadu.html" class="group flex flex-col bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-[1.5rem] shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(168,85,247,0.3)] dark:hover:shadow-[0_20px_40px_-15px_rgba(168,85,247,0.4)] border-2 border-purple-100 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-500 overflow-hidden transform hover:-translate-y-2">
-                <div class="h-48 w-full bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-slate-800 dark:to-purple-900/40 flex items-center justify-center relative overflow-hidden transition-colors duration-500">
-                    <!-- Ornamen Dekoratif -->
-                    <div class="absolute inset-0 bg-[linear-gradient(to_right,#a855f722_1px,transparent_1px),linear-gradient(to_bottom,#a855f722_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#a855f733_1px,transparent_1px),linear-gradient(to_bottom,#a855f733_1px,transparent_1px)] bg-[size:16px_16px] transition-colors duration-500"></div>
+            <a href="permainan/lempardadu.html" class="group flex flex-col bg-white dark:bg-slate-800 rounded-3xl shadow-md hover:shadow-xl border-2 border-slate-100 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-1">
+                <div class="h-48 w-full bg-purple-50 dark:bg-slate-900 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+                    <div class="absolute inset-0 opacity-20 dark:opacity-10 bg-[radial-gradient(#a855f7_2px,transparent_2px)] bg-[size:16px_16px]"></div>
                     <!-- Icon Dadu -->
-                    <span class="text-7xl group-hover:scale-125 group-hover:rotate-12 transition-transform duration-500 drop-shadow-md relative z-10">🎲</span>
+                    <span class="text-7xl group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 relative z-10">🎲</span>
                     <!-- Badge Colorfull -->
-                    <div class="absolute top-4 left-4 bg-purple-100/90 dark:bg-purple-900/80 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-black text-purple-700 dark:text-purple-300 uppercase tracking-widest border border-purple-200 dark:border-purple-700/50 shadow-sm z-10 transition-colors duration-500">
+                    <div class="absolute top-4 left-4 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest border border-purple-100 dark:border-slate-600 shadow-sm z-10 transition-colors duration-300">
                         Peluang
                     </div>
                 </div>
-                <div class="p-6 flex flex-col flex-grow bg-white dark:bg-slate-800 transition-colors duration-500">
-                    <h3 class="font-display text-xl font-extrabold text-slate-800 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-500">Lempar Dadu</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed transition-colors duration-500">
-                        Pelajari peluang dan visualisasikan grafik frekuensi dari setiap lemparan dadu interaktif.
+                <div class="p-6 flex flex-col flex-grow bg-white dark:bg-slate-800 transition-colors duration-300">
+                    <h3 class="font-display text-xl font-extrabold text-slate-800 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">Lempar Dadu</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed transition-colors duration-300">
+                        Pelajari peluang dan visualisasikan grafik frekuensi dari setiap lemparan dadu secara interaktif.
                     </p>
                 </div>
             </a>
 
             <!-- CARD: PENYAJIAN DATA -->
-            <a href="permainan/penyajiandata.html" class="group flex flex-col bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-[1.5rem] shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(14,165,233,0.3)] dark:hover:shadow-[0_20px_40px_-15px_rgba(14,165,233,0.4)] border-2 border-sky-100 dark:border-slate-700 hover:border-sky-300 dark:hover:border-sky-500 transition-all duration-500 overflow-hidden transform hover:-translate-y-2">
-                <div class="h-48 w-full bg-gradient-to-br from-sky-50 to-cyan-100 dark:from-slate-800 dark:to-sky-900/40 flex items-center justify-center relative overflow-hidden transition-colors duration-500">
-                    <!-- Ornamen Dekoratif -->
-                    <div class="absolute inset-0 bg-[linear-gradient(to_right,#38bdf822_1px,transparent_1px),linear-gradient(to_bottom,#38bdf822_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#38bdf833_1px,transparent_1px),linear-gradient(to_bottom,#38bdf833_1px,transparent_1px)] bg-[size:16px_16px] transition-colors duration-500"></div>
+            <a href="permainan/penyajiandata.html" class="group flex flex-col bg-white dark:bg-slate-800 rounded-3xl shadow-md hover:shadow-xl border-2 border-slate-100 dark:border-slate-700 hover:border-sky-300 dark:hover:border-sky-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-1">
+                <div class="h-48 w-full bg-sky-50 dark:bg-slate-900 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+                    <div class="absolute inset-0 opacity-20 dark:opacity-10 bg-[radial-gradient(#0ea5e9_2px,transparent_2px)] bg-[size:16px_16px]"></div>
                     <!-- Icon Grafik -->
-                    <span class="text-7xl group-hover:scale-125 transition-transform duration-500 drop-shadow-md relative z-10">📊</span>
+                    <span class="text-7xl group-hover:scale-110 transition-transform duration-300 relative z-10">📊</span>
                     <!-- Badge Colorfull -->
-                    <div class="absolute top-4 left-4 bg-sky-100/90 dark:bg-sky-900/80 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-widest border border-sky-200 dark:border-sky-700/50 shadow-sm z-10 transition-colors duration-500">
+                    <div class="absolute top-4 left-4 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-widest border border-sky-100 dark:border-slate-600 shadow-sm z-10 transition-colors duration-300">
                         Observasi
                     </div>
                 </div>
-                <div class="p-6 flex flex-col flex-grow bg-white dark:bg-slate-800 transition-colors duration-500">
-                    <h3 class="font-display text-xl font-extrabold text-slate-800 dark:text-white mb-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors duration-500">Penyajian Data</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed transition-colors duration-500">
-                        Mari hitung, pisahkan, dan kelompokkan benda yang berserakan dengan menyenangkan!
+                <div class="p-6 flex flex-col flex-grow bg-white dark:bg-slate-800 transition-colors duration-300">
+                    <h3 class="font-display text-xl font-extrabold text-slate-800 dark:text-white mb-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors duration-300">Penyajian Data</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed transition-colors duration-300">
+                        Mari hitung, pisahkan, dan kelompokkan benda yang berserakan dengan sangat menyenangkan!
                     </p>
                 </div>
             </a>
             
             <!-- CARD: ULAR TANGGA -->
-            <a href="permainan/ulartangga.html" class="group flex flex-col bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-[1.5rem] shadow-lg hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] dark:hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.4)] border-2 border-emerald-100 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-500 transition-all duration-500 overflow-hidden transform hover:-translate-y-2">
-                <div class="h-48 w-full bg-gradient-to-br from-emerald-50 to-teal-100 dark:from-slate-800 dark:to-emerald-900/40 flex items-center justify-center relative overflow-hidden transition-colors duration-500">
-                    <!-- Ornamen Dekoratif -->
-                    <div class="absolute inset-0 bg-[linear-gradient(to_right,#34d39922_1px,transparent_1px),linear-gradient(to_bottom,#34d39922_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#34d39933_1px,transparent_1px),linear-gradient(to_bottom,#34d39933_1px,transparent_1px)] bg-[size:16px_16px] transition-colors duration-500"></div>
+            <a href="permainan/ulartangga.html" class="group flex flex-col bg-white dark:bg-slate-800 rounded-3xl shadow-md hover:shadow-xl border-2 border-slate-100 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-1">
+                <div class="h-48 w-full bg-emerald-50 dark:bg-slate-900 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+                    <div class="absolute inset-0 opacity-20 dark:opacity-10 bg-[radial-gradient(#10b981_2px,transparent_2px)] bg-[size:16px_16px]"></div>
                     <!-- Icon Ular -->
-                    <span class="text-7xl group-hover:scale-125 transition-transform duration-500 drop-shadow-md relative z-10">🐍</span>
+                    <span class="text-7xl group-hover:scale-110 transition-transform duration-300 relative z-10">🐍</span>
                     <!-- Badge Colorfull -->
-                    <div class="absolute top-4 left-4 bg-emerald-100/90 dark:bg-emerald-900/80 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-widest border border-emerald-200 dark:border-emerald-700/50 shadow-sm z-10 transition-colors duration-500">
+                    <div class="absolute top-4 left-4 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest border border-emerald-100 dark:border-slate-600 shadow-sm z-10 transition-colors duration-300">
                         Logika
                     </div>
                 </div>
-                <div class="p-6 flex flex-col flex-grow bg-white dark:bg-slate-800 transition-colors duration-500">
-                    <h3 class="font-display text-xl font-extrabold text-slate-800 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-500">Ular Tangga</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed transition-colors duration-500">
-                        Berlomba mencapai garis akhir! Naik lewat tangga dan berhati-hatilah menghindari ular.
+                <div class="p-6 flex flex-col flex-grow bg-white dark:bg-slate-800 transition-colors duration-300">
+                    <h3 class="font-display text-xl font-extrabold text-slate-800 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">Ular Tangga</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed transition-colors duration-300">
+                        Berlomba mencapai garis akhir! Naik lewat tangga dan berhati-hatilah menghindari gigitan ular.
                     </p>
                 </div>
             </a>
@@ -203,12 +172,12 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="mt-auto py-8 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-t border-slate-200/60 dark:border-slate-800/60 transition-colors duration-500 fade-in-up" style="animation-delay: 0.4s;">
+    <footer class="mt-auto py-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300 fade-in-up" style="animation-delay: 0.3s;">
         <div class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-center sm:text-left">
-            <div class="font-display text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-cyan-500 tracking-widest transition-colors duration-500">
+            <div class="font-display text-lg font-black text-slate-800 dark:text-slate-200 tracking-widest transition-colors duration-300">
                 GEMA
             </div>
-            <div class="text-xs font-bold text-slate-500 dark:text-slate-400 transition-colors duration-500">
+            <div class="text-xs font-bold text-slate-500 dark:text-slate-500 transition-colors duration-300">
                 &copy; 2026 GEMA Project.
             </div>
         </div>
