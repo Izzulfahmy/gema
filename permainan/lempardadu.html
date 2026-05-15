@@ -238,7 +238,7 @@
     <div class="max-w-5xl mx-auto py-4 px-4 sm:px-6 lg:py-6 flex flex-col min-h-screen">
         
         <header class="mb-4 lg:mb-6 text-center pt-10 sm:pt-0 relative z-10">
-            <h1 class="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight mb-2">
+            <h1 class="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight">
                 Ayo Main Lempar Dadu! 🎲
             </h1>
         </header>
@@ -331,7 +331,7 @@
                         </button>
                     </div>
                     
-                    <div id="dice-history-box" class="flex flex-wrap gap-1.5 sm:gap-2 max-h-[100px] overflow-y-auto p-2 sm:p-3 bg-purple-50 rounded-xl shadow-inner border border-purple-100 min-h-[70px] content-start">
+                    <div id="dice-history-box" class="flex flex-wrap gap-1.5 sm:gap-2 max-h-[200px] overflow-y-auto p-2 sm:p-3 bg-purple-50 rounded-xl shadow-inner border border-purple-100 min-h-[100px] content-start">
                         <!-- Pesan Kosong Default -->
                         <div class="text-slate-400 text-xs sm:text-sm font-bold w-full text-center mt-1 italic" id="empty-history">
                             Belum ada dadu yang terkumpul.
@@ -344,17 +344,17 @@
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="text-base sm:text-lg font-black text-orange-600 flex items-center gap-1.5">🔄 Urutkan Dadu</h2>
                         <div class="flex gap-1.5">
-                            <button onclick="autoSortBox()" class="bg-orange-100 hover:bg-orange-200 text-orange-700 p-1.5 rounded-lg transition-colors shadow-sm border border-orange-200" title="Urutkan Otomatis (Terkecil-Terbesar/Sebaliknya)">
-                                🔃
+                            <button onclick="toggleSortMode()" id="sort-mode-btn" class="bg-orange-100 hover:bg-orange-200 text-orange-700 w-8 h-8 flex items-center justify-center rounded-lg transition-colors shadow-sm border border-orange-200 text-sm sm:text-base font-black" title="Ubah Perintah Pengurutan">
+                                📈
                             </button>
                             <button onclick="checkSort()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-bold text-xs sm:text-sm shadow-sm transition-colors flex items-center gap-1 border border-emerald-600">
                                 ✅ Periksa
                             </button>
                         </div>
                     </div>
-                    <p class="text-[10px] sm:text-xs font-bold text-slate-500 mb-2">Geser dadu di bawah dari yang <span class="text-orange-500">Terkecil</span> ke <span class="text-orange-500">Terbesar</span>!</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-500 mb-2" id="sort-instruction">Geser dadu di bawah dari yang <span class="text-orange-500 font-black">Terkecil</span> ke <span class="text-orange-500 font-black">Terbesar</span>!</p>
                     
-                    <div id="dice-sort-box" class="flex flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-orange-50 rounded-xl shadow-inner border border-orange-100 min-h-[70px] content-start cursor-move">
+                    <div id="dice-sort-box" class="flex flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-orange-50 rounded-xl shadow-inner border border-orange-100 min-h-[100px] content-start cursor-move">
                         <div class="text-slate-400 text-xs sm:text-sm font-bold w-full text-center mt-1 italic" id="empty-sort">
                             Tempat mengurutkan dadu.
                         </div>
@@ -504,7 +504,7 @@
         let rollHistory = []; 
         let sortableInstance = null; 
         
-        let currentSortMode = 'asc'; // Untuk Auto-Sort
+        let currentSortTarget = 'asc'; // 'asc' = Terkecil ke Terbesar, 'desc' = Terbesar ke Terkecil
         let autoRollsLeft = 0; // Sisa lemparan otomatis
 
         // Warna dadu pelangi
@@ -657,23 +657,23 @@
         }
 
         // ==========================================
-        // AUTO SORT & CHECK MANUAL SORT
+        // TOGGLE TARGET SORT & CHECK MANUAL SORT
         // ==========================================
-        function autoSortBox() {
-            const sortBox = document.getElementById('dice-sort-box');
-            let items = Array.from(sortBox.children);
-            if(items.length === 0 || items[0].id === 'empty-sort') return;
+        function toggleSortMode() {
+            const btn = document.getElementById('sort-mode-btn');
+            const instruction = document.getElementById('sort-instruction');
             
-            items.sort((a, b) => {
-                let valA = parseInt(a.dataset.val);
-                let valB = parseInt(b.dataset.val);
-                return currentSortMode === 'asc' ? valA - valB : valB - valA;
-            });
-            
-            currentSortMode = currentSortMode === 'asc' ? 'desc' : 'asc';
-            
-            sortBox.innerHTML = '';
-            items.forEach(item => sortBox.appendChild(item));
+            if (currentSortTarget === 'asc') {
+                currentSortTarget = 'desc';
+                btn.innerHTML = '📉';
+                btn.title = 'Urutkan dari Terbesar ke Terkecil';
+                instruction.innerHTML = 'Geser dadu di bawah dari yang <span class="text-orange-500 font-black">Terbesar</span> ke <span class="text-orange-500 font-black">Terkecil</span>!';
+            } else {
+                currentSortTarget = 'asc';
+                btn.innerHTML = '📈';
+                btn.title = 'Urutkan dari Terkecil ke Terbesar';
+                instruction.innerHTML = 'Geser dadu di bawah dari yang <span class="text-orange-500 font-black">Terkecil</span> ke <span class="text-orange-500 font-black">Terbesar</span>!';
+            }
         }
 
         function checkSort() {
@@ -686,19 +686,21 @@
             }
             
             let vals = items.map(i => parseInt(i.dataset.val));
-            let isAsc = true;
-            let isDesc = true;
+            let isCorrect = true;
             
             for(let i = 0; i < vals.length - 1; i++) {
-                if(vals[i] > vals[i+1]) isAsc = false;
-                if(vals[i] < vals[i+1]) isDesc = false;
+                if (currentSortTarget === 'asc') {
+                    if(vals[i] > vals[i+1]) isCorrect = false;
+                } else {
+                    if(vals[i] < vals[i+1]) isCorrect = false;
+                }
             }
             
-            if(isAsc || isDesc) {
+            if(isCorrect) {
                 showAlert("Benar Sekali!", "Wah pintar, susunan dadunya sudah urut dan rapi! 🌟", "🎉");
                 triggerConfetti();
             } else {
-                showAlert("Belum Tepat", "Susunannya masih berantakan. Coba digeser-geser lagi dari yang terkecil ke terbesar ya!", "🧐");
+                showAlert("Belum Tepat", "Susunannya masih berantakan. Coba perhatikan lagi perintah urutannya ya!", "🧐");
             }
         }
 
@@ -855,20 +857,11 @@
             const resultText = document.getElementById('result-text');
             const rollBtn = document.getElementById('roll-btn');
             const autoBtn = document.getElementById('auto-roll-btn');
-            const diceScene = document.getElementById('dice-scene');
-            const diceScaler = document.getElementById('dice-scaler');
             const diceCube = document.getElementById('dice-cube');
-            const overlay = document.getElementById('overlay');
-            const dicePlaceholder = document.getElementById('dice-placeholder');
             
             rollBtn.disabled = true;
             autoBtn.disabled = true;
             resultText.innerHTML = `<span class="animate-pulse text-indigo-400 font-bold text-xs sm:text-sm">Melempar...</span>`;
-
-            dicePlaceholder.style.display = 'block'; 
-            diceScene.classList.add('cinematic');
-            document.body.appendChild(diceScene); 
-            overlay.classList.add('active'); 
 
             const finalResultIndex = Math.floor(Math.random() * 6); 
             const angkaKeluar = finalResultIndex + 1;
@@ -889,19 +882,11 @@
             currentRotX = targetX + (spinsX * 360);
             currentRotY = targetY + (spinsY * 360);
 
-            setTimeout(() => {
-                diceScaler.classList.add('cinematic-scale');
-                diceCube.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
-            }, 50);
+            // Transisi putaran animasi inline di tempat
+            diceCube.style.transition = 'transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            diceCube.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
 
             setTimeout(() => {
-                overlay.classList.remove('active');
-                diceScaler.classList.remove('cinematic-scale');
-                diceScene.classList.remove('cinematic');
-                
-                dicePlaceholder.parentNode.insertBefore(diceScene, dicePlaceholder);
-                dicePlaceholder.style.display = 'none';
-
                 const labelResult = currentTheme === 'alam' ? labelsAlam[finalResultIndex] : angkaKeluar;
                 resultText.innerHTML = `Hasil: <span class="font-black text-indigo-700 ml-1 text-sm sm:text-base">${labelResult}</span>`;
 
@@ -914,11 +899,11 @@
                 autoBtn.disabled = false;
                 setTimeout(() => { isRolling = false; }, 100);
                 
-            }, 1400); 
+            }, 1250); 
         }
 
         // ==========================================
-        // LOGIKA LEMPAR DADU OTOMATIS (TanPA Layar Penuh)
+        // LOGIKA LEMPAR DADU OTOMATIS
         // ==========================================
         function startAutoRoll() {
             if (isRolling) return;
