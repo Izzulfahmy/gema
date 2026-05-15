@@ -144,18 +144,6 @@
         input[type="number"] {
             -moz-appearance: textfield;
         }
-        
-        .tally-display::-webkit-scrollbar {
-            height: 6px;
-        }
-        .tally-display::-webkit-scrollbar-track {
-            background: #fdf2f8; 
-            border-radius: 4px;
-        }
-        .tally-display::-webkit-scrollbar-thumb {
-            background: #fbcfe8; 
-            border-radius: 4px;
-        }
 
         /* =========================================
            CINEMATIC MODE STYLES
@@ -373,6 +361,15 @@
                     </div>
                 </div>
 
+                <!-- TOMBOL HITUNG KE GRAFIK -->
+                <div class="flex justify-center my-1">
+                    <button onclick="calculateDataToChart()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white p-3 sm:p-4 rounded-full border-2 border-emerald-600 border-b-4 ring-2 ring-emerald-200 group" title="Buat Grafik Secara Otomatis">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </button>
+                </div>
+
                 <!-- Grafik Batang -->
                 <div id="chart-container" class="bg-white rounded-3xl shadow-lg border-2 border-cyan-200 p-4 sm:p-6 relative overflow-hidden transition-all" style="display: none;">
                     <div class="absolute -right-5 -bottom-5 w-32 h-32 bg-cyan-50 rounded-full opacity-50 blur-xl"></div>
@@ -395,7 +392,7 @@
                             <thead class="bg-white text-pink-400 font-black border-b border-pink-100">
                                 <tr>
                                     <th scope="col" class="px-3 sm:px-4 py-2 w-16 sm:w-20 text-center border-r border-pink-50">Dadu</th>
-                                    <th scope="col" class="px-3 sm:px-4 py-2">Banyaknya (Turus)</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2 w-1/2">Banyaknya (Turus)</th>
                                     <th scope="col" class="px-3 sm:px-4 py-2 text-center w-24 sm:w-28 border-l border-pink-50">Total Angka</th>
                                 </tr>
                             </thead>
@@ -405,7 +402,7 @@
                         </table>
                     </div>
                     <div class="px-4 py-3 bg-pink-50 border-t border-pink-100 flex justify-end">
-                        <button onclick="checkTableAnswers()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-xl font-black shadow-sm transition-colors border-2 border-emerald-600 flex items-center gap-2 text-sm">
+                        <button onclick="checkTableAnswers()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-xl font-black shadow-sm transition-colors border-2 border-emerald-600 flex items-center gap-2 text-sm active:translate-y-1">
                             ✅ Selesai
                         </button>
                     </div>
@@ -504,9 +501,9 @@
         <div class="relative bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-md w-[90%]" id="win-modal">
             <div id="win-icon" class="text-7xl mb-4">🎉</div>
             <h2 id="win-title" class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-3 leading-tight">LUAR BIASA!</h2>
-            <p id="win-desc" class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel dengan benar!</p>
+            <p id="win-desc" class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kerja Bagus! Kamu berhasil menyelesaikan tugas dengan benar!</p>
             <button onclick="closeWinModal()" class="w-full py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-base font-black rounded-2xl border-2 border-yellow-600 shadow-[0_4px_0_#b45309] active:shadow-[0_0px_0_#b45309] active:translate-y-1 transition-all">
-                Tutup
+                Tutup & Lanjutkan
             </button>
         </div>
     </div>
@@ -751,8 +748,18 @@
             }
             
             if(isCorrect) {
-                showAlert("Benar Sekali!", "Wah pintar, susunan dadunya sudah urut dan rapi! 🌟", "🎉");
+                // Perayaan Jika Urutannya Benar
+                document.getElementById('win-icon').innerText = '🌟';
+                document.getElementById('win-title').innerText = 'HEBAT!';
+                document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi!';
+                
+                const modalContainer = document.getElementById('win-modal-container');
+                const winModal = document.getElementById('win-modal');
+                
+                modalContainer.classList.remove('hidden');
+                setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
                 triggerConfetti();
+
             } else {
                 showAlert("Belum Tepat", "Susunannya masih berantakan. Coba perhatikan lagi perintah urutannya ya!", "🧐");
             }
@@ -777,16 +784,16 @@
                             <!-- Icon disuntikkan disini -->
                         </td>
                         <td class="px-3 sm:px-4 py-1.5">
-                            <div class="flex flex-col bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden w-full max-w-[200px]">
+                            <div class="flex flex-col bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden w-full">
                                 <div class="bg-slate-50 border-b border-slate-100 px-2 py-1 flex justify-between items-center">
-                                    <div class="flex gap-1 shrink-0">
+                                    <div class="flex gap-1 shrink-0 ml-auto">
                                         <button onclick="updateDiceTally(${angka}, 1)" class="w-6 h-6 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded shadow-sm font-black text-sm flex items-center justify-center transition-colors" title="Tambah Turus">|</button>
                                         <button onclick="updateDiceTally(${angka}, -1)" class="w-6 h-6 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded shadow-sm font-black flex items-center justify-center transition-colors" title="Hapus Turus">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" /></svg>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="tally-display flex items-center min-h-[34px] px-2 py-1 overflow-x-auto whitespace-nowrap" id="tally-disp-${angka}">
+                                <div class="tally-display flex flex-wrap items-center min-h-[34px] p-2 gap-1.5" id="tally-disp-${angka}">
                                     ${generateMiniTally(userTallies[i])}
                                 </div>
                             </div>
@@ -832,7 +839,7 @@
 
         function generateMiniTally(count) {
             if (count === 0) return '<span class="text-slate-300 text-xs italic font-semibold">Kosong</span>'; 
-            let html = '<div class="flex items-center gap-1">';
+            let html = '<div class="flex flex-wrap items-center gap-1.5">';
             let fullGroups = Math.floor(count / 5);
             let remainder = count % 5;
             const strokeColor = "#d81b60"; // Warna pink tua untuk turus manual
@@ -870,8 +877,10 @@
                     isTallyCorrect = false;
                 }
                 
-                // Cek Input Angka
-                const numInput = parseInt(document.getElementById(`num-input-${angka}`).value);
+                // Cek Input Angka (Biar nggak pusing anak-anak, jika kosong dianggap 0)
+                const rawNumValue = document.getElementById(`num-input-${angka}`).value;
+                const numInput = rawNumValue === "" ? 0 : parseInt(rawNumValue);
+
                 if (isNaN(numInput) || numInput !== actualFreqs[i]) {
                     isNumberCorrect = false;
                 }
