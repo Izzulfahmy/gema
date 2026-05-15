@@ -41,13 +41,13 @@
 
     <style>
         /* =========================================
-           DICE 3D STYLES
+           DICE 3D STYLES (Diperkecil sedikit untuk UI compact)
            ========================================= */
         .dice-scene {
-            width: 100px; 
-            height: 100px;
+            width: 80px; 
+            height: 80px;
             perspective: 800px; 
-            margin: 2rem auto;
+            margin: 1.5rem auto;
             position: relative; 
             z-index: 50; 
         }
@@ -69,19 +69,19 @@
 
         .dice-face {
             position: absolute;
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             background: #ffffff;
-            border: 4px solid #e2e8f0; 
-            border-radius: 20px; 
+            border: 3px solid #e2e8f0; 
+            border-radius: 16px; 
             box-shadow: 
-                inset 0 0 15px rgba(0,0,0,0.05), 
-                inset 0 0 5px rgba(255,255,255,1),
-                0 6px 0 rgba(203, 213, 225, 0.4); 
+                inset 0 0 10px rgba(0,0,0,0.05), 
+                inset 0 0 4px rgba(255,255,255,1),
+                0 4px 0 rgba(203, 213, 225, 0.4); 
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            padding: 12px;
+            padding: 8px;
             justify-items: center;
             align-items: center;
             backface-visibility: hidden;
@@ -89,24 +89,24 @@
             overflow: hidden; 
         }
 
-        .dice-face.front  { transform: rotateY(0deg) translateZ(50px); }
-        .dice-face.right  { transform: rotateY(90deg) translateZ(50px); }
-        .dice-face.back   { transform: rotateY(180deg) translateZ(50px); }
-        .dice-face.left   { transform: rotateY(-90deg) translateZ(50px); }
-        .dice-face.top    { transform: rotateX(90deg) translateZ(50px); }
-        .dice-face.bottom { transform: rotateX(-90deg) translateZ(50px); }
+        .dice-face.front  { transform: rotateY(0deg) translateZ(40px); }
+        .dice-face.right  { transform: rotateY(90deg) translateZ(40px); }
+        .dice-face.back   { transform: rotateY(180deg) translateZ(40px); }
+        .dice-face.left   { transform: rotateY(-90deg) translateZ(40px); }
+        .dice-face.top    { transform: rotateX(90deg) translateZ(40px); }
+        .dice-face.bottom { transform: rotateX(-90deg) translateZ(40px); }
 
         /* Gaya Titik Dadu */
         .pip {
-            width: 20px;
-            height: 20px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             box-shadow: inset 0 3px 6px rgba(0,0,0,0.3);
             z-index: 2;
         }
         
         /* Warna-warni Titik Dadu */
-        .face-1 .pip { grid-area: 2 / 2 / 3 / 3; background: #ff4757; width: 28px; height: 28px; }
+        .face-1 .pip { grid-area: 2 / 2 / 3 / 3; background: #ff4757; width: 22px; height: 22px; }
         .face-2 .pip { background: #1e90ff; } .face-2 .p1 { grid-area: 1 / 3 / 2 / 4; } .face-2 .p2 { grid-area: 3 / 1 / 4 / 2; }
         .face-3 .pip { background: #2ed573; } .face-3 .p1 { grid-area: 1 / 3 / 2 / 4; } .face-3 .p2 { grid-area: 2 / 2 / 3 / 3; } .face-3 .p3 { grid-area: 3 / 1 / 4 / 2; }
         .face-4 .pip { background: #ffa502; } .face-4 .p1 { grid-area: 1 / 1 / 2 / 2; } .face-4 .p2 { grid-area: 1 / 3 / 2 / 4; } .face-4 .p3 { grid-area: 3 / 1 / 4 / 2; } .face-4 .p4 { grid-area: 3 / 3 / 4 / 4; }
@@ -129,12 +129,21 @@
         .theme-alam .dice-face:not(.fallback-pips) .pip { display: none; }
 
         /* =========================================
-           CUSTOM SCROLLBAR
+           CUSTOM SCROLLBAR & INPUT
            ========================================= */
-        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #a5b4fc; border-radius: 10px; border: 2px solid #f1f5f9; }
         ::-webkit-scrollbar-thumb:hover { background: #818cf8; }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
 
         /* =========================================
            CINEMATIC MODE STYLES
@@ -165,13 +174,14 @@
            TOY BUTTON & ANIMATIONS
            ========================================= */
         .toy-btn {
-            box-shadow: 0 6px 0 #d97706; transition: all 0.1s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.15); transition: all 0.1s;
         }
-        .toy-btn:active {
-            box-shadow: 0 0px 0 #d97706; transform: translateY(6px); 
+        .toy-btn:active:not(:disabled) {
+            box-shadow: 0 0px 0 rgba(0,0,0,0.15); transform: translateY(4px); 
         }
         .toy-btn:disabled {
-            box-shadow: 0 2px 0 #d97706; transform: translateY(4px); opacity: 0.8;
+            opacity: 0.6; cursor: not-allowed;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.15); transform: translateY(2px);
         }
 
         /* Animasi pop in untuk dadu di kotak riwayat */
@@ -196,7 +206,7 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-cyan-100 via-blue-50 to-purple-100 min-h-screen text-slate-800 antialiased selection:bg-yellow-300">
+<body class="bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 min-h-screen text-slate-800 antialiased selection:bg-yellow-300">
 
     <!-- OVERLAY LAYAR BURAM -->
     <div id="overlay"></div>
@@ -204,15 +214,15 @@
     <!-- WADAH TOMBOL KIRI ATAS (HOME & SETTING) -->
     <div class="fixed top-3 left-3 sm:top-5 sm:left-5 z-[100] flex gap-2 sm:gap-3">
         <!-- TOMBOL HOME -->
-        <a href="../index.html" class="bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2.5 rounded-2xl shadow-md hover:bg-indigo-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Kembali ke Beranda">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <a href="../index.html" class="bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2 rounded-xl shadow-sm hover:bg-indigo-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Kembali ke Beranda">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
         </a>
 
         <!-- TOMBOL SETTING (PENGATURAN) -->
-        <button onclick="toggleSettings()" class="bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2.5 rounded-2xl shadow-md hover:bg-indigo-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Pengaturan Dadu">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <button onclick="toggleSettings()" class="bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2 rounded-xl shadow-sm hover:bg-indigo-50 hover:scale-105 font-black flex items-center justify-center transition-all" title="Pengaturan Dadu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -220,37 +230,33 @@
     </div>
 
     <!-- TOMBOL LAYAR PENUH (KANAN ATAS) -->
-    <button onclick="toggleFullScreen()" class="fixed top-3 right-3 sm:top-5 sm:right-5 z-[100] bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-4 sm:py-2.5 rounded-2xl shadow-md hover:bg-indigo-50 hover:scale-105 font-black flex items-center gap-2 transition-all">
-        <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
-        <span id="fs-text" class="hidden sm:inline tracking-wide">Layar Penuh</span>
+    <button onclick="toggleFullScreen()" class="fixed top-3 right-3 sm:top-5 sm:right-5 z-[100] bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2 rounded-xl shadow-sm hover:bg-indigo-50 hover:scale-105 font-black flex items-center transition-all">
+        <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
     </button>
 
-    <div class="max-w-6xl mx-auto py-4 px-4 sm:px-8 lg:py-6 flex flex-col min-h-screen">
+    <div class="max-w-5xl mx-auto py-4 px-4 sm:px-6 lg:py-6 flex flex-col min-h-screen">
         
-        <header class="mb-6 lg:mb-8 text-center pt-14 sm:pt-0 relative z-10">
-            <h1 class="text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight mb-2 sm:mb-3">
+        <header class="mb-4 lg:mb-6 text-center pt-10 sm:pt-0 relative z-10">
+            <h1 class="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight mb-2">
                 Ayo Main Lempar Dadu! 🎲
             </h1>
-            <p class="text-slate-600 text-base sm:text-xl font-bold max-w-2xl mx-auto bg-white/50 inline-block px-4 py-1.5 sm:px-6 sm:py-2 rounded-full shadow-sm border border-white">
-                Lempar dadunya, urutkan, lalu hitung jumlahnya! ✨
-            </p>
         </header>
 
-        <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start relative z-10 flex-grow">
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start relative z-10 flex-grow">
             
             <!-- KOLOM KIRI: Dadu -->
-            <section class="lg:col-span-4 lg:sticky lg:top-4 bg-white rounded-[2rem] shadow-xl border-4 border-indigo-100 p-5 sm:p-6 flex flex-col justify-between overflow-hidden">
+            <section class="lg:col-span-4 lg:sticky lg:top-4 bg-white rounded-3xl shadow-lg border-2 border-indigo-100 p-4 sm:p-5 flex flex-col justify-between overflow-hidden">
                 <div class="flex flex-col items-center">
                     
                     <div class="w-full flex items-center justify-between mb-2">
-                        <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Area Lempar Dadu</div>
-                        <div class="bg-cyan-100 text-cyan-800 text-xs sm:text-sm font-black px-3 py-1 rounded-xl flex items-center gap-1.5 border-2 border-cyan-200 shadow-sm">
+                        <div class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Area Dadu</div>
+                        <div class="bg-cyan-100 text-cyan-800 text-xs font-black px-2 py-1 rounded-lg flex items-center gap-1 border border-cyan-200">
                             🏆 <span id="total-rolls-badge">0 Kali</span>
                         </div>
                     </div>
 
-                    <div id="dice-placeholder" style="width: 100px; height: 100px; margin: 2rem auto; display: none;"></div>
+                    <div id="dice-placeholder" style="width: 80px; height: 80px; margin: 1.5rem auto; display: none;"></div>
                     
                     <div id="dice-scene" class="dice-scene">
                         <div id="dice-scaler" class="dice-scaler">
@@ -283,101 +289,114 @@
                         </div>
                     </div>
                     
-                    <div class="h-14 flex items-center justify-center w-full mt-2 mb-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border-2 border-indigo-100 shadow-inner">
-                        <span id="result-text" class="text-sm sm:text-base font-bold text-indigo-400">
-                            Pencet tombol di bawah 👇
+                    <div class="h-10 flex items-center justify-center w-full mt-2 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-indigo-100">
+                        <span id="result-text" class="text-xs sm:text-sm font-bold text-indigo-500">
+                            Menunggu lemparan...
                         </span>
                     </div>
 
-                    <button id="roll-btn" onclick="rollDice()" class="toy-btn w-full py-3 sm:py-4 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-black rounded-2xl flex items-center justify-center gap-3 text-xl sm:text-2xl border-2 border-yellow-500">
-                        🚀 LEMPAR DADU!
+                    <!-- Tombol Lempar Manual -->
+                    <button id="roll-btn" onclick="rollDice()" class="toy-btn w-full py-2.5 sm:py-3 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-black rounded-xl flex items-center justify-center gap-2 text-sm sm:text-base border-2 border-yellow-500 border-b-4">
+                        🚀 LEMPAR DADU
                     </button>
+                    
+                    <!-- Kontrol Lempar Otomatis -->
+                    <div class="flex items-center gap-2 mt-2 w-full bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+                        <input type="number" id="auto-roll-count" min="1" max="50" value="5" class="w-12 h-9 text-center font-bold text-slate-700 bg-white border border-slate-300 rounded-lg outline-none focus:border-indigo-500 text-sm">
+                        <button onclick="startAutoRoll()" id="auto-roll-btn" class="toy-btn flex-grow h-9 bg-indigo-500 hover:bg-indigo-400 text-white font-bold rounded-lg text-xs sm:text-sm border-2 border-indigo-600 border-b-[3px] flex items-center justify-center gap-1 transition-all">
+                            🤖 Lempar Otomatis
+                        </button>
+                    </div>
+
                 </div>
 
-                <hr class="border-indigo-100 border-dashed border-2 my-5">
+                <hr class="border-indigo-100 border-dashed border-2 my-4">
 
-                <button onclick="resetData()" class="w-full py-2 sm:py-3 bg-white hover:bg-red-50 text-red-500 font-bold rounded-2xl transition-colors flex items-center justify-center gap-2 border-2 border-red-200 text-sm sm:text-base shadow-sm hover:border-red-400">
+                <button onclick="resetData()" class="w-full py-2 bg-white hover:bg-red-50 text-red-500 font-bold rounded-xl transition-colors flex items-center justify-center gap-1 border border-red-200 text-xs sm:text-sm shadow-sm hover:border-red-300">
                     🗑️ Mulai Dari Awal
                 </button>
             </section>
 
             <!-- KOLOM KANAN: Riwayat, Sortir, Grafik & Tabel -->
-            <section class="lg:col-span-8 flex flex-col gap-6">
+            <section class="lg:col-span-8 flex flex-col gap-4 sm:gap-6">
                 
                 <!-- Kotak Riwayat Dadu yang Dilempar -->
-                <div id="history-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-purple-200 p-4 sm:p-6 block relative overflow-hidden">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2">
-                            <h2 class="text-lg sm:text-xl font-black text-purple-700">📦 Riwayat Dadu</h2>
-                            <span class="text-[10px] sm:text-xs font-bold text-purple-400 uppercase tracking-widest bg-purple-50 px-2 py-1 rounded-md border border-purple-100 hidden sm:inline-block">Masuk Ke Sini</span>
-                        </div>
+                <div id="history-container" class="bg-white rounded-3xl shadow-lg border-2 border-purple-200 p-4 sm:p-5 block relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-base sm:text-lg font-black text-purple-700">📦 Riwayat Dadu</h2>
                         
                         <!-- Toggle Mode Tampilan (Angka/Gambar) -->
-                        <button onclick="toggleHistoryMode()" class="bg-purple-50 hover:bg-purple-100 text-purple-600 px-3 py-1.5 rounded-xl font-black text-xs sm:text-sm transition-colors border-2 border-purple-200 shadow-sm flex items-center gap-1.5" title="Ubah Tampilan Angka / Dadu">
+                        <button onclick="toggleHistoryMode()" class="bg-purple-50 hover:bg-purple-100 text-purple-600 px-2.5 py-1 rounded-lg font-black text-[10px] sm:text-xs transition-colors border border-purple-200 shadow-sm flex items-center gap-1" title="Ubah Tampilan Angka / Dadu">
                             <span id="display-mode-icon">1️⃣ Angka</span>
                         </button>
                     </div>
                     
-                    <div id="dice-history-box" class="flex flex-wrap gap-2 sm:gap-3 max-h-[120px] overflow-y-auto p-3 sm:p-4 bg-purple-50 rounded-2xl shadow-inner border-2 border-purple-100 min-h-[90px] content-start">
+                    <div id="dice-history-box" class="flex flex-wrap gap-1.5 sm:gap-2 max-h-[100px] overflow-y-auto p-2 sm:p-3 bg-purple-50 rounded-xl shadow-inner border border-purple-100 min-h-[70px] content-start">
                         <!-- Pesan Kosong Default -->
-                        <div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-history">
-                            Belum ada dadu yang terkumpul. Lempar dadu sekarang!
+                        <div class="text-slate-400 text-xs sm:text-sm font-bold w-full text-center mt-1 italic" id="empty-history">
+                            Belum ada dadu yang terkumpul.
                         </div>
                     </div>
                 </div>
 
                 <!-- Kotak Pengurutan Dadu Manual (Drag & Drop) -->
-                <div id="sort-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-orange-200 p-4 sm:p-6 block relative overflow-hidden">
+                <div id="sort-container" class="bg-white rounded-3xl shadow-lg border-2 border-orange-200 p-4 sm:p-5 block relative overflow-hidden">
                     <div class="flex items-center justify-between mb-2">
-                        <h2 class="text-lg sm:text-xl font-black text-orange-600 flex items-center gap-2">🔄 Urutkan Dadu</h2>
+                        <h2 class="text-base sm:text-lg font-black text-orange-600 flex items-center gap-1.5">🔄 Urutkan Dadu</h2>
+                        <div class="flex gap-1.5">
+                            <button onclick="autoSortBox()" class="bg-orange-100 hover:bg-orange-200 text-orange-700 p-1.5 rounded-lg transition-colors shadow-sm border border-orange-200" title="Urutkan Otomatis (Terkecil-Terbesar/Sebaliknya)">
+                                🔃
+                            </button>
+                            <button onclick="checkSort()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-bold text-xs sm:text-sm shadow-sm transition-colors flex items-center gap-1 border border-emerald-600">
+                                ✅ Periksa
+                            </button>
+                        </div>
                     </div>
-                    <p class="text-xs sm:text-sm font-bold text-slate-500 mb-3">Geser (drag) dadu di bawah ini dari yang <span class="text-orange-500">Terkecil</span> ke <span class="text-orange-500">Terbesar</span>!</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-500 mb-2">Geser dadu di bawah dari yang <span class="text-orange-500">Terkecil</span> ke <span class="text-orange-500">Terbesar</span>!</p>
                     
-                    <div id="dice-sort-box" class="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-orange-50 rounded-2xl shadow-inner border-2 border-orange-100 min-h-[90px] content-start cursor-move">
-                        <div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-sort">
+                    <div id="dice-sort-box" class="flex flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-orange-50 rounded-xl shadow-inner border border-orange-100 min-h-[70px] content-start cursor-move">
+                        <div class="text-slate-400 text-xs sm:text-sm font-bold w-full text-center mt-1 italic" id="empty-sort">
                             Tempat mengurutkan dadu.
                         </div>
                     </div>
                 </div>
 
                 <!-- TOMBOL HITUNG KE GRAFIK -->
-                <div class="flex justify-center my-2">
-                    <button onclick="calculateData()" class="bg-emerald-500 hover:bg-emerald-600 text-white p-4 sm:p-5 rounded-full shadow-[0_6px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all border-4 border-white ring-4 ring-emerald-200 group" title="Hitung dan Buat Grafik!">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-10 sm:w-10 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="flex justify-center my-1">
+                    <button onclick="calculateData()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white p-3 sm:p-4 rounded-full border-2 border-emerald-600 border-b-4 ring-2 ring-emerald-200 group" title="Hitung dan Buat Grafik!">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                     </button>
                 </div>
 
                 <!-- Grafik Batang -->
-                <div id="chart-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-cyan-300 p-6 sm:p-8 relative overflow-hidden transition-all" style="display: none;">
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-50 rounded-full opacity-50 blur-2xl"></div>
-                    <div class="flex items-center justify-between mb-6 relative z-10">
-                        <div>
-                            <h2 class="text-xl sm:text-2xl font-black text-cyan-700">Grafik Diagram Batang</h2>
-                        </div>
+                <div id="chart-container" class="bg-white rounded-3xl shadow-lg border-2 border-cyan-200 p-4 sm:p-6 relative overflow-hidden transition-all" style="display: none;">
+                    <div class="absolute -right-5 -bottom-5 w-32 h-32 bg-cyan-50 rounded-full opacity-50 blur-xl"></div>
+                    <div class="flex items-center justify-between mb-4 relative z-10">
+                        <h2 class="text-lg sm:text-xl font-black text-cyan-700">Grafik Diagram Batang</h2>
                     </div>
-                    <div class="w-full h-[220px] sm:h-[250px] relative z-10">
+                    <div class="w-full h-[180px] sm:h-[220px] relative z-10">
                         <canvas id="frequencyChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Tabel Turus -->
-                <div id="table-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-pink-300 overflow-hidden transition-all" style="display: none;">
-                    <div class="px-4 sm:px-5 py-3 border-b-4 border-pink-100 bg-pink-50">
-                        <h2 class="text-lg sm:text-xl font-black text-pink-600">Papan Skor Turus</h2>
+                <div id="table-container" class="bg-white rounded-3xl shadow-lg border-2 border-pink-200 overflow-hidden transition-all" style="display: none;">
+                    <div class="px-4 py-2 border-b-2 border-pink-100 bg-pink-50">
+                        <h2 class="text-base sm:text-lg font-black text-pink-600">Papan Skor Turus</h2>
                     </div>
                     
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm sm:text-base text-left">
-                            <thead class="bg-white text-pink-400 font-black border-b-2 border-pink-100">
+                        <table class="min-w-full text-xs sm:text-sm text-left">
+                            <thead class="bg-white text-pink-400 font-black border-b border-pink-100">
                                 <tr>
-                                    <th scope="col" class="px-4 sm:px-6 py-2 w-20 sm:w-24 text-center">Angka</th>
-                                    <th scope="col" class="px-4 sm:px-6 py-2">Turus</th>
-                                    <th scope="col" class="px-4 sm:px-6 py-2 text-center w-20 sm:w-24">Total</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2 w-16 sm:w-20 text-center">Angka</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2">Turus</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2 text-center w-16 sm:w-20">Total</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-body" class="divide-y-2 divide-pink-50">
+                            <tbody id="table-body" class="divide-y divide-pink-50">
                                 <!-- Baris tabel di-generate oleh JS -->
                             </tbody>
                         </table>
@@ -388,8 +407,8 @@
         </main>
         
         <!-- FOOTER MINIMALIS -->
-        <footer class="w-full py-4 mt-8 flex justify-center items-center opacity-70">
-            <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">
+        <footer class="w-full py-4 mt-6 flex justify-center items-center opacity-70">
+            <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                 &copy; 2026 GEMA Project
             </p>
         </footer>
@@ -398,58 +417,74 @@
     <!-- MODAL PENGATURAN -->
     <div id="settings-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center">
         <div class="absolute inset-0 bg-indigo-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="settings-modal-backdrop" onclick="closeSettings()"></div>
-        <div class="relative bg-white rounded-[2rem] shadow-2xl border-4 border-indigo-200 p-6 sm:p-8 max-w-sm w-[90%] transform scale-95 opacity-0 transition-all duration-300" id="settings-modal-content">
-            <div class="flex justify-between items-center mb-5">
-                <h3 class="text-xl sm:text-2xl font-black text-indigo-700 flex items-center gap-2">⚙️ Pengaturan</h3>
-                <button onclick="closeSettings()" class="text-slate-400 hover:text-red-500 font-bold text-3xl leading-none">&times;</button>
+        <div class="relative bg-white rounded-3xl shadow-2xl border-2 border-indigo-200 p-5 sm:p-6 max-w-xs w-[90%] transform scale-95 opacity-0 transition-all duration-300" id="settings-modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg sm:text-xl font-black text-indigo-700 flex items-center gap-2">⚙️ Pengaturan</h3>
+                <button onclick="closeSettings()" class="text-slate-400 hover:text-red-500 font-bold text-2xl leading-none">&times;</button>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-3 text-sm">
                 <!-- Tampilan Layar -->
-                <div class="bg-indigo-50 p-4 rounded-xl border-2 border-indigo-100">
-                    <h4 class="font-bold text-indigo-800 mb-2">Tampilan Layar (Setelah Dihitung):</h4>
-                    <label class="flex items-center gap-2 cursor-pointer mb-2 text-slate-700 font-semibold">
-                        <input type="radio" name="view-setting" value="both" checked class="w-5 h-5 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Keduanya (Tabel & Grafik)
+                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                    <h4 class="font-bold text-indigo-800 mb-2">Tampilan (Saat Dihitung):</h4>
+                    <label class="flex items-center gap-2 cursor-pointer mb-1 text-slate-700 font-semibold">
+                        <input type="radio" name="view-setting" value="both" checked class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Tabel & Grafik
                     </label>
-                    <label class="flex items-center gap-2 cursor-pointer mb-2 text-slate-700 font-semibold">
-                        <input type="radio" name="view-setting" value="chart" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Hanya Grafik 📈
+                    <label class="flex items-center gap-2 cursor-pointer mb-1 text-slate-700 font-semibold">
+                        <input type="radio" name="view-setting" value="chart" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Hanya Grafik 📈
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-semibold">
-                        <input type="radio" name="view-setting" value="table" class="w-5 h-5 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Hanya Tabel 📝
+                        <input type="radio" name="view-setting" value="table" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Hanya Tabel 📝
                     </label>
                 </div>
 
                 <!-- Tema Dadu -->
-                <div class="bg-pink-50 p-4 rounded-xl border-2 border-pink-100">
+                <div class="bg-pink-50 p-3 rounded-xl border border-pink-100">
                     <h4 class="font-bold text-pink-800 mb-2">Tema Dadu:</h4>
-                    <label class="flex items-center gap-2 cursor-pointer mb-2 text-slate-700 font-semibold">
-                        <input type="radio" name="theme-setting" value="angka" checked class="w-5 h-5 text-pink-500 focus:ring-pink-500" onchange="applySettings()"> Angka Titik 🎲
+                    <label class="flex items-center gap-2 cursor-pointer mb-1 text-slate-700 font-semibold">
+                        <input type="radio" name="theme-setting" value="angka" checked class="w-4 h-4 text-pink-500 focus:ring-pink-500" onchange="applySettings()"> Angka Titik 🎲
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-semibold">
-                        <input type="radio" name="theme-setting" value="alam" class="w-5 h-5 text-pink-500 focus:ring-pink-500" onchange="applySettings()"> Bentang Alam ⛰️
+                        <input type="radio" name="theme-setting" value="alam" class="w-4 h-4 text-pink-500 focus:ring-pink-500" onchange="applySettings()"> Bentang Alam ⛰️
                     </label>
                 </div>
             </div>
 
-            <button onclick="closeSettings()" class="w-full mt-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-xl transition-colors border-2 border-indigo-600 shadow-md">
+            <button onclick="closeSettings()" class="w-full mt-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-xl transition-colors border border-indigo-600 shadow-sm text-sm">
                 Selesai
             </button>
         </div>
     </div>
 
+    <!-- MODAL PERINGATAN UMUM (ALERT) -->
+    <div id="alert-modal" class="fixed inset-0 z-[10010] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm opacity-0 transition-opacity duration-300" id="alert-modal-backdrop" onclick="closeAlertModal()"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl border-4 border-slate-200 p-5 sm:p-6 max-w-sm w-[90%] transform scale-95 opacity-0 transition-all duration-300 text-center" id="alert-modal-content">
+            <div id="alert-icon" class="text-5xl sm:text-6xl mb-3">⚠️</div>
+            <h3 class="text-lg sm:text-xl font-black text-slate-800 mb-2" id="alert-title">Peringatan</h3>
+            <p class="text-slate-600 font-bold text-xs sm:text-sm mb-5" id="alert-message">Pesan peringatan di sini.</p>
+            <button onclick="closeAlertModal()" class="w-full py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-xl transition-colors border-2 border-indigo-600 shadow-sm active:translate-y-1 text-sm">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- EFEK KONFETI -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden overflow-hidden"></div>
+
     <!-- MODAL KONFIRMASI RESET -->
     <div id="reset-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center">
         <div class="absolute inset-0 bg-indigo-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="reset-modal-backdrop" onclick="hideResetModal()"></div>
-        <div class="relative bg-white rounded-[2rem] shadow-2xl border-4 border-red-200 p-6 sm:p-8 max-w-sm w-[90%] transform scale-95 opacity-0 transition-all duration-300" id="reset-modal-content">
+        <div class="relative bg-white rounded-3xl shadow-2xl border-2 border-red-200 p-5 sm:p-6 max-w-xs w-[90%] transform scale-95 opacity-0 transition-all duration-300" id="reset-modal-content">
             <div class="text-center">
-                <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-red-200">
-                    <span class="text-3xl">🗑️</span>
+                <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-red-200">
+                    <span class="text-2xl">🗑️</span>
                 </div>
-                <h3 class="text-xl sm:text-2xl font-black text-slate-800 mb-2">Mulai Dari Awal?</h3>
-                <p class="text-slate-500 font-bold text-sm sm:text-base mb-6">Yakin mau hapus semua skor? Data yang sudah dihapus tidak bisa kembali lho! 🤔</p>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button onclick="hideResetModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl transition-colors border-2 border-slate-200">❌ Batal</button>
-                    <button onclick="confirmResetData()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-black rounded-xl shadow-md transition-colors border-2 border-red-600">✅ Ya, Hapus!</button>
+                <h3 class="text-lg sm:text-xl font-black text-slate-800 mb-1">Mulai Dari Awal?</h3>
+                <p class="text-slate-500 font-bold text-xs sm:text-sm mb-5">Yakin mau hapus semua skor? Data tidak bisa kembali lho! 🤔</p>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="hideResetModal()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl transition-colors border border-slate-200 text-xs sm:text-sm">❌ Batal</button>
+                    <button onclick="confirmResetData()" class="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white font-black rounded-xl shadow-sm transition-colors border border-red-600 text-xs sm:text-sm">✅ Hapus!</button>
                 </div>
             </div>
         </div>
@@ -464,10 +499,13 @@
         let myChart = null; 
         
         let currentTheme = 'angka'; 
-        let historyDisplayMode = 'icon'; // 'icon' (Muka dadu/Gambar) atau 'number' (Angka nominal)
+        let historyDisplayMode = 'icon'; 
         
-        let rollHistory = []; // Array untuk menyimpan urutan dadu yang dilempar
-        let sortableInstance = null; // Menyimpan instance dari SortableJS
+        let rollHistory = []; 
+        let sortableInstance = null; 
+        
+        let currentSortMode = 'asc'; // Untuk Auto-Sort
+        let autoRollsLeft = 0; // Sisa lemparan otomatis
 
         // Warna dadu pelangi
         const diceColors = ['#ff4757', '#1e90ff', '#2ed573', '#ffa502', '#9c88ff', '#ff7f50'];
@@ -487,7 +525,7 @@
                 animation: 200,
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
-                delay: 100, // Menghindari drag tidak sengaja saat touch di mobile
+                delay: 100, 
                 delayOnTouchOnly: true
             });
         });
@@ -495,44 +533,11 @@
         // ==========================================
         // LOGIKA PENGATURAN (SETTINGS & THEME)
         // ==========================================
-        function toggleSettings() {
-            const modal = document.getElementById('settings-modal');
-            const backdrop = document.getElementById('settings-modal-backdrop');
-            const content = document.getElementById('settings-modal-content');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            setTimeout(() => {
-                backdrop.classList.remove('opacity-0');
-                backdrop.classList.add('opacity-100');
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeSettings() {
-            const modal = document.getElementById('settings-modal');
-            const backdrop = document.getElementById('settings-modal-backdrop');
-            const content = document.getElementById('settings-modal-content');
-            
-            backdrop.classList.remove('opacity-100');
-            backdrop.classList.add('opacity-0');
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
-        }
-
         function applySettings() {
             const viewValue = document.querySelector('input[name="view-setting"]:checked').value;
             const chartCont = document.getElementById('chart-container');
             const tableCont = document.getElementById('table-container');
 
-            // Hanya menyembunyikan/menampilkan jika grafik/tabel sedang tampil
             if (frequencies.some(f => f > 0)) {
                 if (viewValue === 'both') {
                     chartCont.style.display = 'block'; tableCont.style.display = 'block';
@@ -560,7 +565,7 @@
             }
             
             renderTable();
-            reRenderAllBoxes(); // Re-render kotak riwayat dan urutkan agar sesuai tema
+            reRenderAllBoxes(); 
         }
 
         // ==========================================
@@ -576,63 +581,55 @@
             } else {
                 btnText.innerHTML = '1️⃣ Angka';
             }
-            
             reRenderAllBoxes();
         }
 
-        // Mengembalikan HTML isi dadu (Bisa angka, gambar alam, atau pips dadu)
         function getDiceHTMLContent(angka) {
             if (historyDisplayMode === 'number') {
-                return `<span class="text-xl sm:text-3xl font-black text-slate-700">${angka}</span>`;
+                return `<span class="text-lg sm:text-2xl font-black text-slate-700">${angka}</span>`;
             } else {
                 if (currentTheme === 'alam') {
                     return `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-full h-full object-cover rounded-lg" onerror="this.style.display='none'">`;
                 } else {
                     const idx = angka - 1;
-                    return `<span class="text-2xl sm:text-4xl" style="color: ${diceColors[idx]}; line-height: 1;">${diceFacesTable[idx]}</span>`;
+                    return `<span class="text-xl sm:text-2xl" style="color: ${diceColors[idx]}; line-height: 1;">${diceFacesTable[idx]}</span>`;
                 }
             }
         }
 
-        // Fungsi khusus untuk me-render ulang kotak secara menyeluruh (digunakan saat ganti tema atau ganti toggle angka)
         function reRenderAllBoxes() {
             const historyBox = document.getElementById('dice-history-box');
             const sortBox = document.getElementById('dice-sort-box');
             
-            // Simpan urutan saat ini yang ada di sort-box sebelum dibersihkan
             let currentSortOrder = [];
             if (rollHistory.length > 0) {
                 currentSortOrder = Array.from(sortBox.children).map(el => parseInt(el.dataset.val));
             }
 
-            historyBox.innerHTML = '';
-            sortBox.innerHTML = '';
+            historyBox.innerHTML = ''; sortBox.innerHTML = '';
 
             if (rollHistory.length === 0) {
-                historyBox.innerHTML = `<div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-history">Belum ada dadu yang terkumpul.</div>`;
-                sortBox.innerHTML = `<div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-sort">Tempat mengurutkan dadu.</div>`;
+                historyBox.innerHTML = `<div class="text-slate-400 text-xs sm:text-sm font-bold w-full text-center mt-1 italic" id="empty-history">Belum ada dadu yang terkumpul.</div>`;
+                sortBox.innerHTML = `<div class="text-slate-400 text-xs sm:text-sm font-bold w-full text-center mt-1 italic" id="empty-sort">Tempat mengurutkan dadu.</div>`;
                 return;
             }
 
-            // Re-render History
             rollHistory.forEach(angka => {
                 const diceDiv = document.createElement('div');
-                diceDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white`;
+                diceDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white`;
                 diceDiv.innerHTML = getDiceHTMLContent(angka);
                 historyBox.appendChild(diceDiv);
             });
 
-            // Re-render Sort Box sesuai urutan anak-anak
             currentSortOrder.forEach(angka => {
                 const diceDiv = document.createElement('div');
                 diceDiv.dataset.val = angka;
-                diceDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white cursor-move`;
+                diceDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white cursor-move`;
                 diceDiv.innerHTML = getDiceHTMLContent(angka);
                 sortBox.appendChild(diceDiv);
             });
         }
 
-        // Dipanggil setiap kali dadu dilempar (menambahkan element saja tanpa re-render semua agar order tidak hilang)
         function renderHistoryBoxes(newAngka = null) {
             const historyBox = document.getElementById('dice-history-box');
             const sortBox = document.getElementById('dice-sort-box');
@@ -643,39 +640,80 @@
             if (emptySort) emptySort.remove();
 
             if (newAngka !== null) {
-                // Tambah ke History
                 const histDiv = document.createElement('div');
-                histDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white history-pop`;
+                histDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white history-pop`;
                 histDiv.innerHTML = getDiceHTMLContent(newAngka);
                 historyBox.appendChild(histDiv);
 
-                // Tambah ke Sort Box
                 const sortDiv = document.createElement('div');
                 sortDiv.dataset.val = newAngka;
-                sortDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white cursor-move history-pop`;
+                sortDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white cursor-move history-pop`;
                 sortDiv.innerHTML = getDiceHTMLContent(newAngka);
                 sortBox.appendChild(sortDiv);
 
-                // Scroll
                 historyBox.scrollTop = historyBox.scrollHeight;
                 sortBox.scrollTop = sortBox.scrollHeight;
             }
         }
 
         // ==========================================
-        // LOGIKA TABEL & GRAFIK (DIHITUNG MANUAL OLEH TOMBOL)
+        // AUTO SORT & CHECK MANUAL SORT
+        // ==========================================
+        function autoSortBox() {
+            const sortBox = document.getElementById('dice-sort-box');
+            let items = Array.from(sortBox.children);
+            if(items.length === 0 || items[0].id === 'empty-sort') return;
+            
+            items.sort((a, b) => {
+                let valA = parseInt(a.dataset.val);
+                let valB = parseInt(b.dataset.val);
+                return currentSortMode === 'asc' ? valA - valB : valB - valA;
+            });
+            
+            currentSortMode = currentSortMode === 'asc' ? 'desc' : 'asc';
+            
+            sortBox.innerHTML = '';
+            items.forEach(item => sortBox.appendChild(item));
+        }
+
+        function checkSort() {
+            const sortBox = document.getElementById('dice-sort-box');
+            let items = Array.from(sortBox.children);
+            
+            if(items.length === 0 || items[0].id === 'empty-sort') {
+                showAlert("Kosong!", "Belum ada dadu yang bisa diperiksa! Lempar dadu dulu ya.", "📦");
+                return;
+            }
+            
+            let vals = items.map(i => parseInt(i.dataset.val));
+            let isAsc = true;
+            let isDesc = true;
+            
+            for(let i = 0; i < vals.length - 1; i++) {
+                if(vals[i] > vals[i+1]) isAsc = false;
+                if(vals[i] < vals[i+1]) isDesc = false;
+            }
+            
+            if(isAsc || isDesc) {
+                showAlert("Benar Sekali!", "Wah pintar, susunan dadunya sudah urut dan rapi! 🌟", "🎉");
+                triggerConfetti();
+            } else {
+                showAlert("Belum Tepat", "Susunannya masih berantakan. Coba digeser-geser lagi dari yang terkecil ke terbesar ya!", "🧐");
+            }
+        }
+
+        // ==========================================
+        // LOGIKA TABEL & GRAFIK
         // ==========================================
         function calculateData() {
             if (totalRolls === 0) {
-                alert("Kamu belum melempar dadu satupun! Lempar dulu ya. 🎲");
+                showAlert("Data Kosong", "Kamu belum melempar dadu satupun! Lempar dulu ya.", "🎲");
                 return;
             }
 
-            // Hitung frekuensi berdasarkan riwayat
             frequencies = [0, 0, 0, 0, 0, 0];
             rollHistory.forEach(r => frequencies[r-1]++);
 
-            // Tampilkan komponen
             const viewValue = document.querySelector('input[name="view-setting"]:checked').value;
             const chartCont = document.getElementById('chart-container');
             const tableCont = document.getElementById('table-container');
@@ -688,42 +726,28 @@
                 chartCont.style.display = 'none'; tableCont.style.display = 'block';
             }
 
-            // Beri efek highlight
-            chartCont.classList.add('ring-4', 'ring-emerald-400');
-            tableCont.classList.add('ring-4', 'ring-emerald-400');
+            chartCont.classList.add('ring-2', 'ring-emerald-400');
+            tableCont.classList.add('ring-2', 'ring-emerald-400');
             setTimeout(() => {
-                chartCont.classList.remove('ring-4', 'ring-emerald-400');
-                tableCont.classList.remove('ring-4', 'ring-emerald-400');
+                chartCont.classList.remove('ring-2', 'ring-emerald-400');
+                tableCont.classList.remove('ring-2', 'ring-emerald-400');
             }, 1000);
 
             renderTable();
             updateChart();
             
-            // Scroll ke bawah agar hasil terlihat
             chartCont.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function generateTallyMarks(count) {
             if (count === 0) return ''; 
-            let html = '<div class="flex flex-wrap gap-1.5 items-center py-0.5 min-h-[28px]">';
+            let html = '<div class="flex flex-wrap gap-1 items-center py-0.5 min-h-[20px]">';
             let fullGroups = Math.floor(count / 5);
             let remainder = count % 5;
             const strokeColor = "#8b5cf6"; 
             
-            const svg5 = `
-                <svg width="24" height="24" viewBox="0 0 28 28" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="4" x2="5" y2="24"/>
-                    <line x1="10" y1="4" x2="10" y2="24"/>
-                    <line x1="15" y1="4" x2="15" y2="24"/>
-                    <line x1="20" y1="4" x2="20" y2="24"/>
-                    <line x1="2" y1="24" x2="23" y2="4"/> 
-                </svg>
-            `;
-            const svg1 = `
-                <svg width="6" height="24" viewBox="0 0 6 28" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round">
-                    <line x1="3" y1="4" x2="3" y2="24"/>
-                </svg>
-            `;
+            const svg5 = `<svg width="20" height="20" viewBox="0 0 28 28" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="4" x2="5" y2="24"/><line x1="10" y1="4" x2="10" y2="24"/><line x1="15" y1="4" x2="15" y2="24"/><line x1="20" y1="4" x2="20" y2="24"/><line x1="2" y1="24" x2="23" y2="4"/></svg>`;
+            const svg1 = `<svg width="5" height="20" viewBox="0 0 6 28" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round"><line x1="3" y1="4" x2="3" y2="24"/></svg>`;
 
             for (let i = 0; i < fullGroups; i++) { html += svg5; }
             for (let i = 0; i < remainder; i++) { html += svg1; }
@@ -742,13 +766,13 @@
                     labels: currentTheme === 'alam' ? labelsAlam : labelsAngka,
                     datasets: [{
                         label: 'Frekuensi',
-                        data: frequencies, // Data masih 0 di awal
+                        data: frequencies, 
                         backgroundColor: [
                             'rgba(255, 71, 87, 0.8)', 'rgba(30, 144, 255, 0.8)', 'rgba(46, 213, 115, 0.8)', 
                             'rgba(255, 165, 2, 0.8)', 'rgba(156, 136, 255, 0.8)', 'rgba(255, 127, 80, 0.8)'
                         ],
                         borderColor: ['#ff4757', '#1e90ff', '#2ed573', '#ffa502', '#9c88ff', '#ff7f50'],
-                        borderWidth: 3, borderRadius: 10, barPercentage: 0.7 
+                        borderWidth: 2, borderRadius: 6, barPercentage: 0.7 
                     }]
                 },
                 options: {
@@ -757,18 +781,18 @@
                         y: {
                             beginAtZero: true, border: { display: false },
                             grid: { color: '#f1f5f9', drawTicks: false },
-                            ticks: { stepSize: 1, padding: 10, font: { size: 14, weight: 'bold' } }
+                            ticks: { stepSize: 1, padding: 8, font: { size: 12, weight: 'bold' } }
                         },
                         x: {
                             border: { display: false }, grid: { display: false },
-                            ticks: { padding: 10, font: { size: 14, weight: 'bold' } }
+                            ticks: { padding: 8, font: { size: 11, weight: 'bold' } }
                         }
                     },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#1e293b', padding: 16, cornerRadius: 12, displayColors: false,
-                            titleFont: { size: 16, weight: 'bold', family: 'Nunito' }, bodyFont: { size: 20, weight: 'black', family: 'Nunito' }
+                            backgroundColor: '#1e293b', padding: 12, cornerRadius: 8, displayColors: false,
+                            titleFont: { size: 13, weight: 'bold', family: 'Nunito' }, bodyFont: { size: 16, weight: 'black', family: 'Nunito' }
                         }
                     },
                     animation: { duration: 600, easing: 'easeOutBounce' } 
@@ -794,9 +818,9 @@
                 
                 let iconDisplay = '';
                 if (currentTheme === 'alam') {
-                    iconDisplay = `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg border-2 border-slate-200 shadow-sm" alt="${labelsAlam[i]}" onerror="this.style.display='none'">`;
+                    iconDisplay = `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded shadow-sm" alt="${labelsAlam[i]}" onerror="this.style.display='none'">`;
                 } else {
-                    iconDisplay = `<span class="text-2xl sm:text-3xl" style="color: ${diceColors[i]}; line-height: 1;">${diceFacesTable[i]}</span>`;
+                    iconDisplay = `<span class="text-xl sm:text-2xl" style="color: ${diceColors[i]}; line-height: 1;">${diceFacesTable[i]}</span>`;
                 }
 
                 const tr = document.createElement('tr');
@@ -804,26 +828,25 @@
                 tr.className = 'transition-colors duration-500 hover:bg-pink-50/50'; 
 
                 tr.innerHTML = `
-                    <td class="px-4 sm:px-6 py-1.5 text-center border-r-2 border-pink-50">
+                    <td class="px-3 sm:px-4 py-1.5 text-center border-r border-pink-50">
                         <div class="flex flex-col items-center justify-center gap-1">
                             ${iconDisplay}
-                            <span class="font-black text-slate-700 text-sm sm:text-base text-center leading-tight">${labelDisplay}</span>
+                            <span class="font-black text-slate-700 text-xs text-center leading-tight">${labelDisplay}</span>
                         </div>
                     </td>
-                    <td class="px-4 sm:px-6 py-1.5">${generateTallyMarks(jumlah)}</td>
-                    <td class="px-4 sm:px-6 py-1.5 text-center border-l-2 border-pink-50">
-                        <span class="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pink-100 text-pink-600 font-black text-base sm:text-lg border-2 border-pink-200">
+                    <td class="px-3 sm:px-4 py-1.5">${generateTallyMarks(jumlah)}</td>
+                    <td class="px-3 sm:px-4 py-1.5 text-center border-l border-pink-50">
+                        <span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-pink-100 text-pink-600 font-black text-sm border border-pink-200">
                             ${jumlah}
                         </span>
                     </td>
                 `;
                 tbody.appendChild(tr);
             }
-            document.getElementById('total-rolls-badge').innerText = `${totalRolls} Kali`;
         }
 
         // ==========================================
-        // LOGIKA LEMPAR DADU CINEMATIC
+        // LOGIKA LEMPAR DADU CINEMATIC (Manual 1 Kali)
         // ==========================================
         function rollDice() {
             if (isRolling) return; 
@@ -831,6 +854,7 @@
             
             const resultText = document.getElementById('result-text');
             const rollBtn = document.getElementById('roll-btn');
+            const autoBtn = document.getElementById('auto-roll-btn');
             const diceScene = document.getElementById('dice-scene');
             const diceScaler = document.getElementById('dice-scaler');
             const diceCube = document.getElementById('dice-cube');
@@ -838,8 +862,8 @@
             const dicePlaceholder = document.getElementById('dice-placeholder');
             
             rollBtn.disabled = true;
-            rollBtn.innerHTML = `⏳ Mengocok...`;
-            resultText.innerHTML = `<span class="animate-pulse">Memutar dadu...</span>`;
+            autoBtn.disabled = true;
+            resultText.innerHTML = `<span class="animate-pulse text-indigo-400 font-bold text-xs sm:text-sm">Melempar...</span>`;
 
             dicePlaceholder.style.display = 'block'; 
             diceScene.classList.add('cinematic');
@@ -859,8 +883,8 @@
                 case 6: targetX = 180; targetY = 0; break;    
             }
 
-            let spinsX = Math.floor(currentRotX / 360) + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 4) + 3);
-            let spinsY = Math.floor(currentRotY / 360) + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 4) + 3);
+            let spinsX = Math.floor(currentRotX / 360) + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 2);
+            let spinsY = Math.floor(currentRotY / 360) + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 2);
 
             currentRotX = targetX + (spinsX * 360);
             currentRotY = targetY + (spinsY * 360);
@@ -879,28 +903,97 @@
                 dicePlaceholder.style.display = 'none';
 
                 const labelResult = currentTheme === 'alam' ? labelsAlam[finalResultIndex] : angkaKeluar;
-                resultText.innerHTML = `Hasil: <span class="font-black text-indigo-700 ml-1 text-lg">${labelResult}</span>`;
+                resultText.innerHTML = `Hasil: <span class="font-black text-indigo-700 ml-1 text-sm sm:text-base">${labelResult}</span>`;
 
-                // Simpan Riwayat
                 rollHistory.push(angkaKeluar);
                 totalRolls++;
                 document.getElementById('total-rolls-badge').innerText = `${totalRolls} Kali`;
-                
-                // Masukkan ke Kotak Riwayat & Urutkan
                 renderHistoryBoxes(angkaKeluar);
 
-                // Hilangkan auto-update grafik/tabel (Sekarang diurus oleh tombol hitung)
-
                 rollBtn.disabled = false;
-                rollBtn.innerHTML = `🚀 LEMPAR DADU!`;
-                
+                autoBtn.disabled = false;
                 setTimeout(() => { isRolling = false; }, 100);
                 
-            }, 1600); 
+            }, 1400); 
         }
 
         // ==========================================
-        // LOGIKA RESET DATA
+        // LOGIKA LEMPAR DADU OTOMATIS (TanPA Layar Penuh)
+        // ==========================================
+        function startAutoRoll() {
+            if (isRolling) return;
+            const count = parseInt(document.getElementById('auto-roll-count').value);
+            if (isNaN(count) || count < 1 || count > 50) {
+                showAlert("Data Tidak Valid", "Masukkan jumlah lemparan antara 1 sampai 50 ya!", "🤖");
+                return;
+            }
+            
+            autoRollsLeft = count;
+            document.getElementById('roll-btn').disabled = true;
+            document.getElementById('auto-roll-btn').disabled = true;
+            
+            performSingleAutoRoll();
+        }
+
+        function performSingleAutoRoll() {
+            if (autoRollsLeft <= 0) {
+                document.getElementById('roll-btn').disabled = false;
+                document.getElementById('auto-roll-btn').disabled = false;
+                document.getElementById('result-text').innerHTML = `<span class="text-emerald-600 font-bold text-xs sm:text-sm">Lempar Otomatis Selesai! ✅</span>`;
+                return;
+            }
+            
+            isRolling = true;
+            const resultText = document.getElementById('result-text');
+            const diceCube = document.getElementById('dice-cube');
+            
+            resultText.innerHTML = `<span class="animate-pulse text-indigo-500 font-bold text-xs sm:text-sm">Memutar... (${autoRollsLeft} tersisa)</span>`;
+
+            const finalResultIndex = Math.floor(Math.random() * 6); 
+            const angkaKeluar = finalResultIndex + 1;
+            
+            let targetX = 0, targetY = 0;
+            switch(angkaKeluar) {
+                case 1: targetX = 0; targetY = 0; break;      
+                case 2: targetX = 0; targetY = -90; break;    
+                case 3: targetX = -90; targetY = 0; break;    
+                case 4: targetX = 90; targetY = 0; break;     
+                case 5: targetX = 0; targetY = 90; break;     
+                case 6: targetX = 180; targetY = 0; break;    
+            }
+
+            let spinsX = Math.floor(currentRotX / 360) + (Math.random() > 0.5 ? 1 : -1) * 2;
+            let spinsY = Math.floor(currentRotY / 360) + (Math.random() > 0.5 ? 1 : -1) * 2;
+
+            currentRotX = targetX + (spinsX * 360);
+            currentRotY = targetY + (spinsY * 360);
+
+            // Transisi lebih cepat dari manual
+            diceCube.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            diceCube.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+
+            setTimeout(() => {
+                const labelResult = currentTheme === 'alam' ? labelsAlam[finalResultIndex] : angkaKeluar;
+                resultText.innerHTML = `Hasil: <span class="font-black text-indigo-700 ml-1 text-sm sm:text-base">${labelResult}</span>`;
+
+                rollHistory.push(angkaKeluar);
+                totalRolls++;
+                document.getElementById('total-rolls-badge').innerText = `${totalRolls} Kali`;
+                renderHistoryBoxes(angkaKeluar);
+                
+                isRolling = false;
+                autoRollsLeft--;
+                
+                if(autoRollsLeft > 0) {
+                    setTimeout(performSingleAutoRoll, 250); // Jeda kecil antar lemparan
+                } else {
+                    performSingleAutoRoll(); // Call one last time to terminate clean
+                }
+            }, 550); // Waktu putaran kubus
+        }
+
+        // ==========================================
+        // LOGIKA RESET DATA & LAIN-LAIN
         // ==========================================
         function resetData() {
             if (totalRolls === 0) return;
@@ -941,7 +1034,7 @@
             rollHistory = []; 
             document.getElementById('total-rolls-badge').innerText = `0 Kali`;
             
-            document.getElementById('result-text').innerHTML = `<span class="text-sm sm:text-base font-bold text-indigo-400">Pencet tombol di bawah 👇</span>`;
+            document.getElementById('result-text').innerHTML = `<span class="text-xs sm:text-sm font-bold text-indigo-500">Menunggu lemparan...</span>`;
             currentRotX = 0;
             currentRotY = 0;
             document.getElementById('dice-cube').style.transform = `rotateX(0deg) rotateY(0deg)`;
@@ -951,41 +1044,54 @@
             document.getElementById('chart-container').style.display = 'none';
             document.getElementById('table-container').style.display = 'none';
             
-            renderTable();
-            updateChart(); 
             hideResetModal();
         }
 
-        // ==========================================
-        // LOGIKA FULLSCREEN
-        // ==========================================
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    alert(`Gagal membuka layar penuh: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
+        function showAlert(title, message, icon = '⚠️') {
+            const modal = document.getElementById('alert-modal');
+            const backdrop = document.getElementById('alert-modal-backdrop');
+            const content = document.getElementById('alert-modal-content');
+            
+            document.getElementById('alert-icon').innerText = icon;
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-message').innerText = message;
+            
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0'); backdrop.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100');
+            }, 10);
         }
 
-        document.addEventListener('fullscreenchange', () => {
-            const enterIcon = document.getElementById('fs-icon-enter');
-            const exitIcon = document.getElementById('fs-icon-exit');
-            const fsText = document.getElementById('fs-text');
+        function closeAlertModal() {
+            const modal = document.getElementById('alert-modal');
+            const backdrop = document.getElementById('alert-modal-backdrop');
+            const content = document.getElementById('alert-modal-content');
             
-            if (document.fullscreenElement) {
-                enterIcon.classList.add('hidden');
-                exitIcon.classList.remove('hidden');
-                fsText.innerText = 'Keluar Penuh';
-            } else {
-                enterIcon.classList.remove('hidden');
-                exitIcon.classList.add('hidden');
-                fsText.innerText = 'Layar Penuh';
+            backdrop.classList.remove('opacity-100'); backdrop.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+        }
+
+        // Efek Konfeti Sederhana
+        function triggerConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.classList.remove('hidden');
+            const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+            
+            for(let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'absolute'; conf.style.width = '10px'; conf.style.height = '10px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
+                conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; conf.style.zIndex = '9998';
+                
+                const animDur = Math.random() * 2 + 2; 
+                conf.animate([{ transform: `translate3d(0,0,0) rotate(0deg)`, opacity: 1 }, { transform: `translate3d(${Math.random()*150 - 75}px, 100vh, 0) rotate(${Math.random()*720}deg)`, opacity: 0 }], { duration: animDur * 1000, easing: 'ease-out', fill: 'forwards' });
+                container.appendChild(conf); setTimeout(() => conf.remove(), animDur * 1000);
             }
-        });
+            setTimeout(() => { container.classList.add('hidden'); }, 4000);
+        }
     </script>
 </body>
 </html>
