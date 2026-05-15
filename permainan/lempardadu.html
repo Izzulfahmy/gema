@@ -231,7 +231,7 @@
         }
         .quiz-option.missed {
             border-width: 4px !important;
-            border-color: #34d399 !important; /* Hijau tebal jika terlewat (tapi sebenarnya benar) */
+            border-color: #34d399 !important; /* Hijau tebal jika terlewat */
         }
         .quiz-step-container {
             transition: opacity 0.3s ease, transform 0.3s ease;
@@ -411,7 +411,7 @@
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-pink-50 bg-white">
-                                <!-- Baris tabel di-generate oleh JS saat awal -->
+                                <!-- Baris tabel di-generate oleh JS -->
                             </tbody>
                         </table>
                     </div>
@@ -687,6 +687,7 @@
             
             initTable(); 
             reRenderAllBoxes(); 
+            updateTableVisibility();
         }
 
         // ==========================================
@@ -820,7 +821,6 @@
                 document.getElementById('win-title').innerText = 'HEBAT!';
                 document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi sesuai perintah!';
                 
-                // Set Tombol Win Hanya "Tutup" karena belum berhak ke Quiz
                 document.getElementById('win-buttons').innerHTML = `
                     <button onclick="closeWinModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
                         Tutup
@@ -899,6 +899,23 @@
             }
         }
 
+        function updateTableVisibility() {
+            let actualFreqs = [0,0,0,0,0,0];
+            rollHistory.forEach(r => actualFreqs[r-1]++);
+            
+            for (let i = 1; i <= 6; i++) {
+                const row = document.getElementById(`row-${i}`);
+                if (row) {
+                    if (totalRolls === 0) {
+                        row.style.display = ''; 
+                    } else {
+                        // Sembunyikan baris jika dadu tidak pernah keluar
+                        row.style.display = actualFreqs[i-1] > 0 ? '' : 'none'; 
+                    }
+                }
+            }
+        }
+
         function updateDiceTally(angka, change) {
             let current = userTallies[angka - 1];
             current += change;
@@ -947,8 +964,8 @@
                     isTallyCorrect = false;
                 }
                 
-                const rawNumValue = document.getElementById(`num-input-${angka}`).value;
-                const numInput = rawNumValue === "" ? 0 : parseInt(rawNumValue);
+                const rawNumValue = document.getElementById(`num-input-${angka}`).value.trim();
+                const numInput = (rawNumValue === "" || rawNumValue === "0") ? 0 : parseInt(rawNumValue, 10);
 
                 if (isNaN(numInput) || numInput !== actualFreqs[i]) {
                     isNumberCorrect = false;
@@ -965,12 +982,10 @@
                 return;
             }
 
-            // Jika semua benar
             document.getElementById('win-icon').innerText = '🎉';
             document.getElementById('win-title').innerText = 'LUAR BIASA!';
             document.getElementById('win-desc').innerText = 'Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel turus dengan benar! Grafiknya sudah terbuka di layar.';
             
-            // Set Tombol Win Menampilkan Tombol "Menjawab Quiz"
             document.getElementById('win-buttons').innerHTML = `
                 <button onclick="closeWinModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
                     Tutup
@@ -1147,8 +1162,10 @@
                     <tbody class="divide-y divide-slate-100">`;
             
             for(let i=0; i<6; i++) {
-                let num = i+1;
                 let count = frequencies[i];
+                if (count === 0) continue; // Jangan tampilkan dadu yang tidak keluar
+
+                let num = i+1;
                 let nameLabel = currentTheme === 'alam' ? labelsAlam[i] : `Angka ${num}`;
                 
                 let iconDisplay = '';
@@ -1174,6 +1191,8 @@
             q1Container.innerHTML = ''; q2Container.innerHTML = '';
 
             for(let i=0; i<6; i++) {
+                if (frequencies[i] === 0) continue; // Hanya opsi dadu yang keluar
+
                 let num = i+1;
                 let name = currentTheme === 'alam' ? labelsAlam[i] : `Angka ${num}`;
                 
@@ -1288,15 +1307,19 @@
 
             let maxCount = -1; let minCount = 999;
             for (let i = 0; i < 6; i++) {
-                if (frequencies[i] > maxCount) maxCount = frequencies[i];
-                if (frequencies[i] < minCount) minCount = frequencies[i];
+                if (frequencies[i] > 0) { // Hanya cek dadu yang ada isinya
+                    if (frequencies[i] > maxCount) maxCount = frequencies[i];
+                    if (frequencies[i] < minCount) minCount = frequencies[i];
+                }
             }
             
             const correctMaxIds = [];
             const correctMinIds = [];
             for (let i = 0; i < 6; i++) {
-                if (frequencies[i] === maxCount) correctMaxIds.push((i+1).toString());
-                if (frequencies[i] === minCount) correctMinIds.push((i+1).toString());
+                if (frequencies[i] > 0) {
+                    if (frequencies[i] === maxCount) correctMaxIds.push((i+1).toString());
+                    if (frequencies[i] === minCount) correctMinIds.push((i+1).toString());
+                }
             }
 
             // Validasi Q1 (Paling Banyak)
@@ -1436,6 +1459,8 @@
                 totalRolls++;
                 document.getElementById('total-rolls-badge').innerText = `${totalRolls} Kali`;
                 renderHistoryBoxes(angkaKeluar);
+                
+                updateTableVisibility();
 
                 rollBtn.disabled = false;
                 autoBtn.disabled = false;
@@ -1506,6 +1531,8 @@
                 totalRolls++;
                 document.getElementById('total-rolls-badge').innerText = `${totalRolls} Kali`;
                 renderHistoryBoxes(angkaKeluar);
+                
+                updateTableVisibility();
                 
                 isRolling = false;
                 autoRollsLeft--;
@@ -1578,6 +1605,7 @@
 
             document.getElementById('chart-container').classList.add('hidden');
             
+            updateTableVisibility();
             updateChart(); 
             hideResetModal();
         }
@@ -1610,26 +1638,6 @@
                 modal.classList.add('hidden'); 
                 modal.classList.remove('flex'); 
             }, 300);
-        }
-
-        // Efek Konfeti Sederhana
-        function triggerConfetti() {
-            const container = document.getElementById('confetti-container');
-            container.classList.remove('hidden');
-            const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
-            
-            for(let i = 0; i < 50; i++) {
-                const conf = document.createElement('div');
-                conf.style.position = 'absolute'; conf.style.width = '10px'; conf.style.height = '10px';
-                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
-                conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; conf.style.zIndex = '9998';
-                
-                const animDur = Math.random() * 2 + 2; 
-                conf.animate([{ transform: `translate3d(0,0,0) rotate(0deg)`, opacity: 1 }, { transform: `translate3d(${Math.random()*150 - 75}px, 100vh, 0) rotate(${Math.random()*720}deg)`, opacity: 0 }], { duration: animDur * 1000, easing: 'ease-out', fill: 'forwards' });
-                container.appendChild(conf); setTimeout(() => conf.remove(), animDur * 1000);
-            }
-            setTimeout(() => { container.classList.add('hidden'); }, 4000);
         }
 
         // ==========================================
