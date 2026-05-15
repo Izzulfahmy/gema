@@ -205,17 +205,19 @@
 
         /* Drag styling for sortable items (Meningkatkan UX Mobile) */
         .sortable-ghost {
-            opacity: 0.2;
-            background-color: #cbd5e1;
-            transform: scale(0.9);
-            border: 2px dashed #94a3b8;
+            opacity: 0.4 !important;
+            background-color: #e2e8f0 !important; /* Warna slot kosong */
+            border: 2px dashed #94a3b8 !important;
+            transform: scale(0.95) !important;
+            border-radius: 0.5rem !important; /* Mengikuti ukuran rounded kotak dadu */
         }
         .sortable-drag, .sortable-fallback {
             cursor: grabbing !important;
-            transform: scale(1.1) rotate(5deg) !important;
-            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+            transform: scale(1.2) rotate(4deg) !important; /* Terlihat lebih terangkat dari layar */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
             z-index: 9999 !important;
             opacity: 1 !important;
+            background-color: #ffffff !important;
         }
 
         /* Opsi Kuis Terpilih */
@@ -632,15 +634,16 @@
             
             const sortBox = document.getElementById('dice-sort-box');
             sortableInstance = new Sortable(sortBox, {
-                animation: 250, // Animasi drag drop
+                animation: 350, // Lebih lambat & smooth agar terlihat bergeser
+                easing: "cubic-bezier(0.25, 1, 0.5, 1)", // Transisi bergeser yang halus
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
-                forceFallback: true, // Gunakan fallback untuk UX Mobile yang lebih konsisten
+                forceFallback: true, 
                 fallbackClass: 'sortable-fallback',
                 fallbackOnBody: true,
-                delay: 150, // Tekan 150ms untuk mulai mendrag (mengatasi terdrag saat mau scroll)
+                delay: 150, 
                 delayOnTouchOnly: true,
-                touchStartThreshold: 5 // Batas gerak jari sebelum dianggap membatalkan drag (untuk layar sentuh)
+                touchStartThreshold: 5 
             });
         });
 
@@ -1645,7 +1648,9 @@
                 if(tallyDisp) tallyDisp.innerHTML = generateMiniTally(0);
             }
 
-            applySettings(); // This will hide chart & table because they are locked
+            document.getElementById('chart-container').classList.add('hidden');
+            
+            updateTableVisibility();
             updateChart(); 
             hideResetModal();
         }
