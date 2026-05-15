@@ -266,7 +266,7 @@
     <!-- TOMBOL LAYAR PENUH (KANAN ATAS) -->
     <button onclick="toggleFullScreen()" class="fixed top-3 right-3 sm:top-5 sm:right-5 z-[100] bg-white/90 backdrop-blur-md border-2 border-indigo-200 text-indigo-700 p-2 sm:px-3 sm:py-2 rounded-xl shadow-sm hover:bg-indigo-50 hover:scale-105 font-black flex items-center transition-all">
         <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17-11h-6m0 0v6m0-6l7 7" /></svg>
+        <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
     </button>
 
     <div class="max-w-5xl mx-auto py-4 px-4 sm:px-6 lg:py-6 flex flex-col min-h-screen">
@@ -406,7 +406,7 @@
                             <thead class="bg-white text-pink-400 font-black border-b border-pink-100">
                                 <tr>
                                     <th scope="col" class="px-3 sm:px-4 py-2 w-16 sm:w-20 text-center border-r border-pink-50">Dadu</th>
-                                    <th scope="col" class="px-3 sm:px-4 py-2">Banyaknya (Turus)</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2 min-w-[200px]">Banyaknya (Turus)</th>
                                     <th scope="col" class="px-3 sm:px-4 py-2 text-center w-24 sm:w-28 border-l border-pink-50">Total Angka</th>
                                 </tr>
                             </thead>
@@ -527,13 +527,8 @@
             <div id="win-icon" class="text-7xl mb-4">🎉</div>
             <h2 id="win-title" class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-3 leading-tight">LUAR BIASA!</h2>
             <p id="win-desc" class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kerja Bagus! Kamu berhasil menyelesaikan tugas dengan benar!</p>
-            <div class="flex flex-col sm:flex-row gap-3 w-full">
-                <button onclick="closeWinModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
-                    Tutup
-                </button>
-                <button onclick="openQuiz()" class="flex-1 py-3 bg-brand-500 hover:bg-brand-600 text-white text-base font-black rounded-2xl border-2 border-brand-600 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all">
-                    Menjawab Quiz ➡️
-                </button>
+            <div id="win-buttons" class="flex flex-col sm:flex-row gap-3 w-full">
+                <!-- Tombol Akan Diatur Dinamis Lewat JavaScript -->
             </div>
         </div>
     </div>
@@ -825,6 +820,13 @@
                 document.getElementById('win-title').innerText = 'HEBAT!';
                 document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi sesuai perintah!';
                 
+                // Set Tombol Win Hanya "Tutup" karena belum berhak ke Quiz
+                document.getElementById('win-buttons').innerHTML = `
+                    <button onclick="closeWinModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
+                        Tutup
+                    </button>
+                `;
+                
                 const modalContainer = document.getElementById('win-modal-container');
                 const winModal = document.getElementById('win-modal');
                 
@@ -968,6 +970,16 @@
             document.getElementById('win-title').innerText = 'LUAR BIASA!';
             document.getElementById('win-desc').innerText = 'Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel turus dengan benar! Grafiknya sudah terbuka di layar.';
             
+            // Set Tombol Win Menampilkan Tombol "Menjawab Quiz"
+            document.getElementById('win-buttons').innerHTML = `
+                <button onclick="closeWinModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
+                    Tutup
+                </button>
+                <button onclick="openQuiz()" class="flex-1 py-3 bg-brand-500 hover:bg-brand-600 text-white text-base font-black rounded-2xl border-2 border-brand-600 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all">
+                    Menjawab Quiz ➡️
+                </button>
+            `;
+
             frequencies = [...actualFreqs];
             updateChart();
             
@@ -1356,8 +1368,7 @@
                         document.getElementById('win-title').innerText = 'KUIS SEMPURNA!';
                         document.getElementById('win-desc').innerText = 'Semua jawaban kuis kamu Benar! Kamu sudah sangat menguasai materi ini.';
                         
-                        const winBtns = document.getElementById('win-modal').querySelector('.flex-col.sm\\:flex-row');
-                        winBtns.innerHTML = `
+                        document.getElementById('win-buttons').innerHTML = `
                             <button onclick="closeWinModal()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white text-lg font-black rounded-2xl border-2 border-emerald-600 shadow-[0_4px_0_#059669] active:translate-y-1 transition-all">
                                 🌟 Selesai 🌟
                             </button>
