@@ -411,7 +411,7 @@
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-pink-50 bg-white">
-                                <!-- Baris tabel di-generate oleh JS -->
+                                <!-- Baris tabel di-generate oleh JS saat awal -->
                             </tbody>
                         </table>
                     </div>
@@ -833,7 +833,7 @@
                 modalContainer.classList.remove('hidden');
                 modalContainer.classList.add('flex');
                 setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
-                triggerConfetti();
+                triggerConfetti(50);
 
             } else {
                 showAlert("Belum Tepat", "Susunannya masih berantakan. Coba perhatikan lagi perintah urutannya ya!", "🧐");
@@ -990,7 +990,7 @@
                 <button onclick="closeWinModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
                     Tutup
                 </button>
-                <button onclick="openQuiz()" class="flex-1 py-3 bg-brand-500 hover:bg-brand-600 text-white text-base font-black rounded-2xl border-2 border-brand-600 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all">
+                <button onclick="openQuiz()" class="flex-1 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-pink-400 hover:via-purple-400 hover:to-indigo-400 text-white text-base font-black rounded-2xl border-2 border-purple-700 shadow-[0_4px_0_#581c87] active:shadow-[0_0px_0_#581c87] active:translate-y-1 transition-all animate-pulse">
                     Menjawab Quiz ➡️
                 </button>
             `;
@@ -1010,7 +1010,7 @@
             modalContainer.classList.remove('hidden');
             modalContainer.classList.add('flex');
             setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
-            triggerConfetti();
+            triggerConfetti(50);
         }
 
         function closeWinModal() {
@@ -1387,13 +1387,13 @@
                     modal.classList.add('hidden'); modal.classList.remove('flex');
                     
                     if(q1Correct && q2Correct && q3Correct) {
-                        document.getElementById('win-icon').innerText = '🏆';
-                        document.getElementById('win-title').innerText = 'KUIS SEMPURNA!';
-                        document.getElementById('win-desc').innerText = 'Semua jawaban kuis kamu Benar! Kamu sudah sangat menguasai materi ini.';
+                        document.getElementById('win-icon').innerHTML = '<div class="text-8xl animate-bounce">🏆</div>';
+                        document.getElementById('win-title').innerHTML = '<span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 animate-pulse">KUIS SEMPURNA!</span>';
+                        document.getElementById('win-desc').innerHTML = '<span class="text-lg font-black text-slate-700">Luar biasa!</span> Kamu sudah sangat menguasai materi ini. Terus semangat belajar ya! 🚀';
                         
                         document.getElementById('win-buttons').innerHTML = `
-                            <button onclick="closeWinModal()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white text-lg font-black rounded-2xl border-2 border-emerald-600 shadow-[0_4px_0_#059669] active:translate-y-1 transition-all">
-                                🌟 Selesai 🌟
+                            <button onclick="closeWinModal()" class="w-full py-4 bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-white text-lg font-black rounded-2xl border-2 border-emerald-600 shadow-[0_5px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all transform hover:scale-105">
+                                🌟 SELESAI 🌟
                             </button>
                         `;
 
@@ -1403,7 +1403,7 @@
                         modalContainer.classList.remove('hidden');
                         modalContainer.classList.add('flex');
                         setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
-                        triggerConfetti();
+                        triggerConfetti(150);
 
                     } else {
                         showAlert('Jangan Menyerah!', 'Masih ada jawaban kuis yang terlewat atau salah. Ayo kita coba pelajari tabelnya lagi!', '💪');
@@ -1638,6 +1638,26 @@
                 modal.classList.add('hidden'); 
                 modal.classList.remove('flex'); 
             }, 300);
+        }
+
+        // Efek Konfeti yang Meriah
+        function triggerConfetti(particleCount = 50) {
+            const container = document.getElementById('confetti-container');
+            container.classList.remove('hidden');
+            const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+            
+            for(let i = 0; i < particleCount; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'absolute'; conf.style.width = '12px'; conf.style.height = '12px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
+                conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; conf.style.zIndex = '9998';
+                
+                const animDur = Math.random() * 2 + 2; 
+                conf.animate([{ transform: `translate3d(0,0,0) rotate(0deg) scale(1)`, opacity: 1 }, { transform: `translate3d(${Math.random()*300 - 150}px, 100vh, 0) rotate(${Math.random()*720}deg) scale(0.5)`, opacity: 0 }], { duration: animDur * 1000, easing: 'ease-out', fill: 'forwards' });
+                container.appendChild(conf); setTimeout(() => conf.remove(), animDur * 1000);
+            }
+            setTimeout(() => { container.classList.add('hidden'); }, 4000);
         }
 
         // ==========================================
