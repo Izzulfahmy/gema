@@ -144,6 +144,18 @@
         input[type="number"] {
             -moz-appearance: textfield;
         }
+        
+        .tally-display::-webkit-scrollbar {
+            height: 6px;
+        }
+        .tally-display::-webkit-scrollbar-track {
+            background: #fdf2f8; 
+            border-radius: 4px;
+        }
+        .tally-display::-webkit-scrollbar-thumb {
+            background: #fbcfe8; 
+            border-radius: 4px;
+        }
 
         /* =========================================
            CINEMATIC MODE STYLES
@@ -363,7 +375,7 @@
 
                 <!-- TOMBOL HITUNG KE GRAFIK -->
                 <div class="flex justify-center my-1">
-                    <button onclick="calculateData()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white p-3 sm:p-4 rounded-full border-2 border-emerald-600 border-b-4 ring-2 ring-emerald-200 group" title="Hitung dan Buat Grafik!">
+                    <button onclick="calculateDataToChart()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white p-3 sm:p-4 rounded-full border-2 border-emerald-600 border-b-4 ring-2 ring-emerald-200 group" title="Buat Grafik Secara Otomatis">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
@@ -381,25 +393,30 @@
                     </div>
                 </div>
 
-                <!-- Tabel Turus -->
-                <div id="table-container" class="bg-white rounded-3xl shadow-lg border-2 border-pink-200 overflow-hidden transition-all" style="display: none;">
-                    <div class="px-4 py-2 border-b-2 border-pink-100 bg-pink-50">
+                <!-- Tabel Turus Manual -->
+                <div id="table-container" class="bg-white rounded-3xl shadow-lg border-2 border-pink-200 overflow-hidden transition-all" style="display: block;">
+                    <div class="px-4 py-3 border-b-2 border-pink-100 bg-pink-50 flex justify-between items-center">
                         <h2 class="text-base sm:text-lg font-black text-pink-600">Papan Skor Turus</h2>
                     </div>
                     
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-xs sm:text-sm text-left">
+                        <table class="min-w-full text-xs sm:text-sm text-left border-collapse">
                             <thead class="bg-white text-pink-400 font-black border-b border-pink-100">
                                 <tr>
-                                    <th scope="col" class="px-3 sm:px-4 py-2 w-16 sm:w-20 text-center">Angka</th>
-                                    <th scope="col" class="px-3 sm:px-4 py-2">Turus</th>
-                                    <th scope="col" class="px-3 sm:px-4 py-2 text-center w-16 sm:w-20">Total</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2 w-16 sm:w-20 text-center border-r border-pink-50">Dadu</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2">Banyaknya (Turus)</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2 text-center w-24 sm:w-28 border-l border-pink-50">Total Angka</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-body" class="divide-y divide-pink-50">
-                                <!-- Baris tabel di-generate oleh JS -->
+                            <tbody id="table-body" class="divide-y divide-pink-50 bg-white">
+                                <!-- Baris tabel di-generate oleh JS saat awal -->
                             </tbody>
                         </table>
+                    </div>
+                    <div class="px-4 py-3 bg-pink-50 border-t border-pink-100 flex justify-end">
+                        <button onclick="checkTableAnswers()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-xl font-black shadow-sm transition-colors border-2 border-emerald-600 flex items-center gap-2 text-sm">
+                            ✅ Selesai
+                        </button>
                     </div>
                 </div>
 
@@ -426,15 +443,15 @@
             <div class="space-y-3 text-sm">
                 <!-- Tampilan Layar -->
                 <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                    <h4 class="font-bold text-indigo-800 mb-2">Tampilan (Saat Dihitung):</h4>
+                    <h4 class="font-bold text-indigo-800 mb-2">Tampilan Visual:</h4>
                     <label class="flex items-center gap-2 cursor-pointer mb-1 text-slate-700 font-semibold">
-                        <input type="radio" name="view-setting" value="both" checked class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Tabel & Grafik
+                        <input type="radio" name="view-setting" value="both" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Tabel & Grafik
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer mb-1 text-slate-700 font-semibold">
                         <input type="radio" name="view-setting" value="chart" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Hanya Grafik 📈
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-semibold">
-                        <input type="radio" name="view-setting" value="table" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Hanya Tabel 📝
+                        <input type="radio" name="view-setting" value="table" checked class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Hanya Tabel 📝
                     </label>
                 </div>
 
@@ -490,6 +507,19 @@
         </div>
     </div>
 
+    <!-- MODAL CELEBRATION -->
+    <div id="win-modal-container" class="fixed inset-0 pointer-events-none z-[9990] hidden flex justify-center items-center">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="closeWinModal()"></div>
+        <div class="relative bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-md w-[90%]" id="win-modal">
+            <div id="win-icon" class="text-7xl mb-4">🎉</div>
+            <h2 id="win-title" class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-3 leading-tight">LUAR BIASA!</h2>
+            <p id="win-desc" class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel dengan benar!</p>
+            <button onclick="closeWinModal()" class="w-full py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-base font-black rounded-2xl border-2 border-yellow-600 shadow-[0_4px_0_#b45309] active:shadow-[0_0px_0_#b45309] active:translate-y-1 transition-all">
+                Tutup
+            </button>
+        </div>
+    </div>
+
     <script>
         let frequencies = [0, 0, 0, 0, 0, 0]; 
         let totalRolls = 0;
@@ -506,6 +536,8 @@
         
         let currentSortTarget = 'asc'; // 'asc' = Terkecil ke Terbesar, 'desc' = Terbesar ke Terkecil
         let autoRollsLeft = 0; // Sisa lemparan otomatis
+        
+        let userTallies = [0, 0, 0, 0, 0, 0]; // Simpanan jumlah klik turus manual pemain
 
         // Warna dadu pelangi
         const diceColors = ['#ff4757', '#1e90ff', '#2ed573', '#ffa502', '#9c88ff', '#ff7f50'];
@@ -516,6 +548,7 @@
         const labelsAlam = ['Bandealit', 'Rembangan', 'Papuma', 'Bukit J88', "Cangak'an", 'Gambir'];
 
         document.addEventListener('DOMContentLoaded', () => {
+            initTable();
             initChart();
             renderHistoryBoxes();
             
@@ -533,19 +566,49 @@
         // ==========================================
         // LOGIKA PENGATURAN (SETTINGS & THEME)
         // ==========================================
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            const backdrop = document.getElementById('settings-modal-backdrop');
+            const content = document.getElementById('settings-modal-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeSettings() {
+            const modal = document.getElementById('settings-modal');
+            const backdrop = document.getElementById('settings-modal-backdrop');
+            const content = document.getElementById('settings-modal-content');
+            
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
         function applySettings() {
             const viewValue = document.querySelector('input[name="view-setting"]:checked').value;
             const chartCont = document.getElementById('chart-container');
             const tableCont = document.getElementById('table-container');
 
-            if (frequencies.some(f => f > 0)) {
-                if (viewValue === 'both') {
-                    chartCont.style.display = 'block'; tableCont.style.display = 'block';
-                } else if (viewValue === 'chart') {
-                    chartCont.style.display = 'block'; tableCont.style.display = 'none';
-                } else if (viewValue === 'table') {
-                    chartCont.style.display = 'none'; tableCont.style.display = 'block';
-                }
+            if (viewValue === 'both') {
+                chartCont.style.display = 'block'; tableCont.style.display = 'block';
+            } else if (viewValue === 'chart') {
+                chartCont.style.display = 'block'; tableCont.style.display = 'none';
+            } else if (viewValue === 'table') {
+                chartCont.style.display = 'none'; tableCont.style.display = 'block';
             }
 
             const themeValue = document.querySelector('input[name="theme-setting"]:checked').value;
@@ -564,7 +627,7 @@
                 myChart.update();
             }
             
-            renderTable();
+            initTable(); // Refresh the icons in table
             reRenderAllBoxes(); 
         }
 
@@ -705,9 +768,158 @@
         }
 
         // ==========================================
-        // LOGIKA TABEL & GRAFIK
+        // LOGIKA TABEL MANUAL (INTERAKTIF)
         // ==========================================
-        function calculateData() {
+        function initTable() {
+            const tbody = document.getElementById('table-body');
+            
+            // Build the rows only if they don't exist yet
+            if (tbody.children.length === 0) {
+                for (let i = 0; i < 6; i++) {
+                    const angka = i + 1;
+                    const tr = document.createElement('tr');
+                    tr.id = `row-${angka}`;
+                    tr.className = 'transition-colors duration-500 hover:bg-pink-50/50'; 
+
+                    tr.innerHTML = `
+                        <td class="px-3 sm:px-4 py-1.5 text-center border-r border-pink-50" id="icon-container-${angka}">
+                            <!-- Icon disuntikkan disini -->
+                        </td>
+                        <td class="px-3 sm:px-4 py-1.5">
+                            <div class="flex flex-col bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden w-full max-w-[200px]">
+                                <div class="bg-slate-50 border-b border-slate-100 px-2 py-1 flex justify-between items-center">
+                                    <div class="flex gap-1 shrink-0">
+                                        <button onclick="updateDiceTally(${angka}, 1)" class="w-6 h-6 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded shadow-sm font-black text-sm flex items-center justify-center transition-colors" title="Tambah Turus">|</button>
+                                        <button onclick="updateDiceTally(${angka}, -1)" class="w-6 h-6 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded shadow-sm font-black flex items-center justify-center transition-colors" title="Hapus Turus">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="tally-display flex items-center min-h-[34px] px-2 py-1 overflow-x-auto whitespace-nowrap" id="tally-disp-${angka}">
+                                    ${generateMiniTally(userTallies[i])}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-3 sm:px-4 py-1.5 text-center border-l border-pink-50">
+                            <input type="number" min="0" placeholder="?" id="num-input-${angka}" class="w-10 sm:w-12 h-7 sm:h-8 text-center font-black text-slate-700 bg-white border border-slate-200 rounded outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all text-sm sm:text-base shadow-sm">
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            }
+
+            // Selalu perbarui icon berdasarkan tema saat ini
+            for (let i = 0; i < 6; i++) {
+                const angka = i + 1;
+                const labelDisplay = currentTheme === 'alam' ? labelsAlam[i] : angka;
+                
+                let iconDisplay = '';
+                if (currentTheme === 'alam') {
+                    iconDisplay = `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded shadow-sm" alt="${labelsAlam[i]}" onerror="this.style.display='none'">`;
+                } else {
+                    iconDisplay = `<span class="text-xl sm:text-2xl" style="color: ${diceColors[i]}; line-height: 1;">${diceFacesTable[i]}</span>`;
+                }
+                
+                document.getElementById(`icon-container-${angka}`).innerHTML = `
+                    <div class="flex flex-col items-center justify-center gap-1">
+                        ${iconDisplay}
+                        <span class="font-black text-slate-700 text-xs text-center leading-tight">${labelDisplay}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function updateDiceTally(angka, change) {
+            let current = userTallies[angka - 1];
+            current += change;
+            if(current < 0) current = 0;
+            if(current > 50) current = 50; // Batas logis
+            
+            userTallies[angka - 1] = current;
+            document.getElementById(`tally-disp-${angka}`).innerHTML = generateMiniTally(current);
+        }
+
+        function generateMiniTally(count) {
+            if (count === 0) return '<span class="text-slate-300 text-xs italic font-semibold">Kosong</span>'; 
+            let html = '<div class="flex items-center gap-1">';
+            let fullGroups = Math.floor(count / 5);
+            let remainder = count % 5;
+            const strokeColor = "#d81b60"; // Warna pink tua untuk turus manual
+            
+            const svg5 = `<svg width="18" height="18" viewBox="0 0 28 28" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><line x1="5" y1="4" x2="5" y2="24"/><line x1="10" y1="4" x2="10" y2="24"/><line x1="15" y1="4" x2="15" y2="24"/><line x1="20" y1="4" x2="20" y2="24"/><line x1="2" y1="24" x2="23" y2="4"/></svg>`;
+            const svg1 = `<svg width="5" height="18" viewBox="0 0 6 28" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" class="shrink-0"><line x1="3" y1="4" x2="3" y2="24"/></svg>`;
+
+            for (let i = 0; i < fullGroups; i++) { html += svg5; }
+            for (let i = 0; i < remainder; i++) { html += svg1; }
+            html += '</div>';
+            return html;
+        }
+
+        // ==========================================
+        // CEK JAWABAN TABEL (TOMBOL SELESAI)
+        // ==========================================
+        function checkTableAnswers() {
+            if (totalRolls === 0) {
+                showAlert("Belum Ada Dadu", "Lempar dadu dulu sebelum mengisi tabel ya!", "🎲");
+                return;
+            }
+
+            let isTallyCorrect = true;
+            let isNumberCorrect = true;
+
+            // Hitung aktual berdasarkan riwayat
+            let actualFreqs = [0,0,0,0,0,0];
+            rollHistory.forEach(r => actualFreqs[r-1]++);
+
+            for (let i = 0; i < 6; i++) {
+                const angka = i + 1;
+                
+                // Cek Turus
+                if (userTallies[i] !== actualFreqs[i]) {
+                    isTallyCorrect = false;
+                }
+                
+                // Cek Input Angka
+                const numInput = parseInt(document.getElementById(`num-input-${angka}`).value);
+                if (isNaN(numInput) || numInput !== actualFreqs[i]) {
+                    isNumberCorrect = false;
+                }
+            }
+
+            if (!isTallyCorrect) {
+                showAlert("Cek Turusnya!", "Garis turus yang kamu buat ada yang kurang tepat dengan dadu yang keluar. Hitung lagi riwayat dadunya ya!", "✍️");
+                return;
+            }
+
+            if (!isNumberCorrect) {
+                showAlert("Cek Angkanya!", "Angka yang kamu masukkan ada yang belum sesuai dengan jumlah dadu. Yuk periksa lagi!", "🔢");
+                return;
+            }
+
+            // Jika semua benar
+            document.getElementById('win-icon').innerText = '🎉';
+            document.getElementById('win-title').innerText = 'LUAR BIASA!';
+            document.getElementById('win-desc').innerText = 'Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel turus dengan benar!';
+            
+            const modalContainer = document.getElementById('win-modal-container');
+            const winModal = document.getElementById('win-modal');
+            
+            modalContainer.classList.remove('hidden');
+            setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
+            triggerConfetti();
+        }
+
+        function closeWinModal() {
+            const modalContainer = document.getElementById('win-modal-container');
+            const winModal = document.getElementById('win-modal');
+            winModal.classList.remove('scale-100'); winModal.classList.add('scale-0');
+            setTimeout(() => { modalContainer.classList.add('hidden'); }, 300);
+        }
+
+        // ==========================================
+        // LOGIKA GRAFIK (DIHITUNG OLEH TOMBOL 🧮)
+        // ==========================================
+        function calculateDataToChart() {
             if (totalRolls === 0) {
                 showAlert("Data Kosong", "Kamu belum melempar dadu satupun! Lempar dulu ya.", "🎲");
                 return;
@@ -716,45 +928,15 @@
             frequencies = [0, 0, 0, 0, 0, 0];
             rollHistory.forEach(r => frequencies[r-1]++);
 
-            const viewValue = document.querySelector('input[name="view-setting"]:checked').value;
-            const chartCont = document.getElementById('chart-container');
-            const tableCont = document.getElementById('table-container');
-
-            if (viewValue === 'both') {
-                chartCont.style.display = 'block'; tableCont.style.display = 'block';
-            } else if (viewValue === 'chart') {
-                chartCont.style.display = 'block'; tableCont.style.display = 'none';
-            } else if (viewValue === 'table') {
-                chartCont.style.display = 'none'; tableCont.style.display = 'block';
-            }
-
-            chartCont.classList.add('ring-2', 'ring-emerald-400');
-            tableCont.classList.add('ring-2', 'ring-emerald-400');
-            setTimeout(() => {
-                chartCont.classList.remove('ring-2', 'ring-emerald-400');
-                tableCont.classList.remove('ring-2', 'ring-emerald-400');
-            }, 1000);
-
-            renderTable();
             updateChart();
             
-            chartCont.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        function generateTallyMarks(count) {
-            if (count === 0) return ''; 
-            let html = '<div class="flex flex-wrap gap-1 items-center py-0.5 min-h-[20px]">';
-            let fullGroups = Math.floor(count / 5);
-            let remainder = count % 5;
-            const strokeColor = "#8b5cf6"; 
+            const chartCont = document.getElementById('chart-container');
+            chartCont.classList.add('ring-2', 'ring-emerald-400');
+            setTimeout(() => {
+                chartCont.classList.remove('ring-2', 'ring-emerald-400');
+            }, 1000);
             
-            const svg5 = `<svg width="20" height="20" viewBox="0 0 28 28" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="4" x2="5" y2="24"/><line x1="10" y1="4" x2="10" y2="24"/><line x1="15" y1="4" x2="15" y2="24"/><line x1="20" y1="4" x2="20" y2="24"/><line x1="2" y1="24" x2="23" y2="4"/></svg>`;
-            const svg1 = `<svg width="5" height="20" viewBox="0 0 6 28" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round"><line x1="3" y1="4" x2="3" y2="24"/></svg>`;
-
-            for (let i = 0; i < fullGroups; i++) { html += svg5; }
-            for (let i = 0; i < remainder; i++) { html += svg1; }
-            html += '</div>';
-            return html;
+            chartCont.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function initChart() {
@@ -806,44 +988,6 @@
             if (myChart) {
                 myChart.data.datasets[0].data = frequencies;
                 myChart.update();
-            }
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = ''; 
-
-            for (let i = 0; i < 6; i++) {
-                const angka = i + 1;
-                const jumlah = frequencies[i];
-                const labelDisplay = currentTheme === 'alam' ? labelsAlam[i] : angka;
-                
-                let iconDisplay = '';
-                if (currentTheme === 'alam') {
-                    iconDisplay = `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded shadow-sm" alt="${labelsAlam[i]}" onerror="this.style.display='none'">`;
-                } else {
-                    iconDisplay = `<span class="text-xl sm:text-2xl" style="color: ${diceColors[i]}; line-height: 1;">${diceFacesTable[i]}</span>`;
-                }
-
-                const tr = document.createElement('tr');
-                tr.id = `row-${angka}`;
-                tr.className = 'transition-colors duration-500 hover:bg-pink-50/50'; 
-
-                tr.innerHTML = `
-                    <td class="px-3 sm:px-4 py-1.5 text-center border-r border-pink-50">
-                        <div class="flex flex-col items-center justify-center gap-1">
-                            ${iconDisplay}
-                            <span class="font-black text-slate-700 text-xs text-center leading-tight">${labelDisplay}</span>
-                        </div>
-                    </td>
-                    <td class="px-3 sm:px-4 py-1.5">${generateTallyMarks(jumlah)}</td>
-                    <td class="px-3 sm:px-4 py-1.5 text-center border-l border-pink-50">
-                        <span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-pink-100 text-pink-600 font-black text-sm border border-pink-200">
-                            ${jumlah}
-                        </span>
-                    </td>
-                `;
-                tbody.appendChild(tr);
             }
         }
 
@@ -970,11 +1114,11 @@
                 autoRollsLeft--;
                 
                 if(autoRollsLeft > 0) {
-                    setTimeout(performSingleAutoRoll, 250); // Jeda kecil antar lemparan
+                    setTimeout(performSingleAutoRoll, 250); 
                 } else {
-                    performSingleAutoRoll(); // Call one last time to terminate clean
+                    performSingleAutoRoll(); 
                 }
-            }, 550); // Waktu putaran kubus
+            }, 550); 
         }
 
         // ==========================================
@@ -1017,66 +1161,60 @@
             frequencies = [0, 0, 0, 0, 0, 0];
             totalRolls = 0;
             rollHistory = []; 
+            userTallies = [0, 0, 0, 0, 0, 0]; // Reset juga hitungan manual
+
             document.getElementById('total-rolls-badge').innerText = `0 Kali`;
-            
             document.getElementById('result-text').innerHTML = `<span class="text-xs sm:text-sm font-bold text-indigo-500">Menunggu lemparan...</span>`;
+            
             currentRotX = 0;
             currentRotY = 0;
             document.getElementById('dice-cube').style.transform = `rotateX(0deg) rotateY(0deg)`;
             
             reRenderAllBoxes();
             
-            document.getElementById('chart-container').style.display = 'none';
-            document.getElementById('table-container').style.display = 'none';
-            
+            // Bersihkan Tabel
+            for (let i = 1; i <= 6; i++) {
+                const inputNum = document.getElementById(`num-input-${i}`);
+                if(inputNum) inputNum.value = '';
+                const tallyDisp = document.getElementById(`tally-disp-${i}`);
+                if(tallyDisp) tallyDisp.innerHTML = generateMiniTally(0);
+            }
+
+            applySettings(); 
+            updateChart(); 
             hideResetModal();
         }
 
-        function showAlert(title, message, icon = '⚠️') {
-            const modal = document.getElementById('alert-modal');
-            const backdrop = document.getElementById('alert-modal-backdrop');
-            const content = document.getElementById('alert-modal-content');
-            
-            document.getElementById('alert-icon').innerText = icon;
-            document.getElementById('alert-title').innerText = title;
-            document.getElementById('alert-message').innerText = message;
-            
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-            setTimeout(() => {
-                backdrop.classList.remove('opacity-0'); backdrop.classList.add('opacity-100');
-                content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeAlertModal() {
-            const modal = document.getElementById('alert-modal');
-            const backdrop = document.getElementById('alert-modal-backdrop');
-            const content = document.getElementById('alert-modal-content');
-            
-            backdrop.classList.remove('opacity-100'); backdrop.classList.add('opacity-0');
-            content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
-        }
-
-        // Efek Konfeti Sederhana
-        function triggerConfetti() {
-            const container = document.getElementById('confetti-container');
-            container.classList.remove('hidden');
-            const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
-            
-            for(let i = 0; i < 50; i++) {
-                const conf = document.createElement('div');
-                conf.style.position = 'absolute'; conf.style.width = '10px'; conf.style.height = '10px';
-                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
-                conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; conf.style.zIndex = '9998';
-                
-                const animDur = Math.random() * 2 + 2; 
-                conf.animate([{ transform: `translate3d(0,0,0) rotate(0deg)`, opacity: 1 }, { transform: `translate3d(${Math.random()*150 - 75}px, 100vh, 0) rotate(${Math.random()*720}deg)`, opacity: 0 }], { duration: animDur * 1000, easing: 'ease-out', fill: 'forwards' });
-                container.appendChild(conf); setTimeout(() => conf.remove(), animDur * 1000);
+        // ==========================================
+        // LOGIKA FULLSCREEN
+        // ==========================================
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Gagal membuka layar penuh: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
             }
-            setTimeout(() => { container.classList.add('hidden'); }, 4000);
         }
+
+        document.addEventListener('fullscreenchange', () => {
+            const enterIcon = document.getElementById('fs-icon-enter');
+            const exitIcon = document.getElementById('fs-icon-exit');
+            const fsText = document.getElementById('fs-text');
+            
+            if (document.fullscreenElement) {
+                enterIcon.classList.add('hidden');
+                exitIcon.classList.remove('hidden');
+                if(fsText) fsText.innerText = 'Keluar Penuh';
+            } else {
+                enterIcon.classList.remove('hidden');
+                exitIcon.classList.add('hidden');
+                if(fsText) fsText.innerText = 'Layar Penuh';
+            }
+        });
     </script>
 </body>
 </html>
