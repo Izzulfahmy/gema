@@ -550,6 +550,13 @@
         }
 
         function checkGameFinish() {
+            // Validasi 0: Permainan belum dimulai (belum ada benda sama sekali)
+            const allItems = document.querySelectorAll('.school-item');
+            if (allItems.length === 0) {
+                showAlert('Belum Mulai!', 'Silakan pencet tombol "Acak Benda" terlebih dahulu ya! 🎲');
+                return;
+            }
+
             // Validasi 1: Belum ada benda / Masih ada benda di meja
             const itemsOnTable = document.querySelectorAll('#item-box .school-item');
             if (itemsOnTable.length > 0) {
@@ -765,6 +772,29 @@
                 container.appendChild(conf); setTimeout(() => conf.remove(), animDur * 1000);
             }
         }
+
+        // ==========================================
+        // LOGIKA FULLSCREEN
+        // ==========================================
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            const enterIcon = document.getElementById('fs-icon-enter');
+            const exitIcon = document.getElementById('fs-icon-exit');
+            if (document.fullscreenElement) {
+                enterIcon.classList.add('hidden'); exitIcon.classList.remove('hidden');
+            } else {
+                enterIcon.classList.remove('hidden'); exitIcon.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
