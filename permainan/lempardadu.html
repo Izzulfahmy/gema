@@ -373,15 +373,6 @@
                     </div>
                 </div>
 
-                <!-- TOMBOL HITUNG KE GRAFIK -->
-                <div class="flex justify-center my-1">
-                    <button onclick="calculateDataToChart()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white p-3 sm:p-4 rounded-full border-2 border-emerald-600 border-b-4 ring-2 ring-emerald-200 group" title="Buat Grafik Secara Otomatis">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                    </button>
-                </div>
-
                 <!-- Grafik Batang -->
                 <div id="chart-container" class="bg-white rounded-3xl shadow-lg border-2 border-cyan-200 p-4 sm:p-6 relative overflow-hidden transition-all" style="display: none;">
                     <div class="absolute -right-5 -bottom-5 w-32 h-32 bg-cyan-50 rounded-full opacity-50 blur-xl"></div>
@@ -901,6 +892,8 @@
             document.getElementById('win-title').innerText = 'LUAR BIASA!';
             document.getElementById('win-desc').innerText = 'Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel turus dengan benar!';
             
+            calculateDataToChart(); // Automatically trigger the chart display after a successful check
+            
             const modalContainer = document.getElementById('win-modal-container');
             const winModal = document.getElementById('win-modal');
             
@@ -917,13 +910,10 @@
         }
 
         // ==========================================
-        // LOGIKA GRAFIK (DIHITUNG OLEH TOMBOL 🧮)
+        // LOGIKA GRAFIK 
         // ==========================================
         function calculateDataToChart() {
-            if (totalRolls === 0) {
-                showAlert("Data Kosong", "Kamu belum melempar dadu satupun! Lempar dulu ya.", "🎲");
-                return;
-            }
+            if (totalRolls === 0) return;
 
             frequencies = [0, 0, 0, 0, 0, 0];
             rollHistory.forEach(r => frequencies[r-1]++);
@@ -931,12 +921,18 @@
             updateChart();
             
             const chartCont = document.getElementById('chart-container');
-            chartCont.classList.add('ring-2', 'ring-emerald-400');
-            setTimeout(() => {
-                chartCont.classList.remove('ring-2', 'ring-emerald-400');
-            }, 1000);
             
-            chartCont.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Check settings to respect user's view preference
+            const viewValue = document.querySelector('input[name="view-setting"]:checked').value;
+            if (viewValue === 'both' || viewValue === 'chart') {
+                chartCont.style.display = 'block';
+                chartCont.classList.add('ring-2', 'ring-emerald-400');
+                setTimeout(() => {
+                    chartCont.classList.remove('ring-2', 'ring-emerald-400');
+                }, 1000);
+                
+                chartCont.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         function initChart() {
