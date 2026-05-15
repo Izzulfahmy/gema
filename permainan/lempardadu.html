@@ -41,7 +41,7 @@
 
     <style>
         /* =========================================
-           DICE 3D STYLES
+           DICE 3D STYLES (Diperkecil sedikit untuk UI compact)
            ========================================= */
         .dice-scene {
             width: 80px; 
@@ -111,6 +111,9 @@
         .face-5 .pip { background: #9c88ff; } .face-5 .p1 { grid-area: 1 / 1 / 2 / 2; } .face-5 .p2 { grid-area: 1 / 3 / 2 / 4; } .face-5 .p3 { grid-area: 2 / 2 / 3 / 3; } .face-5 .p4 { grid-area: 3 / 1 / 4 / 2; } .face-5 .p5 { grid-area: 3 / 3 / 4 / 4; }
         .face-6 .pip { background: #ff7f50; } .face-6 .p1 { grid-area: 1 / 1 / 2 / 2; } .face-6 .p2 { grid-area: 2 / 1 / 3 / 2; } .face-6 .p3 { grid-area: 3 / 1 / 4 / 2; } .face-6 .p4 { grid-area: 1 / 3 / 2 / 4; } .face-6 .p5 { grid-area: 2 / 3 / 3 / 4; } .face-6 .p6 { grid-area: 3 / 3 / 4 / 4; }
 
+        /* =========================================
+           TEMA GAMBAR BENTANG ALAM
+           ========================================= */
         .dice-img {
             position: absolute;
             top: 0; left: 0;
@@ -364,17 +367,8 @@
                     </div>
                 </div>
 
-                <!-- TOMBOL HITUNG KE GRAFIK -->
-                <div class="flex justify-center my-1">
-                    <button onclick="calculateDataToChart()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white p-3 sm:p-4 rounded-full border-2 border-emerald-600 border-b-4 ring-2 ring-emerald-200 group" title="Buat Grafik Secara Otomatis">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Grafik Batang -->
-                <div id="chart-container" class="bg-white rounded-3xl shadow-lg border-2 border-cyan-200 p-4 sm:p-6 relative overflow-hidden transition-all" style="display: none;">
+                <!-- Grafik Batang (Disembunyikan di awal, akan tampil setelah selesai mengisi tabel) -->
+                <div id="chart-container" class="bg-white rounded-3xl shadow-lg border-2 border-cyan-200 p-4 sm:p-6 relative overflow-hidden transition-all hidden">
                     <div class="absolute -right-5 -bottom-5 w-32 h-32 bg-cyan-50 rounded-full opacity-50 blur-xl"></div>
                     <div class="flex items-center justify-between mb-4 relative z-10">
                         <h2 class="text-lg sm:text-xl font-black text-cyan-700">Grafik Diagram Batang</h2>
@@ -385,7 +379,7 @@
                 </div>
 
                 <!-- Tabel Turus Manual -->
-                <div id="table-container" class="bg-white rounded-3xl shadow-lg border-2 border-pink-200 overflow-hidden transition-all" style="display: block;">
+                <div id="table-container" class="bg-white rounded-3xl shadow-lg border-2 border-pink-200 overflow-hidden transition-all block">
                     <div class="px-4 py-3 border-b-2 border-pink-100 bg-pink-50 flex justify-between items-center">
                         <h2 class="text-base sm:text-lg font-black text-pink-600">Papan Skor Turus</h2>
                     </div>
@@ -395,7 +389,7 @@
                             <thead class="bg-white text-pink-400 font-black border-b border-pink-100">
                                 <tr>
                                     <th scope="col" class="px-3 sm:px-4 py-2 w-16 sm:w-20 text-center border-r border-pink-50">Dadu</th>
-                                    <th scope="col" class="px-3 sm:px-4 py-2 min-w-[200px]">Banyaknya (Turus)</th>
+                                    <th scope="col" class="px-3 sm:px-4 py-2">Banyaknya (Turus)</th>
                                     <th scope="col" class="px-3 sm:px-4 py-2 text-center w-24 sm:w-28 border-l border-pink-50">Total Angka</th>
                                 </tr>
                             </thead>
@@ -498,7 +492,7 @@
         </div>
     </div>
 
-    <!-- MODAL CELEBRATION -->
+    <!-- MODAL CELEBRATION (Bisa Dipakai Banyak Hal) -->
     <div id="win-modal-container" class="fixed inset-0 z-[9990] hidden items-center justify-center">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="closeWinModal()"></div>
         <div class="relative bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-md w-[90%]" id="win-modal">
@@ -511,6 +505,7 @@
         </div>
     </div>
 
+    <!-- SATU-SATUNYA SCRIPT BLOCK UNTUK LOGIKA APLIKASI -->
     <script>
         let frequencies = [0, 0, 0, 0, 0, 0]; 
         let totalRolls = 0;
@@ -594,12 +589,16 @@
             const chartCont = document.getElementById('chart-container');
             const tableCont = document.getElementById('table-container');
 
+            // Cek pengaturan visual jika pengguna ingin mengkustomisasi
             if (viewValue === 'both') {
-                chartCont.style.display = 'block'; tableCont.style.display = 'block';
+                if (frequencies.some(f => f > 0)) chartCont.classList.remove('hidden');
+                tableCont.classList.remove('hidden');
             } else if (viewValue === 'chart') {
-                chartCont.style.display = 'block'; tableCont.style.display = 'none';
+                if (frequencies.some(f => f > 0)) chartCont.classList.remove('hidden');
+                tableCont.classList.add('hidden');
             } else if (viewValue === 'table') {
-                chartCont.style.display = 'none'; tableCont.style.display = 'block';
+                chartCont.classList.add('hidden');
+                tableCont.classList.remove('hidden');
             }
 
             const themeValue = document.querySelector('input[name="theme-setting"]:checked').value;
@@ -751,10 +750,9 @@
             }
             
             if(isCorrect) {
-                // Perayaan Jika Urutannya Benar
                 document.getElementById('win-icon').innerText = '🌟';
                 document.getElementById('win-title').innerText = 'HEBAT!';
-                document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi!';
+                document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi sesuai perintah!';
                 
                 const modalContainer = document.getElementById('win-modal-container');
                 const winModal = document.getElementById('win-modal');
@@ -788,7 +786,7 @@
                             <!-- Icon disuntikkan disini -->
                         </td>
                         <td class="px-3 sm:px-4 py-1.5">
-                            <div class="flex flex-col bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden w-full">
+                            <div class="flex flex-col bg-white rounded-lg shadow-sm border border-slate-200 w-full overflow-hidden">
                                 <div class="bg-slate-50 border-b border-slate-100 px-2 py-1 flex justify-between items-center">
                                     <div class="flex gap-1 shrink-0 ml-auto">
                                         <button onclick="updateDiceTally(${angka}, 1)" class="w-6 h-6 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded shadow-sm font-black text-sm flex items-center justify-center transition-colors" title="Tambah Turus">|</button>
@@ -797,7 +795,8 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="tally-display flex flex-wrap items-center min-h-[34px] p-2 gap-1.5" id="tally-disp-${angka}">
+                                <!-- Tempat Turus dengan Flex Wrap agar turun jika penuh -->
+                                <div class="tally-display flex flex-wrap items-center min-h-[34px] p-2 gap-1.5 w-full" id="tally-disp-${angka}">
                                     ${generateMiniTally(userTallies[i])}
                                 </div>
                             </div>
@@ -881,7 +880,7 @@
                     isTallyCorrect = false;
                 }
                 
-                // Cek Input Angka (Biar nggak pusing anak-anak, jika kosong dianggap 0)
+                // Cek Input Angka (Jika kosong dianggap 0)
                 const rawNumValue = document.getElementById(`num-input-${angka}`).value;
                 const numInput = rawNumValue === "" ? 0 : parseInt(rawNumValue);
 
@@ -903,9 +902,17 @@
             // Jika semua benar
             document.getElementById('win-icon').innerText = '🎉';
             document.getElementById('win-title').innerText = 'LUAR BIASA!';
-            document.getElementById('win-desc').innerText = 'Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel turus dengan benar!';
+            document.getElementById('win-desc').innerText = 'Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel turus dengan benar! Grafiknya sudah terbuka di atas!';
             
-            calculateDataToChart(); // Automatically trigger the chart display after a successful check
+            // Otomatis menampilkan dan memperbarui grafik saat benar
+            frequencies = [...actualFreqs];
+            updateChart();
+            
+            const chartCont = document.getElementById('chart-container');
+            chartCont.classList.remove('hidden');
+            chartCont.style.display = 'block';
+            chartCont.classList.add('ring-4', 'ring-emerald-400');
+            setTimeout(() => { chartCont.classList.remove('ring-4', 'ring-emerald-400'); }, 1500);
             
             const modalContainer = document.getElementById('win-modal-container');
             const winModal = document.getElementById('win-modal');
@@ -929,29 +936,6 @@
         // ==========================================
         // LOGIKA GRAFIK 
         // ==========================================
-        function calculateDataToChart() {
-            if (totalRolls === 0) return;
-
-            frequencies = [0, 0, 0, 0, 0, 0];
-            rollHistory.forEach(r => frequencies[r-1]++);
-
-            updateChart();
-            
-            const chartCont = document.getElementById('chart-container');
-            
-            // Check settings to respect user's view preference
-            const viewValue = document.querySelector('input[name="view-setting"]:checked').value;
-            if (viewValue === 'both' || viewValue === 'chart') {
-                chartCont.style.display = 'block';
-                chartCont.classList.add('ring-2', 'ring-emerald-400');
-                setTimeout(() => {
-                    chartCont.classList.remove('ring-2', 'ring-emerald-400');
-                }, 1000);
-                
-                chartCont.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-
         function initChart() {
             const ctx = document.getElementById('frequencyChart').getContext('2d');
             Chart.defaults.font.family = "'Nunito', sans-serif";
@@ -1135,7 +1119,7 @@
         }
 
         // ==========================================
-        // LOGIKA RESET DATA & LAIN-LAIN
+        // LOGIKA RESET DATA & ALERT
         // ==========================================
         function resetData() {
             if (totalRolls === 0) return;
@@ -1174,7 +1158,7 @@
             frequencies = [0, 0, 0, 0, 0, 0];
             totalRolls = 0;
             rollHistory = []; 
-            userTallies = [0, 0, 0, 0, 0, 0]; // Reset juga hitungan manual
+            userTallies = [0, 0, 0, 0, 0, 0]; 
 
             document.getElementById('total-rolls-badge').innerText = `0 Kali`;
             document.getElementById('result-text').innerHTML = `<span class="text-xs sm:text-sm font-bold text-indigo-500">Menunggu lemparan...</span>`;
@@ -1185,7 +1169,6 @@
             
             reRenderAllBoxes();
             
-            // Bersihkan Tabel
             for (let i = 1; i <= 6; i++) {
                 const inputNum = document.getElementById(`num-input-${i}`);
                 if(inputNum) inputNum.value = '';
@@ -1193,9 +1176,61 @@
                 if(tallyDisp) tallyDisp.innerHTML = generateMiniTally(0);
             }
 
-            applySettings(); 
+            // Sembunyikan Grafik jika Data Dihapus
+            document.getElementById('chart-container').classList.add('hidden');
+            
             updateChart(); 
             hideResetModal();
+        }
+
+        function showAlert(title, message, icon = '⚠️') {
+            const modal = document.getElementById('alert-modal');
+            const backdrop = document.getElementById('alert-modal-backdrop');
+            const content = document.getElementById('alert-modal-content');
+            
+            document.getElementById('alert-icon').innerText = icon;
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-message').innerText = message;
+            
+            modal.classList.remove('hidden'); 
+            modal.classList.add('flex');
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0'); backdrop.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeAlertModal() {
+            const modal = document.getElementById('alert-modal');
+            const backdrop = document.getElementById('alert-modal-backdrop');
+            const content = document.getElementById('alert-modal-content');
+            
+            backdrop.classList.remove('opacity-100'); backdrop.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { 
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex'); 
+            }, 300);
+        }
+
+        // Efek Konfeti Sederhana
+        function triggerConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.classList.remove('hidden');
+            const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+            
+            for(let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'absolute'; conf.style.width = '10px'; conf.style.height = '10px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
+                conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; conf.style.zIndex = '9998';
+                
+                const animDur = Math.random() * 2 + 2; 
+                conf.animate([{ transform: `translate3d(0,0,0) rotate(0deg)`, opacity: 1 }, { transform: `translate3d(${Math.random()*150 - 75}px, 100vh, 0) rotate(${Math.random()*720}deg)`, opacity: 0 }], { duration: animDur * 1000, easing: 'ease-out', fill: 'forwards' });
+                container.appendChild(conf); setTimeout(() => conf.remove(), animDur * 1000);
+            }
+            setTimeout(() => { container.classList.add('hidden'); }, 4000);
         }
 
         // ==========================================
@@ -1216,16 +1251,13 @@
         document.addEventListener('fullscreenchange', () => {
             const enterIcon = document.getElementById('fs-icon-enter');
             const exitIcon = document.getElementById('fs-icon-exit');
-            const fsText = document.getElementById('fs-text');
             
             if (document.fullscreenElement) {
                 enterIcon.classList.add('hidden');
                 exitIcon.classList.remove('hidden');
-                if(fsText) fsText.innerText = 'Keluar Penuh';
             } else {
                 enterIcon.classList.remove('hidden');
                 exitIcon.classList.add('hidden');
-                if(fsText) fsText.innerText = 'Layar Penuh';
             }
         });
     </script>
