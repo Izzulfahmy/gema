@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayo Main Lempar Dadu! 🎲</title>
+    <title>Ayo Main Lempar Dadu!</title>
     
     <!-- Favicon Logo -->
     <link rel="icon" href="../aset/Logo.png" type="image/png">
@@ -203,14 +203,19 @@
             animation: popInHistory 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
+        /* Drag styling for sortable items (Meningkatkan UX Mobile) */
         .sortable-ghost {
-            opacity: 0.4;
-            background-color: #f1f5f9;
+            opacity: 0.2;
+            background-color: #cbd5e1;
+            transform: scale(0.9);
+            border: 2px dashed #94a3b8;
         }
-        .sortable-drag {
+        .sortable-drag, .sortable-fallback {
             cursor: grabbing !important;
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: scale(1.1) rotate(5deg) !important;
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+            z-index: 9999 !important;
+            opacity: 1 !important;
         }
 
         /* Opsi Kuis Terpilih */
@@ -273,7 +278,7 @@
         
         <header class="mb-4 lg:mb-6 text-center pt-10 sm:pt-0 relative z-10">
             <h1 class="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight">
-                Ayo Main Lempar Dadu! 🎲
+                Ayo Main Lempar Dadu!
             </h1>
         </header>
 
@@ -388,7 +393,8 @@
                     </div>
                     <p class="text-[10px] sm:text-xs font-bold text-slate-500 mb-2" id="sort-instruction">Geser dadu di bawah dari yang <span class="text-orange-500 font-black">Terkecil</span> ke <span class="text-orange-500 font-black">Terbesar</span>!</p>
                     
-                    <div id="dice-sort-box" class="flex flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-orange-50 rounded-xl shadow-inner border border-orange-100 min-h-[100px] content-start cursor-move">
+                    <!-- Area Drag Drop dengan UX yang disesuaikan -->
+                    <div id="dice-sort-box" class="flex flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-orange-50 rounded-xl shadow-inner border border-orange-100 min-h-[100px] content-start">
                         <div class="text-slate-400 text-xs sm:text-sm font-bold w-full text-center mt-1 italic" id="empty-sort">
                             Tempat mengurutkan dadu.
                         </div>
@@ -626,11 +632,15 @@
             
             const sortBox = document.getElementById('dice-sort-box');
             sortableInstance = new Sortable(sortBox, {
-                animation: 200,
+                animation: 250, // Animasi drag drop
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
-                delay: 100, 
-                delayOnTouchOnly: true
+                forceFallback: true, // Gunakan fallback untuk UX Mobile yang lebih konsisten
+                fallbackClass: 'sortable-fallback',
+                fallbackOnBody: true,
+                delay: 150, // Tekan 150ms untuk mulai mendrag (mengatasi terdrag saat mau scroll)
+                delayOnTouchOnly: true,
+                touchStartThreshold: 5 // Batas gerak jari sebelum dianggap membatalkan drag (untuk layar sentuh)
             });
         });
 
@@ -717,13 +727,13 @@
 
         function getDiceHTMLContent(angka) {
             if (historyDisplayMode === 'number') {
-                return `<span class="text-lg sm:text-2xl font-black text-slate-700">${angka}</span>`;
+                return `<span class="text-lg sm:text-2xl font-black text-slate-700 pointer-events-none">${angka}</span>`;
             } else {
                 if (currentTheme === 'alam') {
-                    return `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-full h-full object-cover rounded-lg" onerror="this.style.display='none'">`;
+                    return `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-full h-full object-cover rounded-lg pointer-events-none" onerror="this.style.display='none'">`;
                 } else {
                     const idx = angka - 1;
-                    return `<span class="text-xl sm:text-2xl" style="color: ${diceColors[idx]}; line-height: 1;">${diceFacesTable[idx]}</span>`;
+                    return `<span class="text-xl sm:text-2xl pointer-events-none" style="color: ${diceColors[idx]}; line-height: 1;">${diceFacesTable[idx]}</span>`;
                 }
             }
         }
@@ -755,7 +765,8 @@
             currentSortOrder.forEach(angka => {
                 const diceDiv = document.createElement('div');
                 diceDiv.dataset.val = angka;
-                diceDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white cursor-move`;
+                // cursor-grab untuk indikator bisa didrag
+                diceDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white cursor-grab`;
                 diceDiv.innerHTML = getDiceHTMLContent(angka);
                 sortBox.appendChild(diceDiv);
             });
@@ -778,7 +789,7 @@
 
                 const sortDiv = document.createElement('div');
                 sortDiv.dataset.val = newAngka;
-                sortDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white cursor-move history-pop`;
+                sortDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white cursor-grab history-pop`;
                 sortDiv.innerHTML = getDiceHTMLContent(newAngka);
                 sortBox.appendChild(sortDiv);
 
@@ -830,7 +841,7 @@
             if(isCorrect) {
                 document.getElementById('win-icon').innerText = '🌟';
                 document.getElementById('win-title').innerText = 'PINTAR SEKALI!';
-                document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi! Tabel Turus sudah terbuka di bawah, ayo kita isi!';
+                document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi sesuai perintah!';
                 
                 document.getElementById('win-buttons').innerHTML = `
                     <button onclick="closeWinModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
@@ -855,7 +866,7 @@
                 modalContainer.classList.remove('hidden');
                 modalContainer.classList.add('flex');
                 setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
-                triggerConfetti(30); // Sedikit confeti
+                triggerConfetti(30); 
 
             } else {
                 showAlert("Belum Tepat", "Susunannya masih berantakan. Coba perhatikan lagi perintah urutannya ya!", "🧐");
