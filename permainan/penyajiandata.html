@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penyajian Data</title>
+    <title>Penyajian Data 📊</title>
     
     <!-- Favicon Logo -->
     <link rel="icon" href="../aset/Logo.png" type="image/png">
@@ -132,7 +132,6 @@
         }
     </style>
 </head>
-<!-- Mengubah overflow-hidden menjadi overflow-x-hidden agar layar dapat digulir ke bawah (scrollable) -->
 <body class="animated-bg min-h-screen w-screen overflow-x-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
 
     <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN -->
@@ -170,11 +169,10 @@
     </header>
 
     <!-- AREA UTAMA PERMAINAN -->
-    <!-- pb-20 agar scroll mentok tidak tertutup notifikasi -->
-    <main class="w-full flex-grow flex flex-col lg:flex-row p-3 sm:p-4 lg:p-6 pb-24 max-w-[1400px] mx-auto z-10 gap-4 sm:gap-6">
+    <main class="w-full flex-grow flex flex-col lg:flex-row p-3 sm:p-4 lg:p-6 pb-12 max-w-[1400px] mx-auto z-10 gap-4 sm:gap-6 min-h-0">
         
         <!-- BAGIAN KIRI: MEJA BELAJAR -->
-        <section class="flex flex-col w-full lg:w-7/12 min-h-[50vh] lg:min-h-full gap-2 sm:gap-3">
+        <section class="flex flex-col w-full lg:w-7/12 flex-grow lg:flex-grow-0 min-h-[40vh] lg:h-full gap-2 sm:gap-3">
             
             <div class="flex justify-between items-end shrink-0 px-1">
                 <h2 class="text-base sm:text-xl font-black text-sky-700 flex items-center gap-2">
@@ -211,7 +209,7 @@
             </h2>
             
             <!-- GRID 2x2 UNTUK KOTAK (Dirender secara dinamis oleh JS) -->
-            <div id="dropzones-container" class="grid grid-cols-2 gap-2 sm:gap-4 w-full flex-grow pb-4">
+            <div id="dropzones-container" class="grid grid-cols-2 gap-2 sm:gap-4 w-full flex-grow">
                 <!-- Dropzones dirender di sini -->
             </div>
 
@@ -222,11 +220,6 @@
         </section>
 
     </main>
-
-    <!-- NOTIFIKASI MENGAMBANG (STICKY BOTTOM ALERT) -->
-    <div class="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-white/90 backdrop-blur-md px-6 py-2.5 sm:py-3 rounded-full shadow-lg border-2 border-cyan-100 text-center min-w-[280px] transition-colors duration-300" id="log-container">
-        <span id="game-log" class="text-xs sm:text-sm font-bold text-slate-600 transition-colors duration-300">Tentukan pengaturan jenis & jumlah benda ⚙️</span>
-    </div>
 
     <!-- MODAL PENGATURAN -->
     <div id="settings-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center">
@@ -266,19 +259,38 @@
         </div>
     </div>
 
+    <!-- MODAL PERINGATAN (ALERT) -->
+    <div id="alert-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="alert-modal-backdrop" onclick="closeAlertModal()"></div>
+        <div class="relative bg-white rounded-[2rem] shadow-2xl border-4 border-rose-200 p-6 sm:p-8 max-w-sm w-[90%] transform scale-95 opacity-0 transition-all duration-300 text-center" id="alert-modal-content">
+            <div class="text-6xl mb-4">⚠️</div>
+            <h3 class="text-xl sm:text-2xl font-black text-rose-600 mb-2" id="alert-title">Peringatan</h3>
+            <p class="text-slate-600 font-bold text-sm sm:text-base mb-6" id="alert-message">Pesan peringatan di sini.</p>
+            <button onclick="closeAlertModal()" class="w-full py-3 bg-rose-500 hover:bg-rose-600 text-white font-black rounded-xl transition-colors border-2 border-rose-600 shadow-[0_4px_0_#be123c] active:shadow-[0_0px_0_#be123c] active:translate-y-1">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
     <!-- MODAL CELEBRATION (MUNCUL SAAT KLIK SELESAI DAN BENAR) -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
         <!-- Overlay Gelap -->
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="closeWinModal()"></div>
         
         <!-- Kotak Modal -->
-        <div class="relative bg-white/90 backdrop-blur-md p-8 sm:p-10 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-sm w-[90%]" id="win-modal">
+        <div class="relative bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-md w-[90%]" id="win-modal">
             <div class="text-7xl mb-4">🎉</div>
             <h2 class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-3 leading-tight">LUAR BIASA!</h2>
             <p class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kamu pintar sekali sudah berhasil merapikan dan mengelompokkan semuanya dengan benar!</p>
-            <button onclick="closeWinModal()" class="w-full py-3 sm:py-4 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-lg font-black rounded-2xl border-2 border-yellow-600 shadow-[0_4px_0_#b45309] active:shadow-[0_0px_0_#b45309] active:translate-y-1 transition-all">
-                Main Lagi!
-            </button>
+            
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="closeWinModal()" class="flex-1 py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-base font-black rounded-2xl border-2 border-yellow-600 shadow-[0_4px_0_#b45309] active:shadow-[0_0px_0_#b45309] active:translate-y-1 transition-all">
+                    🔄 Main Lagi
+                </button>
+                <button onclick="nextQuiz()" class="flex-1 py-3 bg-brand-500 hover:bg-brand-600 text-white text-base font-black rounded-2xl border-2 border-brand-600 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all">
+                    Lanjut Quiz ➡️
+                </button>
+            </div>
         </div>
     </div>
 
@@ -445,8 +457,6 @@
                     createItemElement(itemObj, box, globalIndex++);
                 }
             });
-            
-            setLog('Benda sudah diacak! Ayo rapikan ke dalam kotak yang benar. 🎯');
         }
 
         // ==========================================
@@ -456,7 +466,7 @@
             const item = document.createElement('div');
             item.className = 'school-item pop-animation flex items-center justify-center';
             item.innerHTML = itemObj.emoji; // Memasukkan teks emoji atau SVG
-            item.dataset.type = itemObj.id; // Pasang tipe (id) untuk mendeteksi dropzone
+            item.dataset.type = itemObj.id; // Pasang tipe (id) untuk mendeteksi dropzone saat validasi
 
             // Hitung posisi acak di dalam kotak meja (10% hingga 80% area aman)
             const randomX = Math.floor(Math.random() * 70) + 10;
@@ -571,29 +581,41 @@
         }
 
         // ==========================================
-        // FUNGSI NOTIFIKASI
+        // FUNGSI NOTIFIKASI (MODAL ALERT)
         // ==========================================
-        function setLog(message, isError = false) {
-            const logBox = document.getElementById('log-container');
-            const logText = document.getElementById('game-log');
+        function showAlert(title, message) {
+            const modal = document.getElementById('alert-modal');
+            const backdrop = document.getElementById('alert-modal-backdrop');
+            const content = document.getElementById('alert-modal-content');
             
-            logText.innerHTML = message;
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-message').innerText = message;
             
-            if (isError) {
-                logBox.classList.remove('bg-white/90', 'border-cyan-100');
-                logBox.classList.add('bg-rose-100', 'border-rose-400');
-                logText.classList.remove('text-slate-600');
-                logText.classList.add('text-rose-700');
-                
-                setTimeout(() => {
-                    logBox.classList.remove('bg-rose-100', 'border-rose-400');
-                    logBox.classList.add('bg-white/90', 'border-cyan-100');
-                    logText.classList.remove('text-rose-700');
-                    logText.classList.add('text-slate-600');
-                    // Reset pesan setelah error
-                    logText.innerHTML = 'Rapikan semua benda ke kotaknya! 📦';
-                }, 3500); // Tampil 3.5 detik
-            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeAlertModal() {
+            const modal = document.getElementById('alert-modal');
+            const backdrop = document.getElementById('alert-modal-backdrop');
+            const content = document.getElementById('alert-modal-content');
+            
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
         }
 
         // ==========================================
@@ -603,7 +625,7 @@
             // 1. Cek Apakah ada Benda di Meja Belajar
             const itemsOnTable = document.querySelectorAll('#item-box .school-item');
             if (itemsOnTable.length > 0) {
-                setLog('⚠️ Masih ada benda tersisa di meja! Pindahkan semuanya ke dalam kotak.', true);
+                showAlert('Belum Selesai!', 'Masih ada benda tersisa di meja! Pindahkan semuanya ke dalam kotak.');
                 return;
             }
 
@@ -621,12 +643,11 @@
             });
 
             if (!isAllCorrect) {
-                setLog('❌ Ups, sepertinya ada benda yang salah tempat! Coba cek lagi baik-baik.', true);
+                showAlert('Ada yang Salah!', 'Ups, sepertinya ada benda yang salah kotak! Coba periksa lagi baik-baik.');
                 return;
             }
 
             // JIKA SEMUA BENAR, MUNCULKAN PERAYAAN
-            setLog('Pekerjaan Bagus! 🌟');
             const modalContainer = document.getElementById('confetti-container');
             const winModal = document.getElementById('win-modal');
             
@@ -650,6 +671,10 @@
                 modalContainer.classList.add('hidden');
                 acakBenda(); // Reset game secara otomatis
             }, 300);
+        }
+
+        function nextQuiz() {
+            showAlert('Segera Hadir!', 'Fitur Lanjut Quiz sedang dalam pengembangan. Tunggu update selanjutnya ya! 🚀');
         }
 
         // Efek Konfeti JS Sederhana
