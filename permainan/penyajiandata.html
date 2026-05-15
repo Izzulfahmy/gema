@@ -131,6 +131,16 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
+        /* Input Number Hilangkan Panah (Spinners) */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
         /* Opsi Kuis Terpilih */
         .quiz-option.selected {
             background-color: #e0f2fe !important;
@@ -151,6 +161,19 @@
         /* Animasi Transisi Kuis */
         .quiz-step-container {
             transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        /* Custom Scrollbar untuk Turus */
+        .tally-display::-webkit-scrollbar {
+            height: 6px;
+        }
+        .tally-display::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+            border-radius: 4px;
+        }
+        .tally-display::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -195,7 +218,7 @@
                     <span id="meja-title">Meja Belajar</span>
                 </h2>
                 <button onclick="acakBenda()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-4 py-2 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all text-xs sm:text-sm tracking-widest uppercase border border-brand-600 flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> Acak Benda
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg Acak Benda>
                 </button>
             </div>
 
@@ -211,10 +234,12 @@
         <!-- BAGIAN KANAN: KOTAK PENGELOMPOKKAN -->
         <section class="flex flex-col w-full lg:w-5/12 gap-2 sm:gap-3 shrink-0 relative">
             <h2 class="text-base sm:text-xl font-black text-sky-700 flex items-center gap-2 px-2 shrink-0">
-                <span>📦</span> Kotak Kelompok
+                <span>📦</span> Kotak Kelompok & Hitung
             </h2>
+            <!-- GRID 2x2 UNTUK KOTAK (Dirender secara dinamis oleh JS) -->
             <div id="dropzones-container" class="grid grid-cols-2 gap-2 sm:gap-4 w-full flex-grow"></div>
 
+            <!-- TOMBOL SELESAI -->
             <button onclick="checkGameFinish()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl px-4 py-3 sm:py-4 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm sm:text-base tracking-widest uppercase border border-emerald-600 flex items-center justify-center gap-2 w-full mt-2">
                 ✅ Selesai
             </button>
@@ -276,7 +301,7 @@
         <div class="relative bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-md w-[90%]" id="win-modal">
             <div class="text-7xl mb-4">🎉</div>
             <h2 class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-3 leading-tight">LUAR BIASA!</h2>
-            <p class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kamu pintar sekali sudah berhasil merapikan dan mengelompokkan semuanya dengan benar!</p>
+            <p class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kerja Bagus! Kamu berhasil mengelompokkan, menggambar turus, dan menghitung semuanya dengan benar!</p>
             
             <div class="flex flex-col sm:flex-row gap-3">
                 <button onclick="closeWinModal()" class="flex-1 py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-base font-black rounded-2xl border-2 border-yellow-600 shadow-[0_4px_0_#b45309] active:shadow-[0_0px_0_#b45309] active:translate-y-1 transition-all">
@@ -340,16 +365,16 @@
 
         const themeConfigs = {
             'alat_tulis': [
-                { id: 'buku', emoji: '📚', name: 'Buku', classes: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', headerBorder: 'border-blue-200/50' } },
-                { id: 'penghapus', emoji: eraserSVG, name: 'Penghapus', classes: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700', headerBorder: 'border-pink-200/50' } },
-                { id: 'gunting', emoji: '✂️', name: 'Gunting', classes: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', headerBorder: 'border-emerald-200/50' } },
-                { id: 'pensil', emoji: '✏️', name: 'Pensil', classes: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', headerBorder: 'border-yellow-200/50' } }
+                { id: 'buku', emoji: '📚', name: 'Buku', classes: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', headerBorder: 'border-blue-200/50', btnBg: 'bg-blue-100', btnHover: 'hover:bg-blue-200', btnText: 'text-blue-700' } },
+                { id: 'penghapus', emoji: eraserSVG, name: 'Penghapus', classes: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700', headerBorder: 'border-pink-200/50', btnBg: 'bg-pink-100', btnHover: 'hover:bg-pink-200', btnText: 'text-pink-700' } },
+                { id: 'gunting', emoji: '✂️', name: 'Gunting', classes: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', headerBorder: 'border-emerald-200/50', btnBg: 'bg-emerald-100', btnHover: 'hover:bg-emerald-200', btnText: 'text-emerald-700' } },
+                { id: 'pensil', emoji: '✏️', name: 'Pensil', classes: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', headerBorder: 'border-yellow-200/50', btnBg: 'bg-yellow-100', btnHover: 'hover:bg-yellow-200', btnText: 'text-yellow-700' } }
             ],
             'buah_buahan': [
-                { id: 'apel', emoji: '🍎', name: 'Apel', classes: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', headerBorder: 'border-red-200/50' } },
-                { id: 'pisang', emoji: '🍌', name: 'Pisang', classes: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', headerBorder: 'border-yellow-200/50' } },
-                { id: 'jeruk', emoji: '🍊', name: 'Jeruk', classes: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', headerBorder: 'border-orange-200/50' } },
-                { id: 'anggur', emoji: '🍇', name: 'Anggur', classes: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', headerBorder: 'border-purple-200/50' } }
+                { id: 'apel', emoji: '🍎', name: 'Apel', classes: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', headerBorder: 'border-red-200/50', btnBg: 'bg-red-100', btnHover: 'hover:bg-red-200', btnText: 'text-red-700' } },
+                { id: 'pisang', emoji: '🍌', name: 'Pisang', classes: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', headerBorder: 'border-yellow-200/50', btnBg: 'bg-yellow-100', btnHover: 'hover:bg-yellow-200', btnText: 'text-yellow-700' } },
+                { id: 'jeruk', emoji: '🍊', name: 'Jeruk', classes: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', headerBorder: 'border-orange-200/50', btnBg: 'bg-orange-100', btnHover: 'hover:bg-orange-200', btnText: 'text-orange-700' } },
+                { id: 'anggur', emoji: '🍇', name: 'Anggur', classes: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', headerBorder: 'border-purple-200/50', btnBg: 'bg-purple-100', btnHover: 'hover:bg-purple-200', btnText: 'text-purple-700' } }
             ]
         };
 
@@ -369,6 +394,9 @@
             renderDropzones();
         });
 
+        // ==========================================
+        // FUNGSI RENDER DROPZONE (DENGAN INPUT TURUS & ANGKA)
+        // ==========================================
         function renderDropzones() {
             const container = document.getElementById('dropzones-container');
             container.innerHTML = '';
@@ -382,16 +410,78 @@
                     : `<span class="flex items-center gap-1.5">${item.emoji} ${item.name}</span>`;
 
                 container.innerHTML += `
-                    <div class="dropzone ${item.classes.bg} border-4 ${item.classes.border} rounded-2xl p-2 sm:p-3 flex flex-col min-h-[120px] sm:min-h-[160px]" data-type="${item.id}">
-                        <div class="flex justify-center items-center mb-2 border-b-2 ${item.classes.headerBorder} pb-2 shrink-0">
+                    <div class="dropzone ${item.classes.bg} border-4 ${item.classes.border} rounded-2xl p-2 flex flex-col h-full" data-type="${item.id}" data-tally="0">
+                        <div class="flex justify-center items-center mb-1 border-b-2 ${item.classes.headerBorder} pb-1 shrink-0">
                             <span class="font-black ${item.classes.text} text-xs sm:text-sm">${emojiDisplay}</span>
                         </div>
-                        <div class="drop-area flex-grow w-full relative"></div>
+                        
+                        <!-- Tempat benda dijatuhkan -->
+                        <div class="drop-area flex-grow w-full relative min-h-[50px] mb-2"></div>
+                        
+                        <!-- Area Input Manual -->
+                        <div class="mt-auto pt-2 border-t-2 ${item.classes.headerBorder} flex flex-col gap-2 shrink-0">
+                            
+                            <!-- Input Turus -->
+                            <div class="flex flex-col bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                                <div class="bg-slate-50 border-b border-slate-100 px-2 py-1 flex justify-between items-center">
+                                    <span class="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest">Turus</span>
+                                    <div class="flex gap-1 shrink-0">
+                                        <button onclick="updateTally('${item.id}', 1)" class="w-6 h-6 sm:w-7 sm:h-7 ${item.classes.btnBg} ${item.classes.btnHover} ${item.classes.btnText} rounded shadow-sm flex justify-center items-center font-black text-xs sm:text-sm transition-colors" title="Tambah Turus">|</button>
+                                        <button onclick="updateTally('${item.id}', -1)" class="w-6 h-6 sm:w-7 sm:h-7 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded shadow-sm flex justify-center items-center font-black transition-colors" title="Hapus Turus">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="tally-display flex items-center justify-start min-h-[30px] px-2 py-1 overflow-x-auto whitespace-nowrap" id="tally-disp-${item.id}">
+                                    ${generateMiniTally(0)}
+                                </div>
+                            </div>
+
+                            <!-- Input Angka -->
+                            <div class="flex items-center justify-between bg-white rounded-lg p-1 shadow-sm border border-slate-200">
+                                <span class="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1.5">Angka</span>
+                                <input type="number" min="0" placeholder="?" id="num-input-${item.id}" class="w-10 sm:w-12 h-7 sm:h-8 text-center font-black text-slate-700 bg-slate-50 border border-slate-200 rounded outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all text-sm sm:text-base">
+                            </div>
+                            
+                        </div>
                     </div>
                 `;
             });
         }
 
+        // Fungsi khusus untuk menggambar turus berukuran mini pada kotak input
+        function generateMiniTally(count) {
+            if (count === 0) return '<span class="text-slate-300 text-xs italic font-semibold">Kosong</span>'; 
+            let html = '<div class="flex items-center gap-1">';
+            let fullGroups = Math.floor(count / 5);
+            let remainder = count % 5;
+            const strokeColor = "#475569"; // slate-600
+            
+            const svg5 = `<svg width="18" height="18" viewBox="0 0 28 28" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><line x1="5" y1="4" x2="5" y2="24"/><line x1="10" y1="4" x2="10" y2="24"/><line x1="15" y1="4" x2="15" y2="24"/><line x1="20" y1="4" x2="20" y2="24"/><line x1="2" y1="24" x2="23" y2="4"/></svg>`;
+            const svg1 = `<svg width="5" height="18" viewBox="0 0 6 28" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" class="shrink-0"><line x1="3" y1="4" x2="3" y2="24"/></svg>`;
+
+            for (let i = 0; i < fullGroups; i++) html += svg5;
+            for (let i = 0; i < remainder; i++) html += svg1;
+            html += '</div>';
+            return html;
+        }
+
+        // Fungsi Memperbarui Jumlah Turus Saat Diklik
+        function updateTally(typeId, change) {
+            const dropzone = document.querySelector(`.dropzone[data-type="${typeId}"]`);
+            let currentTally = parseInt(dropzone.dataset.tally || "0");
+            currentTally += change;
+            
+            if(currentTally < 0) currentTally = 0; // Tidak boleh negatif
+            if(currentTally > 40) currentTally = 40; // Batas wajar
+            
+            dropzone.dataset.tally = currentTally;
+            document.getElementById(`tally-disp-${typeId}`).innerHTML = generateMiniTally(currentTally);
+        }
+
+        // ==========================================
+        // SETTING & ACAK BENDA
+        // ==========================================
         function openSettings() {
             const modal = document.getElementById('settings-modal');
             const backdrop = document.getElementById('settings-modal-backdrop');
@@ -431,7 +521,19 @@
             const emptyState = document.getElementById('empty-state');
             if(emptyState) emptyState.style.display = 'none';
 
+            // Bersihkan semua item yang ada
             document.querySelectorAll('.school-item').forEach(el => el.remove());
+            
+            // Reset state kotak-kotak (Turus & Angka)
+            document.querySelectorAll('.dropzone').forEach(zone => {
+                zone.dataset.tally = "0";
+                const type = zone.dataset.type;
+                const inputNum = document.getElementById(`num-input-${type}`);
+                if(inputNum) inputNum.value = '';
+                const tallyDisp = document.getElementById(`tally-disp-${type}`);
+                if(tallyDisp) tallyDisp.innerHTML = generateMiniTally(0);
+            });
+
             const itemsConfig = themeConfigs[currentTheme];
 
             let remainingItems = totalItemsConfig;
@@ -474,6 +576,9 @@
             container.appendChild(item);
         }
 
+        // ==========================================
+        // DRAG AND DROP
+        // ==========================================
         function handlePointerDown(e) {
             e.preventDefault(); 
             activeDrag = this;
@@ -562,8 +667,11 @@
             setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
         }
 
+        // ==========================================
+        // VALIDASI TOTAL (BENDA, TURUS, & ANGKA)
+        // ==========================================
         function checkGameFinish() {
-            // Validasi 0: Permainan belum dimulai (belum ada benda sama sekali di layar)
+            // Validasi 0: Permainan belum dimulai
             const allItems = document.querySelectorAll('.school-item');
             if (allItems.length === 0) {
                 showAlert('Belum Mulai!', 'Silakan pencet tombol "Acak Benda" terlebih dahulu ya! 🎲');
@@ -577,26 +685,55 @@
                 return;
             }
 
-            // Validasi 2: Kotak Salah
-            let isAllCorrect = true;
+            let isBoxCorrect = true;
+            let isNumberInputCorrect = true;
+            let isTallyInputCorrect = true;
+
             document.querySelectorAll('.dropzone').forEach(zone => {
                 const expectedType = zone.dataset.type;
                 const itemsInZone = zone.querySelectorAll('.school-item');
-                itemsInZone.forEach(item => { if (item.dataset.type !== expectedType) isAllCorrect = false; });
+                
+                // Cek Kotak (Apakah ada benda yang nyasar/salah kotak?)
+                itemsInZone.forEach(item => { if (item.dataset.type !== expectedType) isBoxCorrect = false; });
+                
+                const actualCount = itemsInZone.length;
+
+                // Cek Angka (Input Number)
+                const numInput = document.getElementById(`num-input-${expectedType}`);
+                const enteredNum = parseInt(numInput.value);
+                if (isNaN(enteredNum) || enteredNum !== actualCount) {
+                    isNumberInputCorrect = false;
+                }
+
+                // Cek Turus (Data attribute)
+                const enteredTally = parseInt(zone.dataset.tally || "0");
+                if (enteredTally !== actualCount) {
+                    isTallyInputCorrect = false;
+                }
             });
 
-            if (!isAllCorrect) {
-                showAlert('Ada yang Salah!', 'Ups, sepertinya ada benda yang salah dimasukkan ke dalam kotak. Coba periksa lagi!');
+            // Munculkan Peringatan Bertahap Berdasarkan Prioritas Error
+            if (!isBoxCorrect) {
+                showAlert('Ada yang Salah Kotak!', 'Ups, sepertinya ada benda yang salah dimasukkan ke dalam kotak. Coba periksa lagi kelompoknya!');
                 return;
             }
 
-            // Jika Berhasil: Kumpulkan data untuk Kuis
+            if (!isTallyInputCorrect) {
+                showAlert('Cek Turusnya!', 'Jumlah garis Turus yang kamu gambar belum sesuai dengan jumlah benda di dalam kotak. Yuk, hitung lagi!');
+                return;
+            }
+
+            if (!isNumberInputCorrect) {
+                showAlert('Cek Angkanya!', 'Kolom isian Angka masih ada yang kosong atau belum sesuai dengan jumlah bendanya lho. Jangan menyerah!');
+                return;
+            }
+
+            // Jika Semua Berhasil Benar:
             currentItemCounts = {};
             document.querySelectorAll('.dropzone').forEach(zone => {
                 currentItemCounts[zone.dataset.type] = zone.querySelectorAll('.school-item').length;
             });
 
-            // Munculkan Perayaan
             const modalContainer = document.getElementById('confetti-container');
             const winModal = document.getElementById('win-modal');
             
@@ -660,18 +797,16 @@
         }
 
         function openQuiz() {
-            // Tutup win modal
             document.getElementById('win-modal').classList.remove('scale-100');
             document.getElementById('win-modal').classList.add('scale-0');
             setTimeout(() => { document.getElementById('confetti-container').classList.add('hidden'); }, 300);
 
-            quizAnswers = { q1: null, q2: null, q3: null }; // Reset jawaban pengguna
-            currentQuizStep = 1; // Mulai dari step 1
+            quizAnswers = { q1: null, q2: null, q3: null }; 
+            currentQuizStep = 1; 
 
             const types = Object.keys(currentItemCounts);
             const itemsConfig = themeConfigs[currentTheme];
             
-            // Pertanyaan 1 & 2 Opsi (Nama Benda)
             const q1Container = document.getElementById('quiz-q1-options');
             const q2Container = document.getElementById('quiz-q2-options');
             q1Container.innerHTML = ''; q2Container.innerHTML = '';
@@ -696,24 +831,17 @@
             
             document.getElementById('quiz-q3-item').innerHTML = `${q3ItemTarget.emoji} ${q3ItemTarget.name}`;
             
-            // BUG FIXED: Cegah infinite loop jika nilai count kecil
             let q3Options = [q3ItemCount];
             let attempts = 0;
             while(q3Options.length < 4) {
                 attempts++;
-                let offset = Math.floor(Math.random() * 7) - 3; // range -3 to +3
+                let offset = Math.floor(Math.random() * 7) - 3; 
                 let randomWrong = q3ItemCount + offset;
                 
-                // Jika sulit menemukan nilai unik setelah banyak percobaan, gunakan random biasa 1-15
-                if (attempts > 15) {
-                    randomWrong = Math.floor(Math.random() * 15) + 1;
-                }
-
-                if (randomWrong > 0 && !q3Options.includes(randomWrong)) {
-                    q3Options.push(randomWrong);
-                }
+                if (attempts > 15) { randomWrong = Math.floor(Math.random() * 15) + 1; }
+                if (randomWrong > 0 && !q3Options.includes(randomWrong)) { q3Options.push(randomWrong); }
             }
-            q3Options.sort(() => Math.random() - 0.5); // Acak posisi
+            q3Options.sort(() => Math.random() - 0.5);
 
             const q3Container = document.getElementById('quiz-q3-options');
             q3Container.innerHTML = '';
@@ -725,7 +853,6 @@
                 q3Container.appendChild(btnQ3);
             });
 
-            // Tampilkan Modal Kuis dan inisialisasi UI Step
             updateQuizUI();
             const modal = document.getElementById('quiz-modal');
             const backdrop = document.getElementById('quiz-modal-backdrop');
@@ -740,23 +867,19 @@
 
         function nextQuizStep() {
             if (currentQuizStep === 1 && !quizAnswers.q1) {
-                showAlert('Belum Dijawab!', 'Pilih salah satu jawaban terlebih dahulu ya!');
-                return;
+                showAlert('Belum Dijawab!', 'Pilih salah satu jawaban terlebih dahulu ya!'); return;
             }
             if (currentQuizStep === 2 && !quizAnswers.q2) {
-                showAlert('Belum Dijawab!', 'Pilih salah satu jawaban terlebih dahulu ya!');
-                return;
+                showAlert('Belum Dijawab!', 'Pilih salah satu jawaban terlebih dahulu ya!'); return;
             }
             currentQuizStep++;
             updateQuizUI();
         }
 
         function selectOption(btnElement, questionKey, value) {
-            quizAnswers[questionKey] = value; // Simpan jawaban pengguna
-            // Hapus seleksi sebelumnya
+            quizAnswers[questionKey] = value; 
             const parent = btnElement.parentElement;
             parent.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
-            // Tambahkan seleksi ke tombol ini
             btnElement.classList.add('selected');
         }
 
@@ -766,47 +889,31 @@
                 return;
             }
 
-            // Pindah ke state Review (menampilkan semua pertanyaan sekaligus)
             currentQuizStep = 4;
             updateQuizUI();
 
-            // Hitung kebenaran
             let maxCount = -1; let minCount = 999;
             for (let t in currentItemCounts) {
                 if (currentItemCounts[t] > maxCount) maxCount = currentItemCounts[t];
                 if (currentItemCounts[t] < minCount) minCount = currentItemCounts[t];
             }
             
-            const q3ItemNameRaw = document.getElementById('quiz-q3-item').innerText.split(' ')[1]; // Dapat nama item
+            const q3ItemNameRaw = document.getElementById('quiz-q3-item').innerText.split(' ')[1];
             const q3TargetId = themeConfigs[currentTheme].find(i => i.name === q3ItemNameRaw).id;
             const q3CorrectCount = currentItemCounts[q3TargetId];
 
-            // Validasi & Tampilan Visual Benar/Salah
             const q1Btns = document.getElementById('quiz-q1-options').children;
             let q1Correct = currentItemCounts[quizAnswers.q1] === maxCount;
-            for(let btn of q1Btns) {
-                if(btn.classList.contains('selected')) {
-                    btn.classList.add(q1Correct ? 'correct' : 'wrong');
-                }
-            }
+            for(let btn of q1Btns) { if(btn.classList.contains('selected')) { btn.classList.add(q1Correct ? 'correct' : 'wrong'); } }
 
             const q2Btns = document.getElementById('quiz-q2-options').children;
             let q2Correct = currentItemCounts[quizAnswers.q2] === minCount;
-            for(let btn of q2Btns) {
-                if(btn.classList.contains('selected')) {
-                    btn.classList.add(q2Correct ? 'correct' : 'wrong');
-                }
-            }
+            for(let btn of q2Btns) { if(btn.classList.contains('selected')) { btn.classList.add(q2Correct ? 'correct' : 'wrong'); } }
 
             const q3Btns = document.getElementById('quiz-q3-options').children;
             let q3Correct = parseInt(quizAnswers.q3) === q3CorrectCount;
-            for(let btn of q3Btns) {
-                if(btn.classList.contains('selected')) {
-                    btn.classList.add(q3Correct ? 'correct' : 'wrong');
-                }
-            }
+            for(let btn of q3Btns) { if(btn.classList.contains('selected')) { btn.classList.add(q3Correct ? 'correct' : 'wrong'); } }
 
-            // Beri jeda 2.5 detik untuk pengguna melihat hasil review lalu tutup
             setTimeout(() => {
                 const modal = document.getElementById('quiz-modal');
                 const backdrop = document.getElementById('quiz-modal-backdrop');
@@ -820,14 +927,14 @@
                     
                     if(q1Correct && q2Correct && q3Correct) {
                         showAlert('Kuis Sempurna! 🏆', 'Semua jawaban kuis kamu Benar! Kamu sudah sangat menguasai materi Penyajian Data.');
-                        acakBenda(); // Selesai penuh, acak kembali
+                        acakBenda(); 
                     } else {
                         showAlert('Jangan Menyerah! 💪', 'Masih ada jawaban kuis yang kurang tepat. Ayo kita coba pisahkan benda dan berhitung lagi!');
                         acakBenda();
                     }
                 }, 300);
 
-            }, 2500); // Tampil 2.5 Detik
+            }, 2500); 
         }
 
         // Efek Konfeti Sederhana
