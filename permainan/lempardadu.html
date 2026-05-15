@@ -27,6 +27,9 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- SortableJS untuk Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <script>
         // Tangani Error Jika Gambar Tidak Ada
@@ -180,6 +183,17 @@
         .history-pop {
             animation: popInHistory 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
+
+        /* Drag styling for sortable items */
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #f1f5f9;
+        }
+        .sortable-drag {
+            cursor: grabbing !important;
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-cyan-100 via-blue-50 to-purple-100 min-h-screen text-slate-800 antialiased selection:bg-yellow-300">
@@ -219,7 +233,7 @@
                 Ayo Main Lempar Dadu! 🎲
             </h1>
             <p class="text-slate-600 text-base sm:text-xl font-bold max-w-2xl mx-auto bg-white/50 inline-block px-4 py-1.5 sm:px-6 sm:py-2 rounded-full shadow-sm border border-white">
-                Lempar dadunya dan Lihat grafiknya! ✨
+                Lempar dadunya, urutkan, lalu hitung jumlahnya! ✨
             </p>
         </header>
 
@@ -287,17 +301,24 @@
                 </button>
             </section>
 
-            <!-- KOLOM KANAN: Riwayat, Grafik & Tabel -->
+            <!-- KOLOM KANAN: Riwayat, Sortir, Grafik & Tabel -->
             <section class="lg:col-span-8 flex flex-col gap-6">
                 
                 <!-- Kotak Riwayat Dadu yang Dilempar -->
                 <div id="history-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-purple-200 p-4 sm:p-6 block relative overflow-hidden">
                     <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-lg sm:text-xl font-black text-purple-700 flex items-center gap-2">📦 Kotak Pengumpul Dadu</h2>
-                        <span class="text-xs font-bold text-purple-400 uppercase tracking-widest bg-purple-50 px-2 py-1 rounded-md border border-purple-100">Riwayat</span>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-lg sm:text-xl font-black text-purple-700">📦 Riwayat Dadu</h2>
+                            <span class="text-[10px] sm:text-xs font-bold text-purple-400 uppercase tracking-widest bg-purple-50 px-2 py-1 rounded-md border border-purple-100 hidden sm:inline-block">Masuk Ke Sini</span>
+                        </div>
+                        
+                        <!-- Toggle Mode Tampilan (Angka/Gambar) -->
+                        <button onclick="toggleHistoryMode()" class="bg-purple-50 hover:bg-purple-100 text-purple-600 px-3 py-1.5 rounded-xl font-black text-xs sm:text-sm transition-colors border-2 border-purple-200 shadow-sm flex items-center gap-1.5" title="Ubah Tampilan Angka / Dadu">
+                            <span id="display-mode-icon">1️⃣ Angka</span>
+                        </button>
                     </div>
                     
-                    <div id="dice-history-box" class="flex flex-wrap gap-2 sm:gap-3 max-h-[140px] overflow-y-auto p-3 sm:p-4 bg-purple-50 rounded-2xl shadow-inner border-2 border-purple-100 min-h-[90px] content-start">
+                    <div id="dice-history-box" class="flex flex-wrap gap-2 sm:gap-3 max-h-[120px] overflow-y-auto p-3 sm:p-4 bg-purple-50 rounded-2xl shadow-inner border-2 border-purple-100 min-h-[90px] content-start">
                         <!-- Pesan Kosong Default -->
                         <div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-history">
                             Belum ada dadu yang terkumpul. Lempar dadu sekarang!
@@ -305,8 +326,31 @@
                     </div>
                 </div>
 
+                <!-- Kotak Pengurutan Dadu Manual (Drag & Drop) -->
+                <div id="sort-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-orange-200 p-4 sm:p-6 block relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-lg sm:text-xl font-black text-orange-600 flex items-center gap-2">🔄 Urutkan Dadu</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm font-bold text-slate-500 mb-3">Geser (drag) dadu di bawah ini dari yang <span class="text-orange-500">Terkecil</span> ke <span class="text-orange-500">Terbesar</span>!</p>
+                    
+                    <div id="dice-sort-box" class="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-orange-50 rounded-2xl shadow-inner border-2 border-orange-100 min-h-[90px] content-start cursor-move">
+                        <div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-sort">
+                            Tempat mengurutkan dadu.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOMBOL HITUNG KE GRAFIK -->
+                <div class="flex justify-center my-2">
+                    <button onclick="calculateData()" class="bg-emerald-500 hover:bg-emerald-600 text-white p-4 sm:p-5 rounded-full shadow-[0_6px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all border-4 border-white ring-4 ring-emerald-200 group" title="Hitung dan Buat Grafik!">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-10 sm:w-10 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </button>
+                </div>
+
                 <!-- Grafik Batang -->
-                <div id="chart-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-cyan-300 p-6 sm:p-8 block relative overflow-hidden">
+                <div id="chart-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-cyan-300 p-6 sm:p-8 relative overflow-hidden transition-all" style="display: none;">
                     <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-50 rounded-full opacity-50 blur-2xl"></div>
                     <div class="flex items-center justify-between mb-6 relative z-10">
                         <div>
@@ -319,7 +363,7 @@
                 </div>
 
                 <!-- Tabel Turus -->
-                <div id="table-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-pink-300 overflow-hidden block">
+                <div id="table-container" class="bg-white rounded-[2rem] shadow-xl border-4 border-pink-300 overflow-hidden transition-all" style="display: none;">
                     <div class="px-4 sm:px-5 py-3 border-b-4 border-pink-100 bg-pink-50">
                         <h2 class="text-lg sm:text-xl font-black text-pink-600">Papan Skor Turus</h2>
                     </div>
@@ -363,7 +407,7 @@
             <div class="space-y-4">
                 <!-- Tampilan Layar -->
                 <div class="bg-indigo-50 p-4 rounded-xl border-2 border-indigo-100">
-                    <h4 class="font-bold text-indigo-800 mb-2">Tampilan Layar:</h4>
+                    <h4 class="font-bold text-indigo-800 mb-2">Tampilan Layar (Setelah Dihitung):</h4>
                     <label class="flex items-center gap-2 cursor-pointer mb-2 text-slate-700 font-semibold">
                         <input type="radio" name="view-setting" value="both" checked class="w-5 h-5 text-indigo-600 focus:ring-indigo-500" onchange="applySettings()"> Keduanya (Tabel & Grafik)
                     </label>
@@ -418,8 +462,12 @@
         let currentRotX = 0;
         let currentRotY = 0;
         let myChart = null; 
+        
         let currentTheme = 'angka'; 
-        let rollHistory = []; // Array untuk menyimpan urutan dadu yang keluar
+        let historyDisplayMode = 'icon'; // 'icon' (Muka dadu/Gambar) atau 'number' (Angka nominal)
+        
+        let rollHistory = []; // Array untuk menyimpan urutan dadu yang dilempar
+        let sortableInstance = null; // Menyimpan instance dari SortableJS
 
         // Warna dadu pelangi
         const diceColors = ['#ff4757', '#1e90ff', '#2ed573', '#ffa502', '#9c88ff', '#ff7f50'];
@@ -430,9 +478,18 @@
         const labelsAlam = ['Bandealit', 'Rembangan', 'Papuma', 'Bukit J88', "Cangak'an", 'Gambir'];
 
         document.addEventListener('DOMContentLoaded', () => {
-            renderTable();
             initChart();
-            renderHistory();
+            renderHistoryBoxes();
+            
+            // Inisialisasi Sortable.js untuk kotak pengurutan
+            const sortBox = document.getElementById('dice-sort-box');
+            sortableInstance = new Sortable(sortBox, {
+                animation: 200,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                delay: 100, // Menghindari drag tidak sengaja saat touch di mobile
+                delayOnTouchOnly: true
+            });
         });
 
         // ==========================================
@@ -472,16 +529,18 @@
 
         function applySettings() {
             const viewValue = document.querySelector('input[name="view-setting"]:checked').value;
-            const histCont = document.getElementById('history-container');
             const chartCont = document.getElementById('chart-container');
             const tableCont = document.getElementById('table-container');
 
-            if (viewValue === 'both') {
-                histCont.style.display = 'block'; chartCont.style.display = 'block'; tableCont.style.display = 'block';
-            } else if (viewValue === 'chart') {
-                histCont.style.display = 'block'; chartCont.style.display = 'block'; tableCont.style.display = 'none';
-            } else if (viewValue === 'table') {
-                histCont.style.display = 'none'; chartCont.style.display = 'none'; tableCont.style.display = 'block';
+            // Hanya menyembunyikan/menampilkan jika grafik/tabel sedang tampil
+            if (frequencies.some(f => f > 0)) {
+                if (viewValue === 'both') {
+                    chartCont.style.display = 'block'; tableCont.style.display = 'block';
+                } else if (viewValue === 'chart') {
+                    chartCont.style.display = 'block'; tableCont.style.display = 'none';
+                } else if (viewValue === 'table') {
+                    chartCont.style.display = 'none'; tableCont.style.display = 'block';
+                }
             }
 
             const themeValue = document.querySelector('input[name="theme-setting"]:checked').value;
@@ -501,49 +560,149 @@
             }
             
             renderTable();
-            renderHistory(); // Perbarui tampilan kotak riwayat jika tema diganti
+            reRenderAllBoxes(); // Re-render kotak riwayat dan urutkan agar sesuai tema
         }
 
         // ==========================================
-        // LOGIKA RIWAYAT DADU
+        // LOGIKA RIWAYAT DADU & PENGURUTAN (SORT)
         // ==========================================
-        function renderHistory() {
-            const historyBox = document.getElementById('dice-history-box');
+        
+        function toggleHistoryMode() {
+            historyDisplayMode = historyDisplayMode === 'icon' ? 'number' : 'icon';
+            const btnText = document.getElementById('display-mode-icon');
             
+            if (historyDisplayMode === 'number') {
+                btnText.innerHTML = '🎲 Dadu';
+            } else {
+                btnText.innerHTML = '1️⃣ Angka';
+            }
+            
+            reRenderAllBoxes();
+        }
+
+        // Mengembalikan HTML isi dadu (Bisa angka, gambar alam, atau pips dadu)
+        function getDiceHTMLContent(angka) {
+            if (historyDisplayMode === 'number') {
+                return `<span class="text-xl sm:text-3xl font-black text-slate-700">${angka}</span>`;
+            } else {
+                if (currentTheme === 'alam') {
+                    return `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-full h-full object-cover rounded-lg" onerror="this.style.display='none'">`;
+                } else {
+                    const idx = angka - 1;
+                    return `<span class="text-2xl sm:text-4xl" style="color: ${diceColors[idx]}; line-height: 1;">${diceFacesTable[idx]}</span>`;
+                }
+            }
+        }
+
+        // Fungsi khusus untuk me-render ulang kotak secara menyeluruh (digunakan saat ganti tema atau ganti toggle angka)
+        function reRenderAllBoxes() {
+            const historyBox = document.getElementById('dice-history-box');
+            const sortBox = document.getElementById('dice-sort-box');
+            
+            // Simpan urutan saat ini yang ada di sort-box sebelum dibersihkan
+            let currentSortOrder = [];
+            if (rollHistory.length > 0) {
+                currentSortOrder = Array.from(sortBox.children).map(el => parseInt(el.dataset.val));
+            }
+
+            historyBox.innerHTML = '';
+            sortBox.innerHTML = '';
+
             if (rollHistory.length === 0) {
-                historyBox.innerHTML = `
-                    <div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-history">
-                        Belum ada dadu yang terkumpul. Lempar dadu sekarang!
-                    </div>
-                `;
+                historyBox.innerHTML = `<div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-history">Belum ada dadu yang terkumpul.</div>`;
+                sortBox.innerHTML = `<div class="text-slate-400 text-sm sm:text-base font-bold w-full text-center mt-2 italic" id="empty-sort">Tempat mengurutkan dadu.</div>`;
                 return;
             }
 
-            historyBox.innerHTML = ''; // Bersihkan kontainer
-            
-            rollHistory.forEach((angka, index) => {
-                const isLastItem = (index === rollHistory.length - 1);
+            // Re-render History
+            rollHistory.forEach(angka => {
                 const diceDiv = document.createElement('div');
-                // Beri animasi "pop" untuk dadu yang paling baru dimasukkan
-                diceDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white ${isLastItem && isRolling ? 'history-pop' : ''}`;
-                
-                if (currentTheme === 'alam') {
-                    diceDiv.innerHTML = `<img src="../aset/lempar_dadu/bentang_alam/${angka}.jpeg" class="w-full h-full object-cover rounded-lg" onerror="this.style.display='none'">`;
-                } else {
-                    const idx = angka - 1;
-                    diceDiv.innerHTML = `<span class="text-2xl sm:text-4xl" style="color: ${diceColors[idx]}; line-height: 1;">${diceFacesTable[idx]}</span>`;
-                }
-                
+                diceDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white`;
+                diceDiv.innerHTML = getDiceHTMLContent(angka);
                 historyBox.appendChild(diceDiv);
             });
+
+            // Re-render Sort Box sesuai urutan anak-anak
+            currentSortOrder.forEach(angka => {
+                const diceDiv = document.createElement('div');
+                diceDiv.dataset.val = angka;
+                diceDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white cursor-move`;
+                diceDiv.innerHTML = getDiceHTMLContent(angka);
+                sortBox.appendChild(diceDiv);
+            });
+        }
+
+        // Dipanggil setiap kali dadu dilempar (menambahkan element saja tanpa re-render semua agar order tidak hilang)
+        function renderHistoryBoxes(newAngka = null) {
+            const historyBox = document.getElementById('dice-history-box');
+            const sortBox = document.getElementById('dice-sort-box');
+            const emptyHistory = document.getElementById('empty-history');
+            const emptySort = document.getElementById('empty-sort');
             
-            // Otomatis scroll ke bagian paling bawah agar selalu melihat dadu terbaru
-            historyBox.scrollTop = historyBox.scrollHeight;
+            if (emptyHistory) emptyHistory.remove();
+            if (emptySort) emptySort.remove();
+
+            if (newAngka !== null) {
+                // Tambah ke History
+                const histDiv = document.createElement('div');
+                histDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white history-pop`;
+                histDiv.innerHTML = getDiceHTMLContent(newAngka);
+                historyBox.appendChild(histDiv);
+
+                // Tambah ke Sort Box
+                const sortDiv = document.createElement('div');
+                sortDiv.dataset.val = newAngka;
+                sortDiv.className = `w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 bg-white cursor-move history-pop`;
+                sortDiv.innerHTML = getDiceHTMLContent(newAngka);
+                sortBox.appendChild(sortDiv);
+
+                // Scroll
+                historyBox.scrollTop = historyBox.scrollHeight;
+                sortBox.scrollTop = sortBox.scrollHeight;
+            }
         }
 
         // ==========================================
-        // LOGIKA TABEL & GRAFIK
+        // LOGIKA TABEL & GRAFIK (DIHITUNG MANUAL OLEH TOMBOL)
         // ==========================================
+        function calculateData() {
+            if (totalRolls === 0) {
+                alert("Kamu belum melempar dadu satupun! Lempar dulu ya. 🎲");
+                return;
+            }
+
+            // Hitung frekuensi berdasarkan riwayat
+            frequencies = [0, 0, 0, 0, 0, 0];
+            rollHistory.forEach(r => frequencies[r-1]++);
+
+            // Tampilkan komponen
+            const viewValue = document.querySelector('input[name="view-setting"]:checked').value;
+            const chartCont = document.getElementById('chart-container');
+            const tableCont = document.getElementById('table-container');
+
+            if (viewValue === 'both') {
+                chartCont.style.display = 'block'; tableCont.style.display = 'block';
+            } else if (viewValue === 'chart') {
+                chartCont.style.display = 'block'; tableCont.style.display = 'none';
+            } else if (viewValue === 'table') {
+                chartCont.style.display = 'none'; tableCont.style.display = 'block';
+            }
+
+            // Beri efek highlight
+            chartCont.classList.add('ring-4', 'ring-emerald-400');
+            tableCont.classList.add('ring-4', 'ring-emerald-400');
+            setTimeout(() => {
+                chartCont.classList.remove('ring-4', 'ring-emerald-400');
+                tableCont.classList.remove('ring-4', 'ring-emerald-400');
+            }, 1000);
+
+            renderTable();
+            updateChart();
+            
+            // Scroll ke bawah agar hasil terlihat
+            chartCont.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
         function generateTallyMarks(count) {
             if (count === 0) return ''; 
             let html = '<div class="flex flex-wrap gap-1.5 items-center py-0.5 min-h-[28px]">';
@@ -583,7 +742,7 @@
                     labels: currentTheme === 'alam' ? labelsAlam : labelsAngka,
                     datasets: [{
                         label: 'Frekuensi',
-                        data: frequencies,
+                        data: frequencies, // Data masih 0 di awal
                         backgroundColor: [
                             'rgba(255, 71, 87, 0.8)', 'rgba(30, 144, 255, 0.8)', 'rgba(46, 213, 115, 0.8)', 
                             'rgba(255, 165, 2, 0.8)', 'rgba(156, 136, 255, 0.8)', 'rgba(255, 127, 80, 0.8)'
@@ -663,12 +822,6 @@
             document.getElementById('total-rolls-badge').innerText = `${totalRolls} Kali`;
         }
 
-        function highlightRow(angka) {
-            const row = document.getElementById(`row-${angka}`);
-            row.classList.add('bg-pink-100'); 
-            setTimeout(() => { row.classList.remove('bg-pink-100'); }, 800);
-        }
-
         // ==========================================
         // LOGIKA LEMPAR DADU CINEMATIC
         // ==========================================
@@ -730,19 +883,17 @@
 
                 // Simpan Riwayat
                 rollHistory.push(angkaKeluar);
-                
-                frequencies[finalResultIndex]++;
                 totalRolls++;
+                document.getElementById('total-rolls-badge').innerText = `${totalRolls} Kali`;
                 
-                renderHistory(); // Refresh kotak riwayat dadu
-                renderTable();
-                highlightRow(angkaKeluar);
-                updateChart(); 
+                // Masukkan ke Kotak Riwayat & Urutkan
+                renderHistoryBoxes(angkaKeluar);
 
-                // Izinkan melempar lagi tanpa isRolling halangan
+                // Hilangkan auto-update grafik/tabel (Sekarang diurus oleh tombol hitung)
+
                 rollBtn.disabled = false;
                 rollBtn.innerHTML = `🚀 LEMPAR DADU!`;
-                // Set timeout sangat kecil sebelum melepaskan lock agar animasi history terlihat
+                
                 setTimeout(() => { isRolling = false; }, 100);
                 
             }, 1600); 
@@ -787,14 +938,19 @@
         function confirmResetData() {
             frequencies = [0, 0, 0, 0, 0, 0];
             totalRolls = 0;
-            rollHistory = []; // Kosongkan riwayat
+            rollHistory = []; 
+            document.getElementById('total-rolls-badge').innerText = `0 Kali`;
             
             document.getElementById('result-text').innerHTML = `<span class="text-sm sm:text-base font-bold text-indigo-400">Pencet tombol di bawah 👇</span>`;
             currentRotX = 0;
             currentRotY = 0;
             document.getElementById('dice-cube').style.transform = `rotateX(0deg) rotateY(0deg)`;
             
-            renderHistory();
+            reRenderAllBoxes();
+            
+            document.getElementById('chart-container').style.display = 'none';
+            document.getElementById('table-container').style.display = 'none';
+            
             renderTable();
             updateChart(); 
             hideResetModal();
