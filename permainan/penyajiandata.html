@@ -132,7 +132,8 @@
         }
     </style>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
+<!-- Mengubah overflow-hidden menjadi overflow-x-hidden agar layar dapat digulir ke bawah (scrollable) -->
+<body class="animated-bg min-h-screen w-screen overflow-x-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
 
     <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN -->
     <header class="w-full flex justify-between items-center p-3 sm:p-5 z-[100] relative shrink-0">
@@ -169,14 +170,20 @@
     </header>
 
     <!-- AREA UTAMA PERMAINAN -->
-    <main class="w-full flex-grow flex flex-col lg:flex-row p-3 sm:p-4 lg:p-6 max-w-[1400px] mx-auto z-10 gap-4 sm:gap-6 min-h-0">
+    <!-- pb-20 agar scroll mentok tidak tertutup notifikasi -->
+    <main class="w-full flex-grow flex flex-col lg:flex-row p-3 sm:p-4 lg:p-6 pb-24 max-w-[1400px] mx-auto z-10 gap-4 sm:gap-6">
         
         <!-- BAGIAN KIRI: MEJA BELAJAR -->
-        <section class="flex flex-col w-full lg:w-7/12 flex-grow lg:flex-grow-0 min-h-[40vh] lg:h-full gap-2 sm:gap-3">
+        <section class="flex flex-col w-full lg:w-7/12 min-h-[50vh] lg:min-h-full gap-2 sm:gap-3">
             
             <div class="flex justify-between items-end shrink-0 px-1">
                 <h2 class="text-base sm:text-xl font-black text-sky-700 flex items-center gap-2">
-                    <span>🪑</span> <span id="meja-title">Meja Belajar</span>
+                    <span class="flex items-center text-sky-500 drop-shadow-sm">
+                        <svg class="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="currentColor">
+                           <path d="M2 8h20v4H2zM4 12h3v10H4zM17 12h3v10h-3z"/>
+                        </svg>
+                    </span> 
+                    <span id="meja-title">Meja Belajar</span>
                 </h2>
                 <!-- TOMBOL ACAK -->
                 <button onclick="acakBenda()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-4 py-2 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all text-xs sm:text-sm tracking-widest uppercase border border-brand-600 flex items-center gap-1.5">
@@ -187,7 +194,7 @@
 
             <!-- KOTAK BESAR (TEMPAT BENDA MUNCUL) -->
             <div class="bg-white/80 backdrop-blur-sm p-1.5 sm:p-3 rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl border-4 border-white flex-grow flex flex-col relative overflow-hidden">
-                <div id="item-box" class="box-container bg-slate-50/80 rounded-[1rem] overflow-hidden shadow-inner border-2 border-slate-200">
+                <div id="item-box" class="box-container bg-slate-50/80 rounded-[1rem] overflow-hidden shadow-inner border-2 border-slate-200 min-h-[300px]">
                     <!-- Benda-benda akan dimunculkan di sini oleh JS -->
                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none" id="empty-state">
                         <p class="text-slate-400 font-bold text-center px-4 text-xs sm:text-base">Pencet "Acak Benda" lalu geser benda ke kotak di samping! 👉</p>
@@ -198,23 +205,28 @@
         </section>
 
         <!-- BAGIAN KANAN: KOTAK PENGELOMPOKKAN -->
-        <section class="flex flex-col w-full lg:w-5/12 h-auto lg:h-full gap-2 sm:gap-3 shrink-0 lg:shrink relative">
+        <section class="flex flex-col w-full lg:w-5/12 gap-2 sm:gap-3 shrink-0 relative">
             <h2 class="text-base sm:text-xl font-black text-sky-700 flex items-center gap-2 px-2 shrink-0">
                 <span>📦</span> Kotak Kelompok
             </h2>
             
             <!-- GRID 2x2 UNTUK KOTAK (Dirender secara dinamis oleh JS) -->
-            <div id="dropzones-container" class="grid grid-cols-2 gap-2 sm:gap-4 w-full flex-grow lg:overflow-y-auto pb-4">
+            <div id="dropzones-container" class="grid grid-cols-2 gap-2 sm:gap-4 w-full flex-grow pb-4">
                 <!-- Dropzones dirender di sini -->
             </div>
 
             <!-- TOMBOL SELESAI -->
-            <button onclick="finishGame()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl px-4 py-3 sm:py-4 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm sm:text-base tracking-widest uppercase border border-emerald-600 flex items-center justify-center gap-2 mt-auto shrink-0 w-full">
+            <button onclick="finishGame()" class="toy-btn bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl px-4 py-3 sm:py-4 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm sm:text-base tracking-widest uppercase border border-emerald-600 flex items-center justify-center gap-2 w-full mt-2">
                 ✅ Selesai
             </button>
         </section>
 
     </main>
+
+    <!-- NOTIFIKASI MENGAMBANG (STICKY BOTTOM ALERT) -->
+    <div class="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-white/90 backdrop-blur-md px-6 py-2.5 sm:py-3 rounded-full shadow-lg border-2 border-cyan-100 text-center min-w-[280px] transition-colors duration-300" id="log-container">
+        <span id="game-log" class="text-xs sm:text-sm font-bold text-slate-600 transition-colors duration-300">Tentukan pengaturan jenis & jumlah benda ⚙️</span>
+    </div>
 
     <!-- MODAL PENGATURAN -->
     <div id="settings-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center">
@@ -254,7 +266,7 @@
         </div>
     </div>
 
-    <!-- MODAL CELEBRATION (MUNCUL SAAT KLIK SELESAI) -->
+    <!-- MODAL CELEBRATION (MUNCUL SAAT KLIK SELESAI DAN BENAR) -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
         <!-- Overlay Gelap -->
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="closeWinModal()"></div>
@@ -263,7 +275,7 @@
         <div class="relative bg-white/90 backdrop-blur-md p-8 sm:p-10 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-sm w-[90%]" id="win-modal">
             <div class="text-7xl mb-4">🎉</div>
             <h2 class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-3 leading-tight">LUAR BIASA!</h2>
-            <p class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kamu pintar sekali sudah berhasil merapikan dan menghitung semuanya!</p>
+            <p class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kamu pintar sekali sudah berhasil merapikan dan mengelompokkan semuanya dengan benar!</p>
             <button onclick="closeWinModal()" class="w-full py-3 sm:py-4 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-lg font-black rounded-2xl border-2 border-yellow-600 shadow-[0_4px_0_#b45309] active:shadow-[0_0px_0_#b45309] active:translate-y-1 transition-all">
                 Main Lagi!
             </button>
@@ -285,16 +297,16 @@
         // Konfigurasi Tema (Benda dan Warna Kotak)
         const themeConfigs = {
             'alat_tulis': [
-                { id: 'buku', emoji: '📚', name: 'Buku', classes: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badgeBg: 'bg-white', badgeText: 'text-blue-600', badgeBorder: 'border-blue-100', headerBorder: 'border-blue-200/50' } },
-                { id: 'penghapus', emoji: eraserSVG, name: 'Penghapus', classes: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700', badgeBg: 'bg-white', badgeText: 'text-pink-600', badgeBorder: 'border-pink-100', headerBorder: 'border-pink-200/50' } },
-                { id: 'gunting', emoji: '✂️', name: 'Gunting', classes: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', badgeBg: 'bg-white', badgeText: 'text-emerald-600', badgeBorder: 'border-emerald-100', headerBorder: 'border-emerald-200/50' } },
-                { id: 'pensil', emoji: '✏️', name: 'Pensil', classes: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', badgeBg: 'bg-white', badgeText: 'text-yellow-600', badgeBorder: 'border-yellow-100', headerBorder: 'border-yellow-200/50' } }
+                { id: 'buku', emoji: '📚', name: 'Buku', classes: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', headerBorder: 'border-blue-200/50' } },
+                { id: 'penghapus', emoji: eraserSVG, name: 'Penghapus', classes: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700', headerBorder: 'border-pink-200/50' } },
+                { id: 'gunting', emoji: '✂️', name: 'Gunting', classes: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', headerBorder: 'border-emerald-200/50' } },
+                { id: 'pensil', emoji: '✏️', name: 'Pensil', classes: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', headerBorder: 'border-yellow-200/50' } }
             ],
             'buah_buahan': [
-                { id: 'apel', emoji: '🍎', name: 'Apel', classes: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', badgeBg: 'bg-white', badgeText: 'text-red-600', badgeBorder: 'border-red-100', headerBorder: 'border-red-200/50' } },
-                { id: 'pisang', emoji: '🍌', name: 'Pisang', classes: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', badgeBg: 'bg-white', badgeText: 'text-yellow-600', badgeBorder: 'border-yellow-100', headerBorder: 'border-yellow-200/50' } },
-                { id: 'jeruk', emoji: '🍊', name: 'Jeruk', classes: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', badgeBg: 'bg-white', badgeText: 'text-orange-600', badgeBorder: 'border-orange-100', headerBorder: 'border-orange-200/50' } },
-                { id: 'anggur', emoji: '🍇', name: 'Anggur', classes: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', badgeBg: 'bg-white', badgeText: 'text-purple-600', badgeBorder: 'border-purple-100', headerBorder: 'border-purple-200/50' } }
+                { id: 'apel', emoji: '🍎', name: 'Apel', classes: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', headerBorder: 'border-red-200/50' } },
+                { id: 'pisang', emoji: '🍌', name: 'Pisang', classes: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700', headerBorder: 'border-yellow-200/50' } },
+                { id: 'jeruk', emoji: '🍊', name: 'Jeruk', classes: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', headerBorder: 'border-orange-200/50' } },
+                { id: 'anggur', emoji: '🍇', name: 'Anggur', classes: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', headerBorder: 'border-purple-200/50' } }
             ]
         };
 
@@ -330,13 +342,12 @@
 
                 container.innerHTML += `
                     <div class="dropzone ${item.classes.bg} border-4 ${item.classes.border} rounded-2xl p-2 sm:p-3 flex flex-col min-h-[120px] sm:min-h-[160px]" data-type="${item.id}">
-                        <div class="flex justify-between items-center mb-2 border-b-2 ${item.classes.headerBorder} pb-2 shrink-0">
+                        <div class="flex justify-center items-center mb-2 border-b-2 ${item.classes.headerBorder} pb-2 shrink-0">
                             <span class="font-black ${item.classes.text} text-xs sm:text-sm">
                                 ${emojiDisplay}
                             </span>
-                            <span class="count-badge ${item.classes.badgeBg} ${item.classes.badgeText} font-black px-2 py-0.5 rounded-lg text-xs shadow-sm border ${item.classes.badgeBorder}">0</span>
                         </div>
-                        <div class="drop-area flex-grow w-full"></div>
+                        <div class="drop-area flex-grow w-full relative"></div>
                     </div>
                 `;
             });
@@ -434,8 +445,8 @@
                     createItemElement(itemObj, box, globalIndex++);
                 }
             });
-
-            updateCounts();
+            
+            setLog('Benda sudah diacak! Ayo rapikan ke dalam kotak yang benar. 🎯');
         }
 
         // ==========================================
@@ -489,14 +500,13 @@
             activeDrag.style.left = e.clientX - offsetX + 'px';
             activeDrag.style.top = e.clientY - offsetY + 'px';
             
+            // Hapus CSS status dalam kotak jika sebelumnya ada di kotak
             activeDrag.classList.remove('in-box');
             activeDrag.classList.add('dragging');
 
             document.addEventListener('pointermove', handlePointerMove);
             document.addEventListener('pointerup', handlePointerUp);
             document.addEventListener('pointercancel', handlePointerUp);
-            
-            updateCounts();
         }
 
         function handlePointerMove(e) {
@@ -524,20 +534,22 @@
             let dropzone = elemBelow ? elemBelow.closest('.dropzone') : null;
 
             if (dropzone) {
-                if (dropzone.dataset.type === activeDrag.dataset.type) {
-                    // Masuk kotak dengan jenis yang benar
-                    let dropArea = dropzone.querySelector('.drop-area');
-                    activeDrag.classList.add('in-box'); 
-                    dropArea.appendChild(activeDrag);
-                } else {
-                    kembalikanKeMeja(activeDrag, e.clientX, e.clientY);
-                }
+                // BEBAS MASUK KOTAK (Tanpa mempedulikan jenis bendanya)
+                let dropArea = dropzone.querySelector('.drop-area');
+                activeDrag.classList.add('in-box');
+                
+                // Menghapus properti fixed position agar elemen mengalir secara flex
+                activeDrag.style.position = '';
+                activeDrag.style.left = '';
+                activeDrag.style.top = '';
+                
+                dropArea.appendChild(activeDrag);
             } else {
+                // Jika meleset dari dropzone, kembalikan ke meja
                 kembalikanKeMeja(activeDrag, e.clientX, e.clientY);
             }
 
             activeDrag = null;
-            updateCounts(); 
         }
 
         function kembalikanKeMeja(item, clientX, clientY) {
@@ -548,6 +560,7 @@
             let relX = clientX - offsetX - boxRect.left;
             let relY = clientY - offsetY - boxRect.top;
             
+            // Mencegah benda melayang di luar meja
             relX = Math.max(10, Math.min(relX, boxRect.width - 40)); 
             relY = Math.max(10, Math.min(relY, boxRect.height - 40));
 
@@ -558,25 +571,62 @@
         }
 
         // ==========================================
-        // FUNGSI UPDATE HITUNGAN BENDA
+        // FUNGSI NOTIFIKASI
         // ==========================================
-        function updateCounts() {
-            document.querySelectorAll('.dropzone').forEach(zone => {
-                const count = zone.querySelector('.drop-area').children.length;
-                const badge = zone.querySelector('.count-badge');
-                badge.innerText = count;
+        function setLog(message, isError = false) {
+            const logBox = document.getElementById('log-container');
+            const logText = document.getElementById('game-log');
+            
+            logText.innerHTML = message;
+            
+            if (isError) {
+                logBox.classList.remove('bg-white/90', 'border-cyan-100');
+                logBox.classList.add('bg-rose-100', 'border-rose-400');
+                logText.classList.remove('text-slate-600');
+                logText.classList.add('text-rose-700');
                 
-                badge.classList.remove('scale-125');
-                void badge.offsetWidth; // Reflow
-                if(count > 0) badge.classList.add('scale-125', 'transition-transform');
-                setTimeout(() => badge.classList.remove('scale-125'), 200);
-            });
+                setTimeout(() => {
+                    logBox.classList.remove('bg-rose-100', 'border-rose-400');
+                    logBox.classList.add('bg-white/90', 'border-cyan-100');
+                    logText.classList.remove('text-rose-700');
+                    logText.classList.add('text-slate-600');
+                    // Reset pesan setelah error
+                    logText.innerHTML = 'Rapikan semua benda ke kotaknya! 📦';
+                }, 3500); // Tampil 3.5 detik
+            }
         }
 
         // ==========================================
-        // FUNGSI SELESAI & PERAYAAN
+        // FUNGSI SELESAI & VALIDASI
         // ==========================================
         function finishGame() {
+            // 1. Cek Apakah ada Benda di Meja Belajar
+            const itemsOnTable = document.querySelectorAll('#item-box .school-item');
+            if (itemsOnTable.length > 0) {
+                setLog('⚠️ Masih ada benda tersisa di meja! Pindahkan semuanya ke dalam kotak.', true);
+                return;
+            }
+
+            // 2. Cek Apakah benda dimasukkan ke kotak yang benar
+            let isAllCorrect = true;
+            document.querySelectorAll('.dropzone').forEach(zone => {
+                const expectedType = zone.dataset.type;
+                const itemsInZone = zone.querySelectorAll('.school-item');
+                
+                itemsInZone.forEach(item => {
+                    if (item.dataset.type !== expectedType) {
+                        isAllCorrect = false;
+                    }
+                });
+            });
+
+            if (!isAllCorrect) {
+                setLog('❌ Ups, sepertinya ada benda yang salah tempat! Coba cek lagi baik-baik.', true);
+                return;
+            }
+
+            // JIKA SEMUA BENAR, MUNCULKAN PERAYAAN
+            setLog('Pekerjaan Bagus! 🌟');
             const modalContainer = document.getElementById('confetti-container');
             const winModal = document.getElementById('win-modal');
             
@@ -598,7 +648,7 @@
             
             setTimeout(() => {
                 modalContainer.classList.add('hidden');
-                acakBenda(); // Reset game
+                acakBenda(); // Reset game secara otomatis
             }, 300);
         }
 
