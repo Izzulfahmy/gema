@@ -119,6 +119,17 @@
             align-content: flex-start;
             gap: 4px;
         }
+
+        /* Slider Custom */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #0284c7;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
@@ -126,10 +137,21 @@
     <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN -->
     <header class="w-full flex justify-between items-center p-3 sm:p-5 z-[100] relative shrink-0">
         
-        <!-- Tombol Home (Kiri) -->
-        <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-        </a>
+        <!-- Kumpulan Tombol Kiri (Home & Pengaturan) -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Tombol Home -->
+            <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            </a>
+
+            <!-- Tombol Pengaturan -->
+            <button onclick="openSettings()" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Pengaturan">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+        </div>
 
         <!-- Judul (Tengah) -->
         <div class="absolute left-1/2 -translate-x-1/2 pointer-events-none text-center">
@@ -234,6 +256,32 @@
 
     </main>
 
+    <!-- MODAL PENGATURAN -->
+    <div id="settings-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-sky-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="settings-modal-backdrop" onclick="closeSettings()"></div>
+        <div class="relative bg-white rounded-[2rem] shadow-2xl border-4 border-sky-200 p-6 sm:p-8 max-w-sm w-[90%] transform scale-95 opacity-0 transition-all duration-300" id="settings-modal-content">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl sm:text-2xl font-black text-sky-700 flex items-center gap-2">⚙️ Pengaturan</h3>
+                <button onclick="closeSettings()" class="text-slate-400 hover:text-red-500 font-bold text-3xl leading-none">&times;</button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-sky-50 p-4 sm:p-5 rounded-xl border-2 border-sky-100">
+                    <h4 class="font-bold text-sky-800 mb-3 text-sm sm:text-base">Jumlah Total Benda:</h4>
+                    <div class="flex items-center gap-4">
+                        <input type="range" id="item-count-slider" min="4" max="40" value="20" class="w-full h-2.5 bg-sky-200 rounded-lg appearance-none cursor-pointer outline-none" oninput="document.getElementById('item-count-display').innerText = this.value">
+                        <span id="item-count-display" class="font-black text-2xl text-sky-600 w-10 text-right">20</span>
+                    </div>
+                    <p class="text-xs text-sky-600/70 mt-3 font-semibold">Tentukan seberapa banyak benda yang ingin ditampilkan saat diacak.</p>
+                </div>
+            </div>
+
+            <button onclick="applySettings()" class="w-full mt-6 py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-xl transition-colors border-2 border-sky-600 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1">
+                Simpan & Acak!
+            </button>
+        </div>
+    </div>
+
     <script>
         // Gambar Penghapus Pensil Estetik menggunakan SVG
         const eraserSVG = `
@@ -254,10 +302,61 @@
             { content: '✏️', type: 'pensil' }
         ];
 
+        // Variabel Pengaturan
+        let totalItemsConfig = 20;
+
         // Variabel Status Dragging
         let activeDrag = null;
         let offsetX = 0;
         let offsetY = 0;
+
+        // ==========================================
+        // FUNGSI PENGATURAN MODAL
+        // ==========================================
+        function openSettings() {
+            const modal = document.getElementById('settings-modal');
+            const backdrop = document.getElementById('settings-modal-backdrop');
+            const content = document.getElementById('settings-modal-content');
+            
+            // Set nilai ke slider saat modal dibuka
+            document.getElementById('item-count-slider').value = totalItemsConfig;
+            document.getElementById('item-count-display').innerText = totalItemsConfig;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeSettings() {
+            const modal = document.getElementById('settings-modal');
+            const backdrop = document.getElementById('settings-modal-backdrop');
+            const content = document.getElementById('settings-modal-content');
+            
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function applySettings() {
+            // Ambil value dari slider
+            totalItemsConfig = parseInt(document.getElementById('item-count-slider').value);
+            closeSettings();
+            
+            // Acak benda dengan jumlah baru
+            acakBenda();
+        }
 
         // ==========================================
         // FUNGSI MENGACAK BENDA KE DALAM KOTAK MEJA
@@ -271,14 +370,14 @@
             // Bersihkan semua item yang ada di meja DAN di kotak dropzone
             document.querySelectorAll('.school-item').forEach(el => el.remove());
 
-            itemData.forEach((itemObj, index) => {
-                // Menghasilkan angka 2 sampai 5 buah per jenis benda agar tidak terlalu sesak
-                const itemCount = Math.floor(Math.random() * 4) + 2; 
+            // Loop sebanyak jumlah total benda yang disetting
+            for (let i = 0; i < totalItemsConfig; i++) {
+                // Pilih jenis benda secara acak
+                const randomTypeIndex = Math.floor(Math.random() * itemData.length);
+                const selectedItemObj = itemData[randomTypeIndex];
 
-                for (let i = 0; i < itemCount; i++) {
-                    createItemElement(itemObj, box, index * itemCount + i);
-                }
-            });
+                createItemElement(selectedItemObj, box, i);
+            }
 
             // Reset indikator jumlah
             updateCounts();
@@ -301,7 +400,9 @@
             item.style.left = `${randomX}%`;
             item.style.top = `${randomY}%`;
             item.style.setProperty('--target-rot', `${randomRot}deg`);
-            item.style.animationDelay = `${index * 0.03}s`;
+            
+            // Beri sedikit penundaan (delay) animasi berdasarkan urutan agar tidak muncul bebarengan
+            item.style.animationDelay = `${(index % 10) * 0.03}s`;
 
             // Fix properti saat animasi selesai
             item.addEventListener('animationend', () => {
