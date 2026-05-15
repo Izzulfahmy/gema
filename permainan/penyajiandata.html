@@ -29,7 +29,7 @@
     </script>
 
     <style>
-        /* Animasi Latar Belakang Minimalis */
+        /* Animasi Latar Belakang */
         .animated-bg {
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fdf4ff 100%);
             background-size: 200% 200%;
@@ -42,11 +42,10 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Kotak Penyimpanan Benda */
+        /* Kotak Penyimpanan Benda (Meja) */
         .box-container {
             width: 100%;
-            height: 60vh;
-            min-height: 300px;
+            height: 100%;
             position: relative;
             background-image: 
                 linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
@@ -54,26 +53,44 @@
             background-size: 40px 40px;
         }
 
-        /* Gaya Benda (Item) */
+        /* Gaya Benda (Item yang bisa digeser) */
         .school-item {
             position: absolute;
             font-size: 2.5rem;
             filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.2));
             user-select: none;
-            cursor: pointer;
-            transition: transform 0.2s;
+            cursor: grab;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            touch-action: none; /* Penting untuk drag di mobile */
+            z-index: 10;
         }
         
-        .school-item:hover {
-            transform: scale(1.2) rotate(5deg) !important;
-            z-index: 50 !important;
+        .school-item:active {
+            cursor: grabbing;
         }
 
         @media (max-width: 640px) {
             .school-item { font-size: 2rem; }
         }
 
-        /* Animasi Pop Muncul */
+        /* Item Saat Sedang Digeser */
+        .school-item.dragging {
+            transform: scale(1.3) rotate(0deg) !important;
+            filter: drop-shadow(6px 10px 8px rgba(0,0,0,0.3));
+            z-index: 1000 !important;
+        }
+
+        /* Item Setelah Dimasukkan ke Dalam Kotak (Dropzone) */
+        .school-item.in-box {
+            position: relative !important;
+            left: auto !important;
+            top: auto !important;
+            transform: scale(0.9) rotate(0deg) !important;
+            margin: -4px; /* Rapatkan jarak antar item di box */
+            z-index: 1 !important;
+        }
+
+        /* Animasi Pop Muncul Pertama Kali */
         @keyframes popIn {
             0% { transform: scale(0) rotate(-45deg); opacity: 0; }
             80% { transform: scale(1.2) rotate(10deg); opacity: 1; }
@@ -81,7 +98,7 @@
         }
         
         .pop-animation {
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         /* Gaya Tombol Mainan */
@@ -93,12 +110,21 @@
             border-bottom-width: 0px !important;
             margin-top: 4px;
         }
+
+        /* Area di dalam Dropzone agar tertata otomatis */
+        .drop-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            gap: 4px;
+        }
     </style>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col items-center">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
 
     <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN -->
-    <header class="w-full flex justify-between items-center p-4 sm:p-6 z-[100] relative">
+    <header class="w-full flex justify-between items-center p-3 sm:p-5 z-[100] relative shrink-0">
         
         <!-- Tombol Home (Kiri) -->
         <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
@@ -107,10 +133,10 @@
 
         <!-- Judul (Tengah) -->
         <div class="absolute left-1/2 -translate-x-1/2 pointer-events-none text-center">
-            <h1 class="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 drop-shadow-sm tracking-tight">
+            <h1 class="text-lg sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 drop-shadow-sm tracking-tight">
                 Penyajian Data 📊
             </h1>
-            <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-0.5">Mari Hitung & Kelompokkan!</p>
+            <p class="text-[9px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-0.5">Mari Pisahkan & Hitung!</p>
         </div>
 
         <!-- Tombol Fullscreen (Kanan) -->
@@ -122,93 +148,268 @@
     </header>
 
     <!-- AREA UTAMA PERMAINAN -->
-    <main class="w-full flex-grow flex flex-col items-center justify-center p-4 max-w-5xl mx-auto z-10 gap-4 sm:gap-6">
+    <main class="w-full flex-grow flex flex-col lg:flex-row p-3 sm:p-4 lg:p-6 max-w-[1400px] mx-auto z-10 gap-4 sm:gap-6 min-h-0">
         
-        <!-- TOMBOL ACAK BENDA -->
-        <button onclick="acakBenda()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl px-8 py-3 sm:px-10 sm:py-4 shadow-[0_5px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all text-sm sm:text-lg tracking-widest uppercase border border-brand-600 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-            Acak Benda!
-        </button>
+        <!-- BAGIAN KIRI: MEJA BELAJAR -->
+        <section class="flex flex-col w-full lg:w-7/12 flex-grow lg:flex-grow-0 min-h-[40vh] lg:h-full gap-2 sm:gap-3">
+            
+            <div class="flex justify-between items-end shrink-0 px-1">
+                <h2 class="text-base sm:text-xl font-black text-sky-700 flex items-center gap-2">
+                    <span>🪑</span> Meja Belajar
+                </h2>
+                <!-- TOMBOL ACAK (Diperkecil dan dipindah ke sini) -->
+                <button onclick="acakBenda()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl px-4 py-2 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all text-xs sm:text-sm tracking-widest uppercase border border-brand-600 flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    Acak Benda
+                </button>
+            </div>
 
-        <!-- KOTAK BESAR BENDA (MEJA BELAJAR) -->
-        <div class="w-full bg-white/80 backdrop-blur-sm p-2 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-white">
-            <div id="item-box" class="box-container bg-slate-50/80 rounded-[1.5rem] overflow-hidden shadow-inner border-2 border-slate-200">
-                <!-- Benda-benda akan dimunculkan di sini oleh JS -->
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none" id="empty-state">
-                    <p class="text-slate-400 font-bold text-center px-4">Pencet tombol "Acak Benda!" untuk mengeluarkan alat tulis ke atas meja.</p>
+            <!-- KOTAK BESAR (TEMPAT BENDA MUNCUL) -->
+            <div class="bg-white/80 backdrop-blur-sm p-1.5 sm:p-3 rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl border-4 border-white flex-grow flex flex-col relative overflow-hidden">
+                <div id="item-box" class="box-container bg-slate-50/80 rounded-[1rem] overflow-hidden shadow-inner border-2 border-slate-200">
+                    <!-- Benda-benda akan dimunculkan di sini oleh JS -->
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none" id="empty-state">
+                        <p class="text-slate-400 font-bold text-center px-4 text-xs sm:text-base">Pencet "Acak Benda" lalu geser benda ke kotak di samping! 👉</p>
+                    </div>
                 </div>
             </div>
-        </div>
+
+        </section>
+
+        <!-- BAGIAN KANAN: KOTAK PENGELOMPOKKAN -->
+        <section class="flex flex-col w-full lg:w-5/12 h-auto lg:h-full gap-2 sm:gap-3 shrink-0 lg:shrink">
+            <h2 class="text-base sm:text-xl font-black text-sky-700 flex items-center gap-2 px-2 shrink-0">
+                <span>📦</span> Kotak Kelompok
+            </h2>
+            
+            <!-- GRID 2x2 UNTUK KOTAK -->
+            <div class="grid grid-cols-2 gap-2 sm:gap-4 w-full flex-grow lg:overflow-y-auto pb-4">
+                
+                <!-- Kotak 1: Buku -->
+                <div class="dropzone bg-blue-50 border-4 border-blue-200 rounded-2xl p-2 sm:p-3 flex flex-col min-h-[120px] sm:min-h-[160px]" data-type="buku">
+                    <div class="flex justify-between items-center mb-2 border-b-2 border-blue-200/50 pb-2 shrink-0">
+                        <span class="font-black text-blue-700 text-xs sm:text-sm">📚 Buku</span>
+                        <span class="count-badge bg-white text-blue-600 font-black px-2 py-0.5 rounded-lg text-xs shadow-sm border border-blue-100">0</span>
+                    </div>
+                    <div class="drop-area flex-grow w-full"></div>
+                </div>
+
+                <!-- Kotak 2: Penghapus -->
+                <div class="dropzone bg-pink-50 border-4 border-pink-200 rounded-2xl p-2 sm:p-3 flex flex-col min-h-[120px] sm:min-h-[160px]" data-type="penghapus">
+                    <div class="flex justify-between items-center mb-2 border-b-2 border-pink-200/50 pb-2 shrink-0">
+                        <span class="font-black text-pink-700 text-xs sm:text-sm">🧽 Penghapus</span>
+                        <span class="count-badge bg-white text-pink-600 font-black px-2 py-0.5 rounded-lg text-xs shadow-sm border border-pink-100">0</span>
+                    </div>
+                    <div class="drop-area flex-grow w-full"></div>
+                </div>
+
+                <!-- Kotak 3: Penggaris -->
+                <div class="dropzone bg-emerald-50 border-4 border-emerald-200 rounded-2xl p-2 sm:p-3 flex flex-col min-h-[120px] sm:min-h-[160px]" data-type="penggaris">
+                    <div class="flex justify-between items-center mb-2 border-b-2 border-emerald-200/50 pb-2 shrink-0">
+                        <span class="font-black text-emerald-700 text-xs sm:text-sm">📏 Penggaris</span>
+                        <span class="count-badge bg-white text-emerald-600 font-black px-2 py-0.5 rounded-lg text-xs shadow-sm border border-emerald-100">0</span>
+                    </div>
+                    <div class="drop-area flex-grow w-full"></div>
+                </div>
+
+                <!-- Kotak 4: Pensil -->
+                <div class="dropzone bg-yellow-50 border-4 border-yellow-200 rounded-2xl p-2 sm:p-3 flex flex-col min-h-[120px] sm:min-h-[160px]" data-type="pensil">
+                    <div class="flex justify-between items-center mb-2 border-b-2 border-yellow-200/50 pb-2 shrink-0">
+                        <span class="font-black text-yellow-700 text-xs sm:text-sm">✏️ Pensil</span>
+                        <span class="count-badge bg-white text-yellow-600 font-black px-2 py-0.5 rounded-lg text-xs shadow-sm border border-yellow-100">0</span>
+                    </div>
+                    <div class="drop-area flex-grow w-full"></div>
+                </div>
+
+            </div>
+        </section>
 
     </main>
 
     <script>
-        // Data alat tulis (menggunakan Emoji untuk representasi 3D ringan & berwarna)
-        // 📚 Buku, 🧽 Penghapus (Sponge merepresentasikan penghapus papan/karet), 📏 Penggaris, ✏️ Pensil
-        const itemTypes = ['📚', '🧽', '📏', '✏️'];
+        // Data alat tulis (menggunakan Emoji dan Tipe Identifikasi)
+        const itemData = [
+            { emoji: '📚', type: 'buku' },
+            { emoji: '🧽', type: 'penghapus' },
+            { emoji: '📏', type: 'penggaris' },
+            { emoji: '✏️', type: 'pensil' }
+        ];
 
-        // Acak fungsi ketika halaman pertama kali dimuat
-        document.addEventListener('DOMContentLoaded', () => {
-            // Bisa dibiarkan kosong agar anak menekan tombol Acak dulu, atau panggil acakBenda()
-        });
+        // Variabel Status Dragging
+        let activeDrag = null;
+        let offsetX = 0;
+        let offsetY = 0;
 
         // ==========================================
-        // FUNGSI MENGACAK BENDA KE DALAM KOTAK
+        // FUNGSI MENGACAK BENDA KE DALAM KOTAK MEJA
         // ==========================================
         function acakBenda() {
             const box = document.getElementById('item-box');
             const emptyState = document.getElementById('empty-state');
             
-            // Sembunyikan pesan kosong
             if(emptyState) emptyState.style.display = 'none';
 
-            // Bersihkan isi kotak sebelumnya (kecuali empty-state)
-            const oldItems = box.querySelectorAll('.school-item');
-            oldItems.forEach(item => item.remove());
+            // Bersihkan semua item yang ada di meja DAN di kotak dropzone
+            document.querySelectorAll('.school-item').forEach(el => el.remove());
 
-            // Tentukan jumlah acak untuk masing-masing benda (Misal: 2 hingga 8 buah per tipe)
-            itemTypes.forEach((itemEmoji, index) => {
-                const itemCount = Math.floor(Math.random() * 7) + 2; // Menghasilkan angka 2 - 8
+            itemData.forEach((itemObj, index) => {
+                // Menghasilkan angka 2 sampai 5 buah per jenis benda agar tidak terlalu sesak
+                const itemCount = Math.floor(Math.random() * 4) + 2; 
 
                 for (let i = 0; i < itemCount; i++) {
-                    createItemElement(itemEmoji, box, index * itemCount + i);
+                    createItemElement(itemObj, box, index * itemCount + i);
                 }
             });
+
+            // Reset indikator jumlah
+            updateCounts();
         }
 
         // ==========================================
-        // FUNGSI MEMBUAT ELEMEN BENDA
+        // FUNGSI MEMBUAT ELEMEN BENDA YANG BISA DISERET
         // ==========================================
-        function createItemElement(emoji, container, index) {
+        function createItemElement(itemObj, container, index) {
             const item = document.createElement('div');
             item.className = 'school-item pop-animation';
-            item.innerText = emoji;
+            item.innerText = itemObj.emoji;
+            item.dataset.type = itemObj.type; // Pasang tipe untuk dicocokkan saat dijatuhkan
 
-            // Hitung posisi acak di dalam kotak (5% hingga 85% agar tidak keluar batas)
-            const randomX = Math.floor(Math.random() * 80) + 5;
-            const randomY = Math.floor(Math.random() * 80) + 5;
-            
-            // Hitung rotasi acak (-45 derajat hingga 45 derajat) agar terlihat alami berantakan
+            // Hitung posisi acak di dalam kotak meja (10% hingga 80% area aman)
+            const randomX = Math.floor(Math.random() * 70) + 10;
+            const randomY = Math.floor(Math.random() * 70) + 10;
             const randomRot = Math.floor(Math.random() * 90) - 45;
 
-            // Set properti CSS
             item.style.left = `${randomX}%`;
             item.style.top = `${randomY}%`;
-            item.style.zIndex = Math.floor(Math.random() * 40) + 1; // Z-index acak agar tumpukannya natural
-            
-            // Gunakan custom property agar keyframes tahu posisi akhir rotasinya
             item.style.setProperty('--target-rot', `${randomRot}deg`);
+            item.style.animationDelay = `${index * 0.03}s`;
 
-            // Tambahkan delay animasi sedikit berbeda untuk setiap benda agar munculnya estetik (berurutan cepat)
-            item.style.animationDelay = `${index * 0.02}s`;
-
-            // Ketika animasi selesai, pastikan rotasi dipertahankan agar tidak reset
+            // Fix properti saat animasi selesai
             item.addEventListener('animationend', () => {
-                item.style.transform = `scale(1) rotate(${randomRot}deg)`;
+                if(!item.classList.contains('in-box')){
+                    item.style.transform = `scale(1) rotate(${randomRot}deg)`;
+                }
                 item.classList.remove('pop-animation');
             });
 
+            // Pasang pendengar kejadian Pointer (Support Mouse dan Touch/Sentuhan)
+            item.addEventListener('pointerdown', handlePointerDown);
+
             container.appendChild(item);
+        }
+
+        // ==========================================
+        // LOGIKA DRAG AND DROP (Sentuhan & Mouse)
+        // ==========================================
+        function handlePointerDown(e) {
+            e.preventDefault(); // Mencegah scroll layar saat menarik benda
+            activeDrag = this;
+
+            const rect = activeDrag.getBoundingClientRect();
+            // Menghitung titik sentuh relatif terhadap objek
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            // Pindahkan elemen ke body agar melayang di atas semua kotak
+            document.body.appendChild(activeDrag);
+            activeDrag.style.position = 'fixed';
+            activeDrag.style.left = e.clientX - offsetX + 'px';
+            activeDrag.style.top = e.clientY - offsetY + 'px';
+            
+            // Hapus status in-box dan reset rotasi jika ditarik kembali dari kotak
+            activeDrag.classList.remove('in-box');
+            activeDrag.classList.add('dragging');
+
+            document.addEventListener('pointermove', handlePointerMove);
+            document.addEventListener('pointerup', handlePointerUp);
+            document.addEventListener('pointercancel', handlePointerUp); // Tangani jika jari keluar layar
+            
+            // Update hitungan karena benda diambil keluar dari kotak
+            updateCounts();
+        }
+
+        function handlePointerMove(e) {
+            if (!activeDrag) return;
+            // Update posisi mengikuti kursor/jari
+            activeDrag.style.left = (e.clientX - offsetX) + 'px';
+            activeDrag.style.top = (e.clientY - offsetY) + 'px';
+        }
+
+        function handlePointerUp(e) {
+            if (!activeDrag) return;
+
+            document.removeEventListener('pointermove', handlePointerMove);
+            document.removeEventListener('pointerup', handlePointerUp);
+            document.removeEventListener('pointercancel', handlePointerUp);
+
+            activeDrag.classList.remove('dragging');
+
+            // Sembunyikan sebentar objek yang ditarik untuk mendeteksi elemen (kotak) di bawahnya
+            activeDrag.hidden = true;
+            let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            activeDrag.hidden = false;
+
+            // Cari apakah di bawahnya ada dropzone
+            let dropzone = elemBelow ? elemBelow.closest('.dropzone') : null;
+
+            if (dropzone) {
+                // Cek apakah jenis bendanya sesuai dengan kotak
+                if (dropzone.dataset.type === activeDrag.dataset.type) {
+                    // Berhasil masuk kotak!
+                    let dropArea = dropzone.querySelector('.drop-area');
+                    activeDrag.classList.add('in-box'); // Tambahkan CSS untuk di dalam kotak
+                    dropArea.appendChild(activeDrag);
+                } else {
+                    // Kotak Salah, kembalikan ke meja
+                    kembalikanKeMeja(activeDrag, e.clientX, e.clientY);
+                }
+            } else {
+                // Dijatuhkan di sembarang tempat, kembalikan ke meja
+                kembalikanKeMeja(activeDrag, e.clientX, e.clientY);
+            }
+
+            activeDrag = null;
+            updateCounts(); // Update angka jumlah
+        }
+
+        // Fungsi kembalikan benda ke Meja Belajar
+        function kembalikanKeMeja(item, clientX, clientY) {
+            const box = document.getElementById('item-box');
+            box.appendChild(item);
+            
+            // Konversi kordinat Fixed Viewport menjadi Absolute ke box meja
+            const boxRect = box.getBoundingClientRect();
+            let relX = clientX - offsetX - boxRect.left;
+            let relY = clientY - offsetY - boxRect.top;
+            
+            // Batasi agar tidak terlempar keluar dari kotak meja (Constraint Bounds)
+            relX = Math.max(10, Math.min(relX, boxRect.width - 40)); 
+            relY = Math.max(10, Math.min(relY, boxRect.height - 40));
+
+            item.style.position = 'absolute';
+            item.style.left = relX + 'px';
+            item.style.top = relY + 'px';
+            
+            // Berikan rotasi acak kembali
+            item.style.transform = `scale(1) rotate(${Math.floor(Math.random() * 90) - 45}deg)`;
+        }
+
+        // ==========================================
+        // FUNGSI UPDATE HITUNGAN BENDA
+        // ==========================================
+        function updateCounts() {
+            document.querySelectorAll('.dropzone').forEach(zone => {
+                // Hitung jumlah anak (elemen) yang ada di dalam drop-area masing-masing
+                const count = zone.querySelector('.drop-area').children.length;
+                const badge = zone.querySelector('.count-badge');
+                badge.innerText = count;
+                
+                // Efek denyut kecil jika ada yang bertambah
+                badge.classList.remove('scale-125');
+                void badge.offsetWidth;
+                if(count > 0) badge.classList.add('scale-125', 'transition-transform');
+                setTimeout(() => badge.classList.remove('scale-125'), 200);
+            });
         }
 
         // ==========================================
@@ -216,9 +417,7 @@
         // ==========================================
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Gagal membuka layar penuh.`);
-                });
+                document.documentElement.requestFullscreen().catch(err => {});
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
