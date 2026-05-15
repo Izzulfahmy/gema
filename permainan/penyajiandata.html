@@ -188,7 +188,7 @@
 </head>
 <body class="animated-bg min-h-screen w-full overflow-x-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col">
 
-    <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN (Diperkecil tinggi/paddingnya) -->
+    <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN -->
     <header class="w-full flex justify-between items-center py-2 px-3 sm:py-3 sm:px-5 z-[100] relative shrink-0">
         <div class="flex items-center gap-2 sm:gap-3">
             <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
@@ -217,7 +217,7 @@
     <!-- AREA UTAMA PERMAINAN -->
     <main class="w-full flex-grow flex flex-col lg:flex-row px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4 max-w-[1400px] mx-auto z-10 gap-4 sm:gap-6 min-h-0">
         
-        <!-- BAGIAN KIRI: MEJA BELAJAR (Diperluas menjadi w-2/3) -->
+        <!-- BAGIAN KIRI: MEJA BELAJAR (Diperluas) -->
         <section class="flex flex-col w-full lg:w-2/3 flex-grow min-h-[50vh] gap-2 sm:gap-3">
             <div class="flex justify-between items-end shrink-0 px-1">
                 <h2 class="text-base sm:text-xl font-black text-sky-700 flex items-center gap-2">
@@ -241,12 +241,12 @@
             </div>
         </section>
 
-        <!-- BAGIAN KANAN: KOTAK PENGELOMPOKKAN (Disesuaikan menjadi w-1/3) -->
+        <!-- BAGIAN KANAN: KOTAK PENGELOMPOKKAN -->
         <section class="flex flex-col w-full lg:w-1/3 gap-2 sm:gap-3 shrink-0 relative">
             <h2 class="text-base sm:text-xl font-black text-sky-700 flex items-center gap-2 px-2 shrink-0">
                 <span>📦</span> Kotak Kelompok & Hitung
             </h2>
-            <!-- GRID 2x2 UNTUK KOTAK (Dirender secara dinamis oleh JS) -->
+            <!-- GRID 2x2 UNTUK KOTAK (Dirender secara dinamis) -->
             <div id="dropzones-container" class="grid grid-cols-2 gap-2 sm:gap-4 w-full flex-grow"></div>
 
             <!-- TOMBOL SELESAI -->
@@ -303,7 +303,7 @@
     <div id="alert-modal" class="fixed inset-0 z-[10010] hidden items-center justify-center">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="alert-modal-backdrop" onclick="closeAlertModal()"></div>
         <div class="relative bg-white rounded-[2rem] shadow-2xl border-4 border-rose-200 p-6 sm:p-8 max-w-sm w-[90%] transform scale-95 opacity-0 transition-all duration-300 text-center" id="alert-modal-content">
-            <div class="text-6xl mb-4">⚠️</div>
+            <div id="alert-icon" class="text-6xl mb-4">⚠️</div>
             <h3 class="text-xl sm:text-2xl font-black text-rose-600 mb-2" id="alert-title">Peringatan</h3>
             <p class="text-slate-600 font-bold text-sm sm:text-base mb-6" id="alert-message">Pesan peringatan di sini.</p>
             <button onclick="closeAlertModal()" class="w-full py-3 bg-rose-500 hover:bg-rose-600 text-white font-black rounded-xl transition-colors border-2 border-rose-600 shadow-[0_4px_0_#be123c] active:shadow-[0_0px_0_#be123c] active:translate-y-1">
@@ -312,15 +312,15 @@
         </div>
     </div>
 
-    <!-- MODAL CELEBRATION -->
+    <!-- MODAL CELEBRATION (Bisa untuk Selesai Mengelompokkan / Selesai Kuis) -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="closeWinModal()"></div>
         <div class="relative bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-md w-[90%]" id="win-modal">
-            <div class="text-7xl mb-4">🎉</div>
-            <h2 class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-3 leading-tight">LUAR BIASA!</h2>
-            <p class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kerja Bagus! Kamu berhasil mengelompokkan, menggambar turus, dan menghitung semuanya dengan benar!</p>
+            <div id="win-icon" class="text-7xl mb-4">🎉</div>
+            <h2 id="win-title" class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-3 leading-tight">LUAR BIASA!</h2>
+            <p id="win-desc" class="text-base sm:text-lg font-bold text-slate-600 mb-8">Kerja Bagus! Kamu berhasil mengelompokkan, menggambar turus, dan menghitung semuanya dengan benar!</p>
             
-            <div class="flex flex-col sm:flex-row gap-3">
+            <div id="win-buttons" class="flex flex-col sm:flex-row gap-3">
                 <button onclick="closeWinModal()" class="flex-1 py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-base font-black rounded-2xl border-2 border-yellow-600 shadow-[0_4px_0_#b45309] active:shadow-[0_0px_0_#b45309] active:translate-y-1 transition-all">
                     🔄 Main Lagi
                 </button>
@@ -663,11 +663,12 @@
             item.style.transform = `scale(1) rotate(${Math.floor(Math.random() * 90) - 45}deg)`;
         }
 
-        function showAlert(title, message) {
+        function showAlert(title, message, icon = '⚠️') {
             const modal = document.getElementById('alert-modal');
             const backdrop = document.getElementById('alert-modal-backdrop');
             const content = document.getElementById('alert-modal-content');
             
+            document.getElementById('alert-icon').innerText = icon;
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-message').innerText = message;
             
@@ -691,13 +692,13 @@
         function checkGameFinish() {
             const allItems = document.querySelectorAll('.school-item');
             if (allItems.length === 0) {
-                showAlert('Belum Mulai!', 'Silakan pencet tombol "Acak Benda" terlebih dahulu ya! 🎲');
+                showAlert('Belum Mulai!', 'Silakan pencet tombol "Acak Benda" terlebih dahulu ya!', '🎲');
                 return;
             }
 
             const itemsOnTable = document.querySelectorAll('#item-box .school-item');
             if (itemsOnTable.length > 0) {
-                showAlert('Belum Selesai!', 'Masih ada benda tersisa di meja! Ayo kelompokkan semuanya ke dalam kotak.');
+                showAlert('Belum Selesai!', 'Masih ada benda tersisa di meja! Ayo kelompokkan semuanya ke dalam kotak.', '🤔');
                 return;
             }
 
@@ -726,17 +727,17 @@
             });
 
             if (!isBoxCorrect) {
-                showAlert('Ada yang Salah Kotak!', 'Ups, sepertinya ada benda yang salah dimasukkan ke dalam kotak. Coba periksa lagi kelompoknya!');
+                showAlert('Ada yang Salah Kotak!', 'Ups, sepertinya ada benda yang salah dimasukkan ke dalam kotak. Coba periksa lagi kelompoknya!', '🧐');
                 return;
             }
 
             if (!isTallyInputCorrect) {
-                showAlert('Cek Turusnya!', 'Jumlah garis Turus yang kamu gambar belum sesuai dengan jumlah benda di dalam kotak. Yuk, hitung lagi!');
+                showAlert('Cek Turusnya!', 'Jumlah garis Turus yang kamu gambar belum sesuai dengan jumlah benda di dalam kotak. Yuk, hitung lagi!', '✍️');
                 return;
             }
 
             if (!isNumberInputCorrect) {
-                showAlert('Cek Angkanya!', 'Kolom isian Angka masih ada yang kosong atau belum sesuai dengan jumlah bendanya lho. Jangan menyerah!');
+                showAlert('Cek Angkanya!', 'Kolom isian Angka masih ada yang kosong atau belum sesuai dengan jumlah bendanya lho. Jangan menyerah!', '🔢');
                 return;
             }
 
@@ -744,6 +745,19 @@
             document.querySelectorAll('.dropzone').forEach(zone => {
                 currentItemCounts[zone.dataset.type] = zone.querySelectorAll('.school-item').length;
             });
+            
+            // Konfigurasi Modal Selesai Kelompok
+            document.getElementById('win-icon').innerText = '🎉';
+            document.getElementById('win-title').innerText = 'LUAR BIASA!';
+            document.getElementById('win-desc').innerText = 'Kerja Bagus! Kamu berhasil mengelompokkan, menggambar turus, dan menghitung semuanya dengan benar!';
+            document.getElementById('win-buttons').innerHTML = `
+                <button onclick="closeWinModal()" class="flex-1 py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-base font-black rounded-2xl border-2 border-yellow-600 shadow-[0_4px_0_#b45309] active:shadow-[0_0px_0_#b45309] active:translate-y-1 transition-all">
+                    🔄 Main Lagi
+                </button>
+                <button onclick="openQuiz()" class="flex-1 py-3 bg-brand-500 hover:bg-brand-600 text-white text-base font-black rounded-2xl border-2 border-brand-600 shadow-[0_4px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all">
+                    Lanjut Quiz ➡️
+                </button>
+            `;
 
             const modalContainer = document.getElementById('confetti-container');
             const winModal = document.getElementById('win-modal');
@@ -761,7 +775,7 @@
         }
 
         // ==========================================
-        // LOGIKA KUIS INTERAKTIF (MULTIPLE CHOICE & FINGER IMAGES)
+        // LOGIKA KUIS INTERAKTIF
         // ==========================================
         function generateTallyMarksSVG(count) {
             if (count === 0) return '-'; 
@@ -779,7 +793,6 @@
             return html;
         }
 
-        // FUNGSI BARU UNTUK GAMBAR JARI (COMBINATION)
         function generateFingerImagesHTML(count) {
             if (count === 0) return '<span class="text-slate-400 font-black text-xl">0</span>'; 
             let html = '<div class="flex flex-wrap gap-1 items-center justify-center">';
@@ -834,7 +847,6 @@
 
             const itemsConfig = themeConfigs[currentTheme];
             
-            // Build Summary Table (Tetap menampilkan turus untuk panduan anak)
             const tableContainer = document.getElementById('quiz-summary-table-container');
             let tableHTML = `
                 <table class="w-full text-left border-collapse summary-table">
@@ -862,7 +874,6 @@
             tableHTML += `</tbody></table>`;
             tableContainer.innerHTML = tableHTML;
 
-            // Pertanyaan 1 & 2 Opsi (Multiple Choice Toggle)
             const q1Container = document.getElementById('quiz-q1-options');
             const q2Container = document.getElementById('quiz-q2-options');
             q1Container.innerHTML = ''; q2Container.innerHTML = '';
@@ -883,7 +894,6 @@
                 q2Container.appendChild(btnQ2);
             });
 
-            // Pertanyaan 3 (Jari Berhitung Single Choice)
             const q3ItemTarget = itemsConfig[Math.floor(Math.random() * itemsConfig.length)];
             const q3ItemCount = currentItemCounts[q3ItemTarget.id];
             
@@ -905,9 +915,8 @@
             q3Container.innerHTML = '';
             q3Options.forEach(optVal => {
                 const btnQ3 = document.createElement('button');
-                // Beri min-height agar opsi gambar jari tidak penyok
                 btnQ3.className = "quiz-option py-3 px-2 bg-white border-2 border-indigo-100 rounded-xl flex items-center justify-center hover:bg-indigo-50 transition-all min-h-[80px]";
-                btnQ3.innerHTML = generateFingerImagesHTML(optVal); // Menggunakan gambar jari
+                btnQ3.innerHTML = generateFingerImagesHTML(optVal); 
                 btnQ3.dataset.val = optVal;
                 btnQ3.onclick = function() { selectOptionSingle(this, 'q3', optVal); };
                 q3Container.appendChild(btnQ3);
@@ -927,16 +936,15 @@
 
         function nextQuizStep() {
             if (currentQuizStep === 1 && quizAnswers.q1.length === 0) {
-                showAlert('Belum Dijawab!', 'Pilih minimal satu jawaban terlebih dahulu ya!'); return;
+                showAlert('Belum Dijawab!', 'Pilih minimal satu jawaban terlebih dahulu ya!', '👆'); return;
             }
             if (currentQuizStep === 2 && quizAnswers.q2.length === 0) {
-                showAlert('Belum Dijawab!', 'Pilih minimal satu jawaban terlebih dahulu ya!'); return;
+                showAlert('Belum Dijawab!', 'Pilih minimal satu jawaban terlebih dahulu ya!', '👆'); return;
             }
             currentQuizStep++;
             updateQuizUI();
         }
 
-        // Toggle untuk multiple choice (Bisa pilih lebih dari satu)
         function toggleMultipleOption(btnElement, questionKey, value) {
             const idx = quizAnswers[questionKey].indexOf(value);
             if (idx > -1) {
@@ -948,7 +956,6 @@
             }
         }
 
-        // Single choice khusus untuk soal jari
         function selectOptionSingle(btnElement, questionKey, value) {
             quizAnswers[questionKey] = value; 
             const parent = btnElement.parentElement;
@@ -958,7 +965,7 @@
 
         function submitQuiz() {
             if(!quizAnswers.q3) {
-                showAlert('Belum Dijawab!', 'Pilih salah satu jawaban terlebih dahulu ya!');
+                showAlert('Belum Dijawab!', 'Pilih salah satu jawaban terlebih dahulu ya!', '👆');
                 return;
             }
 
@@ -988,8 +995,8 @@
                     if (!isCorrectAns) q1Correct = false;
                 } else {
                     if (isCorrectAns) {
-                        q1Correct = false; // Terlewat (harusnya dipilih)
-                        btn.classList.add('missed'); // Beri tanda hijau pinggiran
+                        q1Correct = false; 
+                        btn.classList.add('missed'); 
                     }
                 }
             }
@@ -1041,10 +1048,25 @@
                     modal.classList.add('hidden'); modal.classList.remove('flex');
                     
                     if(q1Correct && q2Correct && q3Correct) {
-                        showAlert('Kuis Sempurna! 🏆', 'Semua jawaban kuis kamu Benar! Kamu sudah sangat menguasai materi Penyajian Data.');
-                        acakBenda(); 
+                        // Kuis Sempurna!
+                        document.getElementById('win-icon').innerText = '🏆';
+                        document.getElementById('win-title').innerText = 'KUIS SEMPURNA!';
+                        document.getElementById('win-desc').innerText = 'Semua jawaban kuis kamu Benar! Kamu sudah sangat menguasai materi Penyajian Data.';
+                        document.getElementById('win-buttons').innerHTML = `
+                            <button onclick="closeWinModal()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white text-lg font-black rounded-2xl border-2 border-emerald-600 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all">
+                                🌟 Main Lagi 🌟
+                            </button>
+                        `;
+
+                        const modalContainer = document.getElementById('confetti-container');
+                        const winModal = document.getElementById('win-modal');
+                        
+                        modalContainer.classList.remove('hidden');
+                        setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
+                        triggerConfetti();
+
                     } else {
-                        showAlert('Jangan Menyerah! 💪', 'Masih ada jawaban kuis yang terlewat atau salah. Ayo kita coba berhitung lagi!');
+                        showAlert('Jangan Menyerah!', 'Masih ada jawaban kuis yang terlewat atau salah. Ayo kita coba berhitung lagi!', '💪');
                         acakBenda();
                     }
                 }, 300);
