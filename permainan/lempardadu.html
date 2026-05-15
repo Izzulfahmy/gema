@@ -395,8 +395,8 @@
                     </div>
                 </div>
 
-                <!-- Tabel Turus Manual -->
-                <div id="table-container" class="bg-white rounded-3xl shadow-lg border-2 border-pink-200 overflow-hidden transition-all block">
+                <!-- Tabel Turus Manual (Awalnya Sembunyi, muncul setelah periksa urutkan) -->
+                <div id="table-container" class="bg-white rounded-3xl shadow-lg border-2 border-pink-200 overflow-hidden transition-all hidden">
                     <div class="px-4 py-3 border-b-2 border-pink-100 bg-pink-50 flex justify-between items-center">
                         <h2 class="text-base sm:text-lg font-black text-pink-600">Papan Skor Turus</h2>
                     </div>
@@ -411,7 +411,7 @@
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-pink-50 bg-white">
-                                <!-- Baris tabel di-generate oleh JS saat awal -->
+                                <!-- Baris tabel di-generate oleh JS -->
                             </tbody>
                         </table>
                     </div>
@@ -422,7 +422,7 @@
                     </div>
                 </div>
 
-                <!-- Grafik Batang (Diletakkan di Bawah Tabel Turus, Tampil Setelah Menjawab Tabel dengan Benar) -->
+                <!-- Grafik Batang (Tampil Setelah Menjawab Tabel dengan Benar) -->
                 <div id="chart-container" class="bg-white rounded-3xl shadow-lg border-2 border-cyan-200 p-4 sm:p-6 relative overflow-hidden transition-all hidden">
                     <div class="absolute -right-5 -bottom-5 w-32 h-32 bg-cyan-50 rounded-full opacity-50 blur-xl"></div>
                     <div class="flex items-center justify-between mb-4 relative z-10">
@@ -439,7 +439,7 @@
         <!-- FOOTER MINIMALIS -->
         <footer class="w-full py-4 mt-6 flex justify-center items-center opacity-70">
             <p class="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                &copy; 2026 GEMA Project
+                &copy; 2026 Gemar Matematika Project
             </p>
         </footer>
     </div>
@@ -520,7 +520,7 @@
         </div>
     </div>
 
-    <!-- MODAL CELEBRATION (Bisa Dipakai Banyak Hal) -->
+    <!-- MODAL CELEBRATION -->
     <div id="win-modal-container" class="fixed inset-0 z-[9990] hidden items-center justify-center">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="closeWinModal()"></div>
         <div class="relative bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-md w-[90%]" id="win-modal">
@@ -609,6 +609,10 @@
         let quizAnswers = { q1: [], q2: [], q3: null }; 
         let currentQuizStep = 1;
 
+        // Flags to control what is unlocked
+        let isTableUnlocked = false;
+        let isChartUnlocked = false;
+
         const diceColors = ['#ff4757', '#1e90ff', '#2ed573', '#ffa502', '#9c88ff', '#ff7f50'];
         const diceFacesTable = ['&#9856;', '&#9857;', '&#9858;', '&#9859;', '&#9860;', '&#9861;'];
 
@@ -658,15 +662,22 @@
             const chartCont = document.getElementById('chart-container');
             const tableCont = document.getElementById('table-container');
 
-            if (viewValue === 'both') {
-                if (frequencies.some(f => f > 0)) chartCont.classList.remove('hidden');
-                tableCont.classList.remove('hidden');
-            } else if (viewValue === 'chart') {
-                if (frequencies.some(f => f > 0)) chartCont.classList.remove('hidden');
-                tableCont.classList.add('hidden');
-            } else if (viewValue === 'table') {
-                chartCont.classList.add('hidden');
-                tableCont.classList.remove('hidden');
+            // Set base class to hidden, clean up inline styles
+            chartCont.classList.add('hidden');
+            chartCont.style.display = ''; 
+            tableCont.classList.add('hidden');
+            tableCont.style.display = '';
+
+            // Apply visibility ONLY if the sections are unlocked by completing steps
+            if (isTableUnlocked) {
+                if (viewValue === 'both' || viewValue === 'table') {
+                    tableCont.classList.remove('hidden');
+                }
+            }
+            if (isChartUnlocked) {
+                if (viewValue === 'both' || viewValue === 'chart') {
+                    chartCont.classList.remove('hidden');
+                }
             }
 
             const themeValue = document.querySelector('input[name="theme-setting"]:checked').value;
@@ -818,8 +829,8 @@
             
             if(isCorrect) {
                 document.getElementById('win-icon').innerText = '🌟';
-                document.getElementById('win-title').innerText = 'HEBAT!';
-                document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi sesuai perintah!';
+                document.getElementById('win-title').innerText = 'PINTAR SEKALI!';
+                document.getElementById('win-desc').innerText = 'Wah pintar, susunan dadunya sudah urut dan rapi! Tabel Turus sudah terbuka di bawah, ayo kita isi!';
                 
                 document.getElementById('win-buttons').innerHTML = `
                     <button onclick="closeWinModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
@@ -827,13 +838,24 @@
                     </button>
                 `;
                 
+                // UNLOCK TABLE
+                isTableUnlocked = true;
+                applySettings(); // Will show table if settings permit
+                
+                // Add highlight to table to draw attention
+                const tableCont = document.getElementById('table-container');
+                if(!tableCont.classList.contains('hidden')) {
+                    tableCont.classList.add('ring-4', 'ring-pink-400');
+                    setTimeout(() => { tableCont.classList.remove('ring-4', 'ring-pink-400'); }, 1500);
+                }
+
                 const modalContainer = document.getElementById('win-modal-container');
                 const winModal = document.getElementById('win-modal');
                 
                 modalContainer.classList.remove('hidden');
                 modalContainer.classList.add('flex');
                 setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
-                triggerConfetti(50);
+                triggerConfetti(30); // Sedikit confeti
 
             } else {
                 showAlert("Belum Tepat", "Susunannya masih berantakan. Coba perhatikan lagi perintah urutannya ya!", "🧐");
@@ -982,9 +1004,23 @@
                 return;
             }
 
-            document.getElementById('win-icon').innerText = '🎉';
-            document.getElementById('win-title').innerText = 'LUAR BIASA!';
-            document.getElementById('win-desc').innerText = 'Kerja Bagus! Kamu berhasil menghitung dan mengisi tabel turus dengan benar! Grafiknya sudah terbuka di layar.';
+            // UNLOCK CHART
+            isChartUnlocked = true;
+            frequencies = [...actualFreqs];
+            updateChart();
+            applySettings();
+
+            // Highlight Chart
+            const chartCont = document.getElementById('chart-container');
+            if(!chartCont.classList.contains('hidden')) {
+                 chartCont.classList.add('ring-4', 'ring-emerald-400');
+                 setTimeout(() => { chartCont.classList.remove('ring-4', 'ring-emerald-400'); }, 1500);
+            }
+
+            // Tampilkan Modal Penuh Kemenangan
+            document.getElementById('win-icon').innerHTML = '<div class="text-8xl animate-bounce">🏆</div>';
+            document.getElementById('win-title').innerHTML = '<span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 animate-pulse">KERJA BAGUS!</span>';
+            document.getElementById('win-desc').innerHTML = '<span class="text-lg font-black text-slate-700">Luar biasa!</span> Kamu berhasil menghitung dan mengisi tabel turus dengan benar! Grafiknya sudah terbuka di layar.';
             
             document.getElementById('win-buttons').innerHTML = `
                 <button onclick="closeWinModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-base font-black rounded-2xl border-2 border-slate-300 shadow-sm active:translate-y-1 transition-all">
@@ -995,22 +1031,13 @@
                 </button>
             `;
 
-            frequencies = [...actualFreqs];
-            updateChart();
-            
-            const chartCont = document.getElementById('chart-container');
-            chartCont.classList.remove('hidden');
-            chartCont.style.display = 'block';
-            chartCont.classList.add('ring-4', 'ring-emerald-400');
-            setTimeout(() => { chartCont.classList.remove('ring-4', 'ring-emerald-400'); }, 1500);
-            
             const modalContainer = document.getElementById('win-modal-container');
             const winModal = document.getElementById('win-modal');
             
             modalContainer.classList.remove('hidden');
             modalContainer.classList.add('flex');
             setTimeout(() => { winModal.classList.remove('scale-0'); winModal.classList.add('scale-100'); }, 50);
-            triggerConfetti(50);
+            triggerConfetti(100);
         }
 
         function closeWinModal() {
@@ -1307,7 +1334,7 @@
 
             let maxCount = -1; let minCount = 999;
             for (let i = 0; i < 6; i++) {
-                if (frequencies[i] > 0) { // Hanya cek dadu yang ada isinya
+                if (frequencies[i] > 0) { 
                     if (frequencies[i] > maxCount) maxCount = frequencies[i];
                     if (frequencies[i] < minCount) minCount = frequencies[i];
                 }
@@ -1587,6 +1614,10 @@
             rollHistory = []; 
             userTallies = [0, 0, 0, 0, 0, 0]; 
 
+            // Reset Unlocked states
+            isTableUnlocked = false;
+            isChartUnlocked = false;
+
             document.getElementById('total-rolls-badge').innerText = `0 Kali`;
             document.getElementById('result-text').innerHTML = `<span class="text-xs sm:text-sm font-bold text-indigo-500">Menunggu lemparan...</span>`;
             
@@ -1603,9 +1634,7 @@
                 if(tallyDisp) tallyDisp.innerHTML = generateMiniTally(0);
             }
 
-            document.getElementById('chart-container').classList.add('hidden');
-            
-            updateTableVisibility();
+            applySettings(); // This will hide chart & table because they are locked
             updateChart(); 
             hideResetModal();
         }
@@ -1640,7 +1669,7 @@
             }, 300);
         }
 
-        // Efek Konfeti yang Meriah
+        // Efek Konfeti Sederhana
         function triggerConfetti(particleCount = 50) {
             const container = document.getElementById('confetti-container');
             container.classList.remove('hidden');
@@ -1648,13 +1677,13 @@
             
             for(let i = 0; i < particleCount; i++) {
                 const conf = document.createElement('div');
-                conf.style.position = 'absolute'; conf.style.width = '12px'; conf.style.height = '12px';
+                conf.style.position = 'absolute'; conf.style.width = '10px'; conf.style.height = '10px';
                 conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
                 conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0'; conf.style.zIndex = '9998';
                 
                 const animDur = Math.random() * 2 + 2; 
-                conf.animate([{ transform: `translate3d(0,0,0) rotate(0deg) scale(1)`, opacity: 1 }, { transform: `translate3d(${Math.random()*300 - 150}px, 100vh, 0) rotate(${Math.random()*720}deg) scale(0.5)`, opacity: 0 }], { duration: animDur * 1000, easing: 'ease-out', fill: 'forwards' });
+                conf.animate([{ transform: `translate3d(0,0,0) rotate(0deg) scale(1)`, opacity: 1 }, { transform: `translate3d(${Math.random()*150 - 75}px, 100vh, 0) rotate(${Math.random()*720}deg) scale(0.5)`, opacity: 0 }], { duration: animDur * 1000, easing: 'ease-out', fill: 'forwards' });
                 container.appendChild(conf); setTimeout(() => conf.remove(), animDur * 1000);
             }
             setTimeout(() => { container.classList.add('hidden'); }, 4000);
