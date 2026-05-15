@@ -156,13 +156,23 @@
                     </div>
                 </div>
 
-                <!-- KARTU GAME 3: COMING SOON -->
-                <div class="bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-6 text-center h-full min-h-[300px]">
-                    <div class="w-14 h-14 bg-white rounded-full shadow-sm border border-slate-100 flex items-center justify-center text-2xl mb-4 text-slate-400">
-                        🏗️
+                <!-- KARTU GAME 3: PENYAJIAN DATA -->
+                <div class="bg-white rounded-2xl p-2 shadow-sm border border-slate-100 card-hover flex flex-col group">
+                    <div class="h-40 overflow-hidden relative rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center">
+                        <span class="text-6xl group-hover:scale-110 transition-transform duration-500 drop-shadow-md">📊</span>
+                        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-bold text-sky-600 uppercase tracking-wider shadow-sm">
+                            Matematika & Observasi
+                        </div>
                     </div>
-                    <h3 class="text-base font-extrabold text-slate-600 mb-1">Segera Hadir</h3>
-                    <p class="text-xs text-slate-400 font-medium px-4">Tunggu kejutan seru lainnya dari tim GEMA.</p>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-1.5">📊 Penyajian Data</h3>
+                        <p class="text-sm text-slate-500 mb-5 flex-grow line-clamp-3 leading-relaxed">
+                            Mari hitung dan kelompokkan alat tulis yang berserakan! Latihan yang asyik untuk memahami konsep dasar pengumpulan data.
+                        </p>
+                        <a href="permainan/penyajiandata.html" class="w-full py-2.5 bg-sky-50 text-sky-600 hover:bg-sky-600 hover:text-white text-center font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5">
+                            Mainkan <span class="text-lg leading-none">&rarr;</span>
+                        </a>
+                    </div>
                 </div>
 
             </div>
@@ -216,23 +226,6 @@
                 enterIcon.classList.remove('hidden');
                 exitIcon.classList.add('hidden');
             }
-        });
-
-        // Upaya agar otomatis fullscreen
-        // Browser modern mencegah fullscreen otomatis tanpa interaksi pengguna, 
-        // sehingga kita siasati dengan memanggilnya pada klik pertama di halaman.
-        function autoFullscreenOnClick() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Autoplay fullscreen dicegah browser: ${err.message}`);
-                });
-            }
-            // Hapus listener agar hanya terpanggil pada klik pertama
-            document.removeEventListener('click', autoFullscreenOnClick);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.addEventListener('click', autoFullscreenOnClick);
         });
     </script>
 </body>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penyajian Data 📊</title>
+    
+    <!-- Favicon Logo -->
+    <link rel="icon" href="../aset/Logo.png" type="image/png">
+    
+    <!-- Google Fonts: Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0f9ff', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Animasi Latar Belakang Minimalis */
+        .animated-bg {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fdf4ff 100%);
+            background-size: 200% 200%;
+            animation: gradientMove 15s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Kotak Penyimpanan Benda */
+        .box-container {
+            width: 100%;
+            height: 60vh;
+            min-height: 300px;
+            position: relative;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Gaya Benda (Item) */
+        .school-item {
+            position: absolute;
+            font-size: 2.5rem;
+            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.2));
+            user-select: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .school-item:hover {
+            transform: scale(1.2) rotate(5deg) !important;
+            z-index: 50 !important;
+        }
+
+        @media (max-width: 640px) {
+            .school-item { font-size: 2rem; }
+        }
+
+        /* Animasi Pop Muncul */
+        @keyframes popIn {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            80% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(var(--target-rot)); opacity: 1; }
+        }
+        
+        .pop-animation {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Gaya Tombol Mainan */
+        .toy-btn {
+            transition: all 0.1s;
+        }
+        .toy-btn:active {
+            transform: translateY(4px);
+            border-bottom-width: 0px !important;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 flex flex-col items-center">
+
+    <!-- HEADER: TOMBOL KIRI, JUDUL TENGAH, TOMBOL KANAN -->
+    <header class="w-full flex justify-between items-center p-4 sm:p-6 z-[100] relative">
+        
+        <!-- Tombol Home (Kiri) -->
+        <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+        </a>
+
+        <!-- Judul (Tengah) -->
+        <div class="absolute left-1/2 -translate-x-1/2 pointer-events-none text-center">
+            <h1 class="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 drop-shadow-sm tracking-tight">
+                Penyajian Data 📊
+            </h1>
+            <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-0.5">Mari Hitung & Kelompokkan!</p>
+        </div>
+
+        <!-- Tombol Fullscreen (Kanan) -->
+        <button onclick="toggleFullScreen()" class="bg-white/80 backdrop-blur-md border border-white/60 text-sky-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Layar Penuh">
+            <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+            <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
+        </button>
+
+    </header>
+
+    <!-- AREA UTAMA PERMAINAN -->
+    <main class="w-full flex-grow flex flex-col items-center justify-center p-4 max-w-5xl mx-auto z-10 gap-4 sm:gap-6">
+        
+        <!-- TOMBOL ACAK BENDA -->
+        <button onclick="acakBenda()" class="toy-btn bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl px-8 py-3 sm:px-10 sm:py-4 shadow-[0_5px_0_#0284c7] active:shadow-[0_0px_0_#0284c7] active:translate-y-1 transition-all text-sm sm:text-lg tracking-widest uppercase border border-brand-600 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            Acak Benda!
+        </button>
+
+        <!-- KOTAK BESAR BENDA (MEJA BELAJAR) -->
+        <div class="w-full bg-white/80 backdrop-blur-sm p-2 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl border-4 border-white">
+            <div id="item-box" class="box-container bg-slate-50/80 rounded-[1.5rem] overflow-hidden shadow-inner border-2 border-slate-200">
+                <!-- Benda-benda akan dimunculkan di sini oleh JS -->
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none" id="empty-state">
+                    <p class="text-slate-400 font-bold text-center px-4">Pencet tombol "Acak Benda!" untuk mengeluarkan alat tulis ke atas meja.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Data alat tulis (menggunakan Emoji untuk representasi 3D ringan & berwarna)
+        // 📚 Buku, 🧽 Penghapus (Sponge merepresentasikan penghapus papan/karet), 📏 Penggaris, ✏️ Pensil
+        const itemTypes = ['📚', '🧽', '📏', '✏️'];
+
+        // Acak fungsi ketika halaman pertama kali dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            // Bisa dibiarkan kosong agar anak menekan tombol Acak dulu, atau panggil acakBenda()
+        });
+
+        // ==========================================
+        // FUNGSI MENGACAK BENDA KE DALAM KOTAK
+        // ==========================================
+        function acakBenda() {
+            const box = document.getElementById('item-box');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Sembunyikan pesan kosong
+            if(emptyState) emptyState.style.display = 'none';
+
+            // Bersihkan isi kotak sebelumnya (kecuali empty-state)
+            const oldItems = box.querySelectorAll('.school-item');
+            oldItems.forEach(item => item.remove());
+
+            // Tentukan jumlah acak untuk masing-masing benda (Misal: 2 hingga 8 buah per tipe)
+            itemTypes.forEach((itemEmoji, index) => {
+                const itemCount = Math.floor(Math.random() * 7) + 2; // Menghasilkan angka 2 - 8
+
+                for (let i = 0; i < itemCount; i++) {
+                    createItemElement(itemEmoji, box, index * itemCount + i);
+                }
+            });
+        }
+
+        // ==========================================
+        // FUNGSI MEMBUAT ELEMEN BENDA
+        // ==========================================
+        function createItemElement(emoji, container, index) {
+            const item = document.createElement('div');
+            item.className = 'school-item pop-animation';
+            item.innerText = emoji;
+
+            // Hitung posisi acak di dalam kotak (5% hingga 85% agar tidak keluar batas)
+            const randomX = Math.floor(Math.random() * 80) + 5;
+            const randomY = Math.floor(Math.random() * 80) + 5;
+            
+            // Hitung rotasi acak (-45 derajat hingga 45 derajat) agar terlihat alami berantakan
+            const randomRot = Math.floor(Math.random() * 90) - 45;
+
+            // Set properti CSS
+            item.style.left = `${randomX}%`;
+            item.style.top = `${randomY}%`;
+            item.style.zIndex = Math.floor(Math.random() * 40) + 1; // Z-index acak agar tumpukannya natural
+            
+            // Gunakan custom property agar keyframes tahu posisi akhir rotasinya
+            item.style.setProperty('--target-rot', `${randomRot}deg`);
+
+            // Tambahkan delay animasi sedikit berbeda untuk setiap benda agar munculnya estetik (berurutan cepat)
+            item.style.animationDelay = `${index * 0.02}s`;
+
+            // Ketika animasi selesai, pastikan rotasi dipertahankan agar tidak reset
+            item.addEventListener('animationend', () => {
+                item.style.transform = `scale(1) rotate(${randomRot}deg)`;
+                item.classList.remove('pop-animation');
+            });
+
+            container.appendChild(item);
+        }
+
+        // ==========================================
+        // LOGIKA FULLSCREEN
+        // ==========================================
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Gagal membuka layar penuh.`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            const enterIcon = document.getElementById('fs-icon-enter');
+            const exitIcon = document.getElementById('fs-icon-exit');
+            if (document.fullscreenElement) {
+                enterIcon.classList.add('hidden'); exitIcon.classList.remove('hidden');
+            } else {
+                enterIcon.classList.remove('hidden'); exitIcon.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
