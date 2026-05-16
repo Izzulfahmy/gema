@@ -203,19 +203,19 @@
             animation: popInHistory 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Drag styling for sortable items - DIPERBAIKI AGAR SMOOTH SAAT SWAP */
+        /* Drag styling for sortable items (UX DIPERBAIKI - LEBIH NATURAL & MENYATU) */
         .sortable-ghost {
-            opacity: 0.3 !important;
-            background-color: #f1f5f9 !important; /* Warna slot kosong */
-            border: 2px dashed #cbd5e1 !important;
-            /* PENTING: Dihapus transform-nya agar ukuran aslinya tidak berubah dan hit-box tetap akurat */
+            opacity: 0.4 !important;
+            background-color: #cbd5e1 !important; /* Warna tempat yang ditinggalkan */
+            border: 2px dashed #94a3b8 !important;
+            border-radius: 0.5rem !important;
         }
-        .sortable-drag {
+        .sortable-drag, .sortable-fallback {
             cursor: grabbing !important;
-            transform: scale(1.15) rotate(4deg) !important; /* Terlihat lebih terangkat dari layar */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
+            /* Menghilangkan efek mengambang (scale/rotate) agar tetap presisi */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
             z-index: 9999 !important;
-            opacity: 1 !important;
+            opacity: 0.9 !important;
             background-color: #ffffff !important;
         }
 
@@ -237,7 +237,7 @@
         }
         .quiz-option.missed {
             border-width: 4px !important;
-            border-color: #34d399 !important; /* Hijau tebal jika terlewat */
+            border-color: #34d399 !important;
         }
         .quiz-step-container {
             transition: opacity 0.3s ease, transform 0.3s ease;
@@ -633,16 +633,14 @@
             
             const sortBox = document.getElementById('dice-sort-box');
             sortableInstance = new Sortable(sortBox, {
-                animation: 250, // Lebih cepat & responsif
+                animation: 300, // Smooth transition
                 easing: "cubic-bezier(0.25, 1, 0.5, 1)", 
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
-                forceFallback: true, 
-                fallbackClass: 'sortable-drag',
-                fallbackOnBody: true,
+                forceFallback: false, // MATIKAN fallback agar UX HTML5 native berjalan, seringkali ini menyelesaikan masalah "scale" aneh dan pergeseran yang tidak natural
                 delay: 150, 
                 delayOnTouchOnly: true,
-                swapThreshold: 0.65 // Titik batas pertukaran (agar lebih mudah bergeser saat didekati)
+                swapThreshold: 1 // Harus lewat ke seluruh body item untuk men-swap, mencegah melompat-lompat
             });
         });
 
