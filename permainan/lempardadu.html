@@ -41,7 +41,7 @@
 
     <style>
         /* =========================================
-           DICE 3D STYLES (Diperkecil sedikit untuk UI compact)
+           DICE 3D STYLES
            ========================================= */
         .dice-scene {
             width: 80px; 
@@ -203,16 +203,17 @@
             animation: popInHistory 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Drag styling for sortable items (Meningkatkan UX Mobile) */
+        /* Drag styling for sortable items - DIPERBAIKI AGAR SMOOTH SAAT SWAP */
         .sortable-ghost {
-            opacity: 0.4 !important;
-            background-color: #e2e8f0 !important; /* Warna slot kosong */
-            border: 2px dashed #94a3b8 !important;
-            border-radius: 0.5rem !important; /* Mengikuti ukuran rounded kotak dadu */
+            opacity: 0.3 !important;
+            background-color: #f1f5f9 !important; /* Warna slot kosong */
+            border: 2px dashed #cbd5e1 !important;
+            /* PENTING: Dihapus transform-nya agar ukuran aslinya tidak berubah dan hit-box tetap akurat */
         }
-        .sortable-drag, .sortable-fallback {
+        .sortable-drag {
             cursor: grabbing !important;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            transform: scale(1.15) rotate(4deg) !important; /* Terlihat lebih terangkat dari layar */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
             z-index: 9999 !important;
             opacity: 1 !important;
             background-color: #ffffff !important;
@@ -526,7 +527,7 @@
         </div>
     </div>
 
-    <!-- MODAL CELEBRATION -->
+    <!-- MODAL CELEBRATION (Bisa Dipakai Banyak Hal) -->
     <div id="win-modal-container" class="fixed inset-0 z-[9990] hidden items-center justify-center">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto" onclick="closeWinModal()"></div>
         <div class="relative bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500 pointer-events-auto max-w-md w-[90%]" id="win-modal">
@@ -632,16 +633,16 @@
             
             const sortBox = document.getElementById('dice-sort-box');
             sortableInstance = new Sortable(sortBox, {
-                animation: 350, // Lebih lambat & smooth agar terlihat bergeser
-                easing: "cubic-bezier(0.25, 1, 0.5, 1)", // Transisi bergeser yang halus
+                animation: 250, // Lebih cepat & responsif
+                easing: "cubic-bezier(0.25, 1, 0.5, 1)", 
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
                 forceFallback: true, 
-                fallbackClass: 'sortable-fallback',
+                fallbackClass: 'sortable-drag',
                 fallbackOnBody: true,
                 delay: 150, 
                 delayOnTouchOnly: true,
-                touchStartThreshold: 5 
+                swapThreshold: 0.65 // Titik batas pertukaran (agar lebih mudah bergeser saat didekati)
             });
         });
 
@@ -766,7 +767,6 @@
             currentSortOrder.forEach(angka => {
                 const diceDiv = document.createElement('div');
                 diceDiv.dataset.val = angka;
-                // cursor-grab untuk indikator bisa didrag
                 diceDiv.className = `w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shadow-sm border border-slate-200 bg-white cursor-grab`;
                 diceDiv.innerHTML = getDiceHTMLContent(angka);
                 sortBox.appendChild(diceDiv);
