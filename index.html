@@ -14,7 +14,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class', // Mengaktifkan Dark Mode via class
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: { 
@@ -31,14 +31,12 @@
            LATAR BELAKANG COLORFUL BERANIMASI
            ========================================= */
         body { 
-            /* Gradasi warna pastel cerah yang ceria */
             background: linear-gradient(-45deg, #fdf4ff, #e0e7ff, #ecfeff, #fffbeb);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
         }
 
         .dark body { 
-            /* Gradasi warna gelap yang elegan untuk mode malam */
             background: linear-gradient(-45deg, #1e1b4b, #0f172a, #172554, #31111d);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -53,7 +51,6 @@
         /* =========================================
            ANIMASI & EFEK MELAYANG
            ========================================= */
-        /* Animasi mengambang untuk ikon di dalam kartu */
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-10px) rotate(3deg); }
@@ -65,7 +62,6 @@
             display: inline-block;
         }
 
-        /* Animasi Masuk Halaman */
         .fade-in-up {
             animation: fadeInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             opacity: 0;
@@ -83,7 +79,6 @@
             height: 28px;
             object-fit: contain;
             transition: transform 0.2s ease-in-out;
-            /* Filter shadow dipertahankan sedikit untuk kedalaman, tapi border dihilangkan di class HTML */
             filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
         }
         .logo-row img:hover {
@@ -94,7 +89,6 @@
             .logo-row img { height: 36px; }
         }
 
-        /* Tombol bergaya mainan */
         .toy-btn-sm {
             box-shadow: 0 4px 0 rgba(0,0,0,0.1); transition: all 0.1s;
         }
@@ -104,6 +98,13 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased text-slate-800 dark:text-slate-100 selection:bg-pink-200 dark:selection:bg-pink-900 overflow-x-hidden relative">
+
+    <div id="game-container" class="fixed inset-0 z-[9999] hidden bg-white dark:bg-slate-900 flex-col opacity-0 transition-opacity duration-300">
+        <button onclick="closeGame()" class="toy-btn-sm absolute top-3 left-3 sm:top-5 sm:left-5 z-[10000] w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 text-rose-500 rounded-xl hover:bg-rose-50 dark:hover:bg-slate-700 hover:border-rose-300 dark:hover:border-rose-500 transition-colors flex items-center justify-center" title="Kembali ke Menu Utama">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        </button>
+        <iframe id="game-frame" class="w-full h-full border-none flex-grow" src=""></iframe>
+    </div>
 
     <button onclick="toggleTheme()" class="toy-btn-sm fixed top-3 left-3 sm:top-5 sm:left-5 z-[100] w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 text-pink-500 dark:text-yellow-400 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-pink-300 dark:hover:border-yellow-500 transition-colors focus:outline-none flex items-center justify-center group" title="Ubah Tema">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden dark:block group-hover:rotate-45 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
@@ -118,11 +119,9 @@
     <div class="w-full pt-6 sm:pt-8 px-4 flex justify-center fade-in-up relative z-50">
         <nav class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-lg border-4 border-indigo-200/50 dark:border-indigo-900/50 py-2.5 px-6 sm:px-10 rounded-full transition-colors duration-300 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400"></div>
-            
             <div class="flex items-center justify-center gap-4 sm:gap-8 logo-row mt-1">
                 <img src="aset/tutwuri.png" alt="Tut Wuri Handayani" title="Tut Wuri Handayani">
                 <img src="aset/Logo.png" alt="Logo GEMA" title="GEMA">
-                <!-- Border dan rounded dihilangkan agar logo bersih -->
                 <img src="aset/fkip.jpg" alt="FKIP" title="FKIP" class="rounded-sm">
                 <img src="aset/ppg.jpg" alt="PPG" title="PPG" class="rounded-sm">
             </div>
@@ -141,7 +140,7 @@
     <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 pb-24 relative z-10">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 fade-in-up" style="animation-delay: 0.2s;">
             
-            <a href="permainan/penyajiandata.html" class="group flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] shadow-lg hover:shadow-2xl border-4 border-sky-100 dark:border-slate-700 hover:border-sky-400 dark:hover:border-sky-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+            <button onclick="openGame('permainan/penyajiandata.html')" class="w-full text-left group flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] shadow-lg hover:shadow-2xl border-4 border-sky-100 dark:border-slate-700 hover:border-sky-400 dark:hover:border-sky-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
                 <div class="h-48 w-full bg-gradient-to-br from-sky-50 to-cyan-100 dark:from-slate-900 dark:to-sky-900/40 flex items-center justify-center relative overflow-hidden transition-colors duration-300 border-b-4 border-sky-100 dark:border-slate-700 group-hover:border-sky-300">
                     <div class="absolute inset-0 opacity-20 dark:opacity-10 bg-[radial-gradient(#0ea5e9_2px,transparent_2px)] bg-[size:16px_16px]"></div>
                     <span class="text-7xl animate-float group-hover:scale-125 transition-transform duration-300 relative z-10 filter drop-shadow-md">📊</span>
@@ -155,9 +154,9 @@
                         Hitung, pisahkan, dan kelompokkan benda yang berserakan dengan menyenangkan!
                     </p>
                 </div>
-            </a>
+            </button>
 
-            <a href="permainan/lempardadu.html" class="group flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] shadow-lg hover:shadow-2xl border-4 border-purple-100 dark:border-slate-700 hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+            <button onclick="openGame('permainan/lempardadu.html')" class="w-full text-left group flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] shadow-lg hover:shadow-2xl border-4 border-purple-100 dark:border-slate-700 hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
                 <div class="h-48 w-full bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-slate-900 dark:to-purple-900/40 flex items-center justify-center relative overflow-hidden transition-colors duration-300 border-b-4 border-purple-100 dark:border-slate-700 group-hover:border-purple-300">
                     <div class="absolute inset-0 opacity-20 dark:opacity-10 bg-[radial-gradient(#a855f7_2px,transparent_2px)] bg-[size:16px_16px]"></div>
                     <span class="text-7xl animate-float group-hover:scale-125 transition-transform duration-300 relative z-10 filter drop-shadow-md" style="animation-delay: 1s;">🎲</span>
@@ -171,9 +170,9 @@
                         Pelajari peluang, urutkan angkanya, dan visualisasikan grafik dadumu!
                     </p>
                 </div>
-            </a>
+            </button>
             
-            <a href="permainan/ulartangga.html" class="group flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] shadow-lg hover:shadow-2xl border-4 border-emerald-100 dark:border-slate-700 hover:border-emerald-400 dark:hover:border-emerald-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-2 lg:col-span-1 sm:col-span-2 lg:col-start-auto">
+            <button onclick="openGame('permainan/ulartangga.html')" class="w-full text-left group flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] shadow-lg hover:shadow-2xl border-4 border-emerald-100 dark:border-slate-700 hover:border-emerald-400 dark:hover:border-emerald-500 transition-all duration-300 overflow-hidden transform hover:-translate-y-2 lg:col-span-1 sm:col-span-2 lg:col-start-auto">
                 <div class="h-48 w-full bg-gradient-to-br from-emerald-50 to-teal-100 dark:from-slate-900 dark:to-emerald-900/40 flex items-center justify-center relative overflow-hidden transition-colors duration-300 border-b-4 border-emerald-100 dark:border-slate-700 group-hover:border-emerald-300">
                     <div class="absolute inset-0 opacity-20 dark:opacity-10 bg-[radial-gradient(#10b981_2px,transparent_2px)] bg-[size:16px_16px]"></div>
                     <span class="text-7xl animate-float group-hover:scale-125 transition-transform duration-300 relative z-10 filter drop-shadow-md" style="animation-delay: 2s;">🐍</span>
@@ -187,7 +186,7 @@
                         Berlomba mencapai garis akhir! Naik lewat tangga dan hindari gigitan ular.
                     </p>
                 </div>
-            </a>
+            </button>
 
         </div>
     </main>
@@ -249,6 +248,44 @@
                 exitIcon.classList.add('hidden');
             }
         });
+
+        // =====================================
+        // FUNGSI MEMBUKA & MENUTUP GAME (IFRAME)
+        // =====================================
+        function openGame(url) {
+            const gameContainer = document.getElementById('game-container');
+            const gameFrame = document.getElementById('game-frame');
+            
+            // Masukkan URL game
+            gameFrame.src = url;
+            
+            // Tampilkan container
+            gameContainer.classList.remove('hidden');
+            gameContainer.classList.add('flex');
+            
+            // Animasi transisi masuk
+            setTimeout(() => {
+                gameContainer.classList.remove('opacity-0');
+                gameContainer.classList.add('opacity-100');
+            }, 10);
+        }
+
+        function closeGame() {
+            const gameContainer = document.getElementById('game-container');
+            const gameFrame = document.getElementById('game-frame');
+            
+            // Animasi transisi keluar
+            gameContainer.classList.remove('opacity-100');
+            gameContainer.classList.add('opacity-0');
+            
+            // Sembunyikan setelah animasi selesai
+            setTimeout(() => {
+                gameContainer.classList.add('hidden');
+                gameContainer.classList.remove('flex');
+                // Hapus sumber agar memori browser kembali bersih
+                gameFrame.src = '';
+            }, 300);
+        }
     </script>
 </body>
 </html>
