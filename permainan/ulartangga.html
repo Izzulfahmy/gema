@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ular Tangga Seru! 🐍🪜</title>
     
-    <!-- Favicon Logo -->
     <link rel="icon" href="../aset/Logo.png" type="image/png">
     
-    <!-- Google Fonts: Nunito -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -244,7 +241,6 @@
 </head>
 <body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col justify-center items-center">
 
-    <!-- MODAL PILIH PEMAIN (STARTUP) -->
     <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
         <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-md w-[90%] text-center transform transition-all border-4 border-emerald-100">
             <div class="text-6xl mb-4 drop-shadow-md">🐍🪜</div>
@@ -260,27 +256,12 @@
         </div>
     </div>
 
-    <!-- ABSOLUTE CORNER BUTTONS (Z-INDEX TINGGI) -->
-    <!-- Kiri Atas (Home & Reset) -->
-    <div class="absolute top-4 left-4 z-[100] flex flex-col sm:flex-row gap-2 sm:gap-3">
-        <a href="../index.html" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Beranda">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-        </a>
+    <div class="absolute top-4 right-4 z-[100]">
         <button onclick="resetGame()" class="bg-white/80 backdrop-blur-md border border-white/60 text-rose-500 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Ulang Permainan">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
         </button>
     </div>
 
-    <!-- Kanan Atas (Fullscreen) -->
-    <div class="absolute top-4 right-4 z-[100]">
-        <button onclick="toggleFullScreen()" class="bg-white/80 backdrop-blur-md border border-white/60 text-emerald-600 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none" title="Layar Penuh">
-            <svg id="fs-icon-enter" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-            <svg id="fs-icon-exit" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14h6m0 0v6m0-6l-7 7m17-11h-6m0 0V4m0 6l-7-7M4 10h6m0 0V4m0 6l-7-7m17 11h-6m0 0v6m0-6l7 7" /></svg>
-        </button>
-    </div>
-
-    <!-- HUD PEMAIN DI 4 SUDUT (Diupdate Icon Hewannya) -->
-    <!-- P1: Kelinci (Kiri Atas) -->
     <div id="card-p0" class="absolute top-20 left-4 sm:top-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 transition-all duration-300 hidden origin-top-left">
         <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-xl shadow-inner">🐰</div>
         <div class="pr-2">
@@ -289,7 +270,6 @@
         </div>
     </div>
     
-    <!-- P2: Kambing (Kanan Atas) -->
     <div id="card-p1" class="absolute top-20 right-4 sm:top-24 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-red-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-top-right">
         <div class="w-10 h-10 rounded-full bg-red-100 border border-red-400 flex items-center justify-center font-black text-xl shadow-inner">🐐</div>
         <div class="pl-2 text-right">
@@ -298,7 +278,6 @@
         </div>
     </div>
 
-    <!-- P3: Katak (Kiri Bawah) -->
     <div id="card-p2" class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
         <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-xl shadow-inner">🐸</div>
         <div class="pr-2">
@@ -307,7 +286,6 @@
         </div>
     </div>
 
-    <!-- P4: Kucing (Kanan Bawah) -->
     <div id="card-p3" class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-bottom-right">
         <div class="w-10 h-10 rounded-full bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-xl shadow-inner">🐱</div>
         <div class="pl-2 text-right">
@@ -316,13 +294,10 @@
         </div>
     </div>
 
-    <!-- WRAPPER UTAMA PAPAN -->
     <div class="w-full h-full flex justify-center items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
         
-        <!-- WRAPPER BERISI PAPAN & TOMBOL DI SAMPINGNYA -->
         <div class="board-wrapper">
             
-            <!-- TOMBOL KOCOK (Menempel tepat di kiri bawah papan - Kotak 1) -->
             <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 transition-transform w-[60px] sm:w-[80px]">
                 <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black transition-all">🎲</div>
                 <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-xs tracking-widest uppercase border border-brand-600">
@@ -330,36 +305,27 @@
                 </button>
             </div>
 
-            <!-- BOARD CONTAINER -->
             <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
                 <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
                     
-                    <!-- SVG LAYER -->
                     <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
 
-                    <!-- GRID KOTAK 10x10 -->
                     <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full">
-                        <!-- Sel (Kotak) di-generate oleh JS -->
-                    </div>
+                        </div>
 
-                    <!-- PION PEMAIN (KARAKTER HEWAN) -->
                     <div id="tokens-container">
-                        <!-- P1: Kelinci -->
                         <div id="player-token-0" class="player-token hidden">
                             <div class="token-emoji">🐰</div>
                             <div class="token-base base-0"></div>
                         </div>
-                        <!-- P2: Kambing -->
                         <div id="player-token-1" class="player-token hidden">
                             <div class="token-emoji">🐐</div>
                             <div class="token-base base-1"></div>
                         </div>
-                        <!-- P3: Katak -->
                         <div id="player-token-2" class="player-token hidden">
                             <div class="token-emoji">🐸</div>
                             <div class="token-base base-2"></div>
                         </div>
-                        <!-- P4: Kucing -->
                         <div id="player-token-3" class="player-token hidden">
                             <div class="token-emoji">🐱</div>
                             <div class="token-base base-3"></div>
@@ -371,7 +337,6 @@
         </div>
     </div>
 
-    <!-- OVERLAY ANIMASI DADU 3D YANG DILEMPAR (TERLEMPAR DARI KIRI BAWAH MENUJU TENGAH PAPAN) -->
     <div id="dice-3d-overlay" class="fixed inset-0 z-[1000] perspective-1000 pointer-events-none flex items-center justify-center opacity-0 hidden transition-opacity duration-300">
         <div id="dice-wrapper" class="flex flex-col items-center">
             <div id="dice-cube" class="dice-cube shadow-xl rounded-2xl">
@@ -386,7 +351,6 @@
         </div>
     </div>
 
-    <!-- EFEK KONFETI (MUNCUL SAAT MENANG) -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
         <div class="bg-white/90 backdrop-blur-md p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500" id="win-modal">
             <div class="text-7xl mb-4">🏆</div>
@@ -823,29 +787,6 @@
                 document.getElementById('startup-modal').classList.remove('hidden');
             }, 300);
         }
-
-        // ==========================================
-        // LOGIKA FULLSCREEN
-        // ==========================================
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {});
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-        }
-
-        document.addEventListener('fullscreenchange', () => {
-            const enterIcon = document.getElementById('fs-icon-enter');
-            const exitIcon = document.getElementById('fs-icon-exit');
-            if (document.fullscreenElement) {
-                enterIcon.classList.add('hidden'); exitIcon.classList.remove('hidden');
-            } else {
-                enterIcon.classList.remove('hidden'); exitIcon.classList.add('hidden');
-            }
-        });
     </script>
 </body>
 </html>
