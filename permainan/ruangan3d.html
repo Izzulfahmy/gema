@@ -3,356 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Dunia 3D Interaktif & Deteksi Jari</title>
+    <title>Kamera Jari Ceria!</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+
     <style>
+        /* Animasi Latar Belakang Ceria */
         body {
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             margin: 0;
-            overflow: hidden;
-            background-color: #87CEEB; /* Warna langit biru */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none;
-        }
-        #ui-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px 20px;
-            border-radius: 16px;
-            pointer-events: none;
-            user-select: none;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.2);
-            z-index: 10;
-        }
-        h1 { margin: 0 0 10px 0; font-size: 20px; }
-        p { margin: 5px 0; font-size: 13px; line-height: 1.4; }
-        .icon { font-size: 18px; }
-        
-        /* Tampilan Kamera dan UI AI */
-        #ai-container {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 10px;
-            z-index: 10;
+            overflow-x: hidden;
         }
 
-        #cam-wrapper {
-            position: relative;
-            width: 160px;
-            height: 120px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 3px solid #38bdf8;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-            display: none; /* Disembunyikan sebelum kamera aktif */
-            background-color: #000;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        /* Video asli disembunyikan, kita hanya tampilkan canvas agar bisa digambar kerangka tangannya */
-        #input_video { display: none; }
-        
+        /* Container Kamera dengan Efek Cermin */
         #output_canvas {
+            transform: scaleX(-1); /* Efek cermin agar gerakan tidak terbalik */
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scaleX(-1); /* Efek cermin agar gerakan tangan pas */
+            border-radius: 1.5rem;
         }
 
-        #start-cam-btn {
-            pointer-events: auto;
-            background: linear-gradient(135deg, #0ea5e9, #6366f1);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #312e81;
+        .cam-frame {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 0 0 8px white;
+            position: relative;
+        }
+
+        /* Animasi Bouncy (Melompat) untuk Angka */
+        @keyframes pop {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Tombol Mainan */
+        .toy-btn {
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2); 
             transition: all 0.1s;
         }
-        #start-cam-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #312e81;
+        .toy-btn:active {
+            box-shadow: 0 0px 0 rgba(0,0,0,0.2); 
+            transform: translateY(6px); 
         }
 
-        #finger-badge {
-            background: #f59e0b;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 900;
-            font-size: 16px;
-            display: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            border: 2px solid #fff;
+        /* Loading Spinner Animation */
+        .spinner {
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
         }
-
-        /* Loading Spinner */
-        #loading {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-weight: bold;
-            display: none;
-            text-align: center;
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 
-    <!-- Muat Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    
     <!-- Muat MediaPipe untuk Deteksi Tangan (AI) -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
-<body>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- UI Bantuan -->
-    <div id="ui-container">
-        <h1>Pulau Ajaib 3D</h1>
-        <p><span class="icon">👆</span> <b>Geser/Drag</b> putar kamera</p>
-        <p><span class="icon">🔍</span> <b>Scroll/Pinch</b> zoom in/out</p>
-        <p><span class="icon">🖱️</span> <b>Klik objek</b> untuk interaksi</p>
-        <hr style="border-color: rgba(255,255,255,0.2); margin: 8px 0;">
-        <p style="color: #fcd34d; font-weight: bold;">Keajaiban Kamera:</p>
-        <p>✌️ <b>1-3 Jari:</b> Ubah Waktu (Siang/Senja/Malam)</p>
-        <p>🖐️ <b>4 Jari:</b> Pohon Melompat</p>
-        <p>🖐️ <b>5 Jari:</b> Hujan Kotak Hadiah!</p>
+    <!-- Header Judul -->
+    <header class="text-center mb-6 mt-4 relative z-10">
+        <h1 class="text-4xl sm:text-6xl font-black text-white drop-shadow-lg tracking-tight mb-2">
+            🖐️ Jari Pintar!
+        </h1>
+        <p class="text-white/90 font-bold text-base sm:text-xl bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full inline-block shadow-sm">
+            Tunjukkan jarimu ke kamera!
+        </p>
+    </header>
+
+    <!-- Area Utama Kamera -->
+    <div class="relative w-full max-w-2xl aspect-[4/3] sm:aspect-video cam-frame bg-slate-800 rounded-3xl flex items-center justify-center z-10">
+        
+        <!-- Video Input (Disembunyikan, hanya diambil datanya) -->
+        <video id="input_video" class="hidden" playsinline></video>
+        
+        <!-- Canvas Output (Tempat menggambar video + rangka tangan) -->
+        <canvas id="output_canvas" class="hidden"></canvas>
+        
+        <!-- Pesan Awal & Tombol Mulai -->
+        <div id="start-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-white/10 backdrop-blur-md rounded-3xl z-20">
+            <div class="text-8xl mb-6 drop-shadow-md animate-bounce">📷</div>
+            <button id="start-cam-btn" onclick="startCamera()" class="toy-btn bg-gradient-to-r from-pink-500 to-purple-500 text-white font-black text-xl sm:text-2xl px-8 py-4 rounded-2xl border-4 border-white">
+                Nyalakan Kamera!
+            </button>
+        </div>
+
+        <!-- Layar Loading AI -->
+        <div id="loading-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-900/80 backdrop-blur-sm rounded-3xl z-20 hidden text-white">
+            <div class="spinner mb-4"></div>
+            <p class="font-bold text-lg animate-pulse">Memanggil Keajaiban AI... ✨</p>
+        </div>
+
     </div>
 
-    <!-- UI Deteksi AI -->
-    <div id="ai-container">
-        <div id="finger-badge">Menunggu Tangan... 🤚</div>
-        <button id="start-cam-btn" onclick="startCamera()">📷 Aktifkan Kamera Ajaib</button>
-        <div id="cam-wrapper">
-            <video id="input_video"></video>
-            <canvas id="output_canvas" width="320" height="240"></canvas>
-            <div id="loading">Memuat AI...⏳</div>
+    <!-- Papan Hasil Angka Jari -->
+    <div id="result-board" class="mt-8 bg-white p-6 rounded-[2rem] shadow-xl border-4 border-white hidden flex-col items-center w-full max-w-sm z-10 transition-colors duration-300 transform">
+        <p class="text-slate-400 font-bold uppercase tracking-widest text-sm mb-2">Jumlah Jarimu:</p>
+        <div id="finger-number" class="text-7xl sm:text-8xl font-black text-slate-200">
+            0
+        </div>
+        <div id="finger-text" class="mt-3 text-xl font-bold text-slate-500 text-center">
+            Ayo angkat tanganmu!
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // 1. SETUP DUNIA 3D (THREE.JS)
-        // ==========================================
-        let scene, camera, renderer, controls;
-        let interactableObjects = []; 
-        let trees = [];
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
-        window.onload = function() {
-            init3D();
-            animate3D();
-        };
-
-        function init3D() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87CEEB); 
-            scene.fog = new THREE.Fog(0x87CEEB, 20, 100); 
-
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 15, 30); 
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true; 
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            document.body.appendChild(renderer.domElement);
-
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; 
-            controls.dampingFactor = 0.05;
-            controls.maxPolarAngle = Math.PI / 2 + 0.1; 
-            controls.minDistance = 10; 
-            controls.maxDistance = 60; 
-
-            // Pencahayaan
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            dirLight.position.set(20, 40, 20);
-            dirLight.castShadow = true;
-            dirLight.shadow.mapSize.width = 1024;
-            dirLight.shadow.mapSize.height = 1024;
-            scene.add(dirLight);
-
-            buildWorld();
-
-            window.addEventListener('resize', onWindowResize);
-            window.addEventListener('pointerdown', onPointerDown);
-        }
-
-        function buildWorld() {
-            // Tanah Atas
-            const groundGeo = new THREE.CylinderGeometry(15, 12, 4, 32);
-            const groundMat = new THREE.MeshStandardMaterial({ color: 0x4CAF50, roughness: 0.8 });
-            const ground = new THREE.Mesh(groundGeo, groundMat);
-            ground.position.y = -2;
-            ground.receiveShadow = true;
-            scene.add(ground);
-            
-            // Tanah Bawah
-            const dirtGeo = new THREE.CylinderGeometry(12, 8, 5, 32);
-            const dirtMat = new THREE.MeshStandardMaterial({ color: 0x5D4037, roughness: 1 });
-            const dirt = new THREE.Mesh(dirtGeo, dirtMat);
-            dirt.position.y = -6.5;
-            scene.add(dirt);
-
-            // Pohon
-            for (let i = 0; i < 15; i++) createTree();
-
-            // Kotak Awal
-            for (let i = 0; i < 5; i++) createInteractiveBox();
-
-            // Awan
-            createClouds();
-        }
-
-        function createTree() {
-            const treeGroup = new THREE.Group();
-
-            const trunkGeo = new THREE.CylinderGeometry(0.4, 0.6, 2, 8);
-            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x795548 });
-            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-            trunk.position.y = 1;
-            trunk.castShadow = true;
-            trunk.receiveShadow = true;
-            treeGroup.add(trunk);
-
-            const leavesGeo = new THREE.ConeGeometry(2, 4, 8);
-            const leavesMat = new THREE.MeshStandardMaterial({ color: 0x2E7D32 });
-            const leaves = new THREE.Mesh(leavesGeo, leavesMat);
-            leaves.position.y = 3;
-            leaves.castShadow = true;
-            leaves.receiveShadow = true;
-            treeGroup.add(leaves);
-
-            const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * 12; 
-            treeGroup.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
-            
-            const scale = 0.5 + Math.random() * 0.8;
-            treeGroup.scale.set(scale, scale, scale);
-
-            scene.add(treeGroup);
-            interactableObjects.push(leaves);
-            trees.push(treeGroup); // Simpan pohon untuk animasi AI
-        }
-
-        function createInteractiveBox() {
-            const size = 0.8 + Math.random() * 0.8;
-            const geometry = new THREE.BoxGeometry(size, size, size);
-            const colors = [0xFF5252, 0xFFEB3B, 0x448AFF, 0xE040FB, 0xFF9800];
-            const material = new THREE.MeshStandardMaterial({ 
-                color: colors[Math.floor(Math.random() * colors.length)], 
-                roughness: 0.2, metalness: 0.1 
-            });
-            const box = new THREE.Mesh(geometry, material);
-            
-            const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * 13;
-            box.position.set(Math.cos(angle) * radius, 15, Math.sin(angle) * radius); // Jatuh dari atas
-            
-            box.castShadow = true; box.receiveShadow = true;
-            box.rotation.y = Math.random() * Math.PI;
-
-            scene.add(box);
-            interactableObjects.push(box);
-            
-            // Animasi jatuh sederhana
-            const dropInterval = setInterval(() => {
-                if(box.position.y > size/2) {
-                    box.position.y -= 0.5;
-                    box.rotation.x += 0.1;
-                } else {
-                    box.position.y = size/2;
-                    clearInterval(dropInterval);
-                }
-            }, 16);
-        }
-
-        function createClouds() {
-            const cloudGeo = new THREE.DodecahedronGeometry(2, 1);
-            const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true, transparent: true, opacity: 0.9 });
-            for(let i=0; i<5; i++) {
-                const cloud = new THREE.Mesh(cloudGeo, cloudMat);
-                cloud.position.set((Math.random() - 0.5) * 40, 15 + Math.random() * 10, (Math.random() - 0.5) * 40);
-                cloud.scale.set(1 + Math.random(), 0.5 + Math.random()*0.5, 1 + Math.random());
-                scene.add(cloud);
-            }
-        }
-
-        function onPointerDown(event) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(interactableObjects);
-
-            if (intersects.length > 0) {
-                const objectHit = intersects[0].object;
-                objectHit.material.color.setHex(Math.random() * 0xffffff);
-                
-                const originalY = objectHit.position.y;
-                objectHit.position.y += 1;
-                setTimeout(() => { objectHit.position.y = originalY; }, 150);
-            }
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-
-        // ==========================================
-        // 2. SETUP AI DETEKSI JARI (MEDIAPIPE)
-        // ==========================================
         const videoElement = document.getElementById('input_video');
         const canvasElement = document.getElementById('output_canvas');
         const canvasCtx = canvasElement.getContext('2d');
-        const fingerBadge = document.getElementById('finger-badge');
-        const startBtn = document.getElementById('start-cam-btn');
-        const camWrapper = document.getElementById('cam-wrapper');
-        const loading = document.getElementById('loading');
+        
+        const startOverlay = document.getElementById('start-overlay');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const resultBoard = document.getElementById('result-board');
+        const fingerNumber = document.getElementById('finger-number');
+        const fingerText = document.getElementById('finger-text');
 
         let isAiActive = false;
-        let actionCooldown = 0; // Mencegah AI memicu animasi berkali-kali dalam 1 detik
-        let lastReportedFingers = 0;
+        let currentFingerCount = -1; // Menyimpan angka terakhir yang terdeteksi
+
+        // Warna-warni ceria untuk setiap jumlah jari
+        const colorPalette = {
+            0: { bg: 'bg-white', border: 'border-slate-200', textCol: 'text-slate-300', msg: 'Ayo angkat tanganmu! 👋' },
+            1: { bg: 'bg-red-50', border: 'border-red-400', textCol: 'text-red-500', msg: 'Satu! Seperti tiang ☝️' },
+            2: { bg: 'bg-orange-50', border: 'border-orange-400', textCol: 'text-orange-500', msg: 'Dua! Gunting damai ✌️' },
+            3: { bg: 'bg-yellow-50', border: 'border-yellow-400', textCol: 'text-yellow-500', msg: 'Tiga! Garpu kue 🤟' },
+            4: { bg: 'bg-emerald-50', border: 'border-emerald-400', textCol: 'text-emerald-500', msg: 'Empat! Kaki kucing 🐾' },
+            5: { bg: 'bg-blue-50', border: 'border-blue-400', textCol: 'text-blue-500', msg: 'Lima! Tos tinggi! 🖐️' }
+        };
 
         function startCamera() {
-            startBtn.style.display = 'none';
-            camWrapper.style.display = 'block';
-            fingerBadge.style.display = 'block';
-            loading.style.display = 'block';
+            // Sembunyikan tombol mulai, tampilkan loading
+            startOverlay.classList.add('hidden');
+            loadingOverlay.classList.remove('hidden');
 
-            // Inisialisasi Hands AI
+            // Inisialisasi MediaPipe Hands AI
             const hands = new Hands({locateFile: (file) => {
                 return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
             }});
             
             hands.setOptions({
-                maxNumHands: 1,
+                maxNumHands: 1, // Fokus ke 1 tangan saja agar akurat
                 modelComplexity: 1,
-                minDetectionConfidence: 0.6,
-                minTrackingConfidence: 0.6
+                minDetectionConfidence: 0.7,
+                minTrackingConfidence: 0.7
             });
             
             hands.onResults(onHandResults);
@@ -362,114 +184,106 @@
                 onFrame: async () => {
                     await hands.send({image: videoElement});
                 },
-                width: 320,
-                height: 240
+                width: 640,
+                height: 480
             });
-            cameraUtils.start();
+            
+            cameraUtils.start().catch(err => {
+                alert("Wah, kameranya tidak bisa diakses. Pastikan kamu sudah memberikan izin kamera ya!");
+                startOverlay.classList.remove('hidden');
+                loadingOverlay.classList.add('hidden');
+            });
         }
 
         function onHandResults(results) {
-            loading.style.display = 'none'; // Sembunyikan loading jika sudah ada frame
-            isAiActive = true;
+            // Saat frame pertama berhasil diproses
+            if (!isAiActive) {
+                isAiActive = true;
+                loadingOverlay.classList.add('hidden');
+                canvasElement.classList.remove('hidden');
+                resultBoard.classList.remove('hidden');
+                resultBoard.classList.add('flex');
+            }
             
             // Bersihkan canvas
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-            // Gambar ulang video ke canvas
+            // Gambar ulang video asli dari kamera ke canvas
             canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
+            // Jika tangan terdeteksi
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                 const landmarks = results.multiHandLandmarks[0];
                 
-                // Gambar Garis Tangan
-                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#00FF00', lineWidth: 2});
-                drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 1, radius: 2});
+                // Gambar Garis Rangka Tangan (Warna Warni Ceria)
+                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#ffffff', lineWidth: 4});
+                drawLandmarks(canvasCtx, landmarks, {color: '#f472b6', lineWidth: 2, radius: 6}); // Warna pink untuk titik
 
                 // Hitung Jari
                 let fingerCount = calculateFingers(landmarks);
-                fingerBadge.innerText = `Jari Terdeteksi: ${fingerCount} ✌️`;
-
-                // Pemicu Keajaiban 3D
-                handleMagicInteraction(fingerCount);
+                
+                // Update UI jika jumlah jari berubah
+                updateUI(fingerCount);
 
             } else {
-                fingerBadge.innerText = `Tangan tidak terlihat 🤚`;
+                // Jika tangan tidak ada di layar
+                updateUI(0);
             }
             canvasCtx.restore();
-            
-            if (actionCooldown > 0) actionCooldown--;
         }
 
         function calculateFingers(landmarks) {
             let count = 0;
             
             // Algoritma Pengecekan Jari Terangkat (Y-axis check)
-            // Ujung jari (Tip) harus lebih tinggi (Y lebih kecil di layar) dari pangkal jarinya (PIP)
+            // Ujung jari (Tip) harus lebih tinggi (Y lebih kecil) dari sendi bawahnya (PIP/MCP)
             
             // Telunjuk (Index) - Tip: 8, PIP: 6
             if (landmarks[8].y < landmarks[6].y) count++;
+            
             // Tengah (Middle) - Tip: 12, PIP: 10
             if (landmarks[12].y < landmarks[10].y) count++;
+            
             // Manis (Ring) - Tip: 16, PIP: 14
             if (landmarks[16].y < landmarks[14].y) count++;
+            
             // Kelingking (Pinky) - Tip: 20, PIP: 18
             if (landmarks[20].y < landmarks[18].y) count++;
 
-            // Jempol (Thumb) sedikit berbeda karena bergerak ke samping.
-            // Kita ukur jarak ujung jempol ke pangkal kelingking (17) vs pangkal jempol ke pangkal kelingking
+            // Jempol (Thumb)
+            // Diukur jaraknya memanjang keluar dari telapak
             const thumbTipDist = Math.hypot(landmarks[4].x - landmarks[17].x, landmarks[4].y - landmarks[17].y);
             const thumbMcpDist = Math.hypot(landmarks[2].x - landmarks[17].x, landmarks[2].y - landmarks[17].y);
-            if (thumbTipDist > thumbMcpDist + 0.05) count++; // Terangkat / Terbuka
+            if (thumbTipDist > thumbMcpDist + 0.05) count++; 
 
             return count;
         }
 
-        function handleMagicInteraction(count) {
-            if (count === 0 || actionCooldown > 0) return;
+        function updateUI(count) {
+            // Batasi angka 0-5
+            if (count < 0) count = 0;
+            if (count > 5) count = 5;
 
-            // Memicu aksi jika jari stabil atau berubah
-            if (count !== lastReportedFingers) {
-                
-                lastReportedFingers = count;
-                actionCooldown = 60; // Jeda sekitar 1-2 detik sebelum aksi lain bisa dipicu
+            // Jika angka sama dengan sebelumnya, tidak perlu update animasi
+            if (count === currentFingerCount) return;
+            
+            currentFingerCount = count;
+            const style = colorPalette[count];
 
-                // Aksi Berdasarkan Jumlah Jari
-                if (count === 1) {
-                    // Siang Hari
-                    scene.background.setHex(0x87CEEB);
-                    scene.fog.color.setHex(0x87CEEB);
-                    fingerBadge.style.background = "#3b82f6"; // Biru
-                } 
-                else if (count === 2) {
-                    // Senja
-                    scene.background.setHex(0xFD5E53);
-                    scene.fog.color.setHex(0xFD5E53);
-                    fingerBadge.style.background = "#f97316"; // Oranye
-                } 
-                else if (count === 3) {
-                    // Malam
-                    scene.background.setHex(0x0B1D3A);
-                    scene.fog.color.setHex(0x0B1D3A);
-                    fingerBadge.style.background = "#1e1b4b"; // Biru Gelap
-                } 
-                else if (count === 4) {
-                    // Pohon Melompat
-                    fingerBadge.style.background = "#10b981"; // Hijau
-                    trees.forEach((tree, index) => {
-                        setTimeout(() => {
-                            const origY = tree.position.y;
-                            tree.position.y += 3;
-                            setTimeout(() => { tree.position.y = origY; }, 200);
-                        }, index * 50); // Lompat bergelombang
-                    });
-                } 
-                else if (count === 5) {
-                    // Hujan Kotak Hadiah
-                    fingerBadge.style.background = "#eab308"; // Kuning
-                    createInteractiveBox();
-                }
-            }
+            // Update teks dan warna
+            fingerNumber.innerText = count;
+            fingerText.innerText = style.msg;
+
+            // Bersihkan kelas warna sebelumnya
+            resultBoard.className = `mt-8 p-6 rounded-[2rem] shadow-2xl flex flex-col items-center w-full max-w-sm z-10 transition-colors duration-300 border-4 ${style.bg} ${style.border}`;
+            fingerNumber.className = `text-[6rem] sm:text-[8rem] leading-none font-black ${style.textCol} drop-shadow-sm`;
+            fingerText.className = `mt-2 text-lg sm:text-xl font-bold text-center ${style.textCol}`;
+
+            // Mainkan Animasi Bouncy dengan me-reset elemen
+            fingerNumber.classList.remove('animate-pop');
+            void fingerNumber.offsetWidth; // Trigger reflow untuk mereset animasi css
+            fingerNumber.classList.add('animate-pop');
         }
     </script>
 </body>
