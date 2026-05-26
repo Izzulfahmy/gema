@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Dunia 3D Interaktif</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB; /* Warna langit biru */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none; /* Mencegah scroll default di mobile saat menggeser canvas */
+        }
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 20px;
+            border-radius: 12px;
+            pointer-events: none; /* Agar klik tembus ke canvas 3D */
+            user-select: none;
+            backdrop-filter: blur(4px);
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+        }
+        p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .instruction {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .icon {
+            font-size: 20px;
+        }
+    </style>
+    <!-- Muat Three.js dari CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Muat OrbitControls untuk fitur geser & putar -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+    <!-- Antarmuka Pengguna -->
+    <div id="ui-container">
+        <h1>Pulau Melayang 3D</h1>
+        <p><span class="icon">👆</span> <b>Geser/Drag</b> untuk memutar kamera</p>
+        <p><span class="icon">🔍</span> <b>Scroll/Pinch</b> untuk zoom (perbesar/perkecil)</p>
+        <p><span class="icon">🖱️</span> <b>Klik/Sentuh</b> objek untuk mengubah warna!</p>
+    </div>
+
+    <script>
+        // Variabel global
+        let scene, camera, renderer, controls;
+        let interactableObjects = []; // Array untuk menyimpan objek yang bisa diklik
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // Inisialisasi saat window dimuat
+        window.onload = function() {
+            init();
+            animate();
+        };
+
+        function init() {
+            // 1. Buat Scene (Panggung 3D)
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB); // Langit siang
+            scene.fog = new THREE.Fog(0x87CEEB, 20, 100); // Efek kabut di kejauhan
+
+            // 2. Buat Kamera
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 15, 30); // Posisi awal kamera
+
+            // 3. Buat Renderer (Mesin Penggambar)
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true; // Aktifkan bayangan
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.body.appendChild(renderer.domElement);
+
+            // 4. Tambahkan Kontrol (Agar bisa digeser-geser)
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; // Efek gerakan halus saat dilepas
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 + 0.1; // Batasi putaran ke bawah agar tidak terlalu ke bawah tanah
+            controls.minDistance = 10; // Zoom maksimal ke dalam
+            controls.maxDistance = 60; // Zoom maksimal ke luar
+
+            // 5. Tambahkan Pencahayaan
+            // Cahaya ambien merata ke seluruh objek
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            // Cahaya matahari dari satu arah yang menghasilkan bayangan
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(20, 40, 20);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            dirLight.shadow.camera.left = -20;
+            dirLight.shadow.camera.right = 20;
+            dirLight.shadow.camera.top = 20;
+            dirLight.shadow.camera.bottom = -20;
+            scene.add(dirLight);
+
+            // 6. Bangun Dunia (Pulau, Pohon, Awan, dll)
+            buildWorld();
+
+            // 7. Event Listeners
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('pointerdown', onPointerDown); // Mendukung klik mouse dan sentuhan layar
+        }
+
+        function buildWorld() {
+            // --- Membuat Tanah (Pulau Melayang) ---
+            const groundGeometry = new THREE.CylinderGeometry(15, 12, 4, 32);
+            const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x4CAF50, roughness: 0.8 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.position.y = -2; // Turunkan sedikit agar permukaannya di Y=0
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // Tambahkan dasar tanah cokelat
+            const dirtGeometry = new THREE.CylinderGeometry(12, 8, 5, 32);
+            const dirtMaterial = new THREE.MeshStandardMaterial({ color: 0x5D4037, roughness: 1 });
+            const dirt = new THREE.Mesh(dirtGeometry, dirtMaterial);
+            dirt.position.y = -6.5;
+            scene.add(dirt);
+
+            // --- Menambahkan Pohon Acak ---
+            const treeCount = 15;
+            for (let i = 0; i < treeCount; i++) {
+                createTree();
+            }
+
+            // --- Menambahkan Kotak-kotak Hadiah (Interaktif) ---
+            const boxCount = 8;
+            for (let i = 0; i < boxCount; i++) {
+                createInteractiveBox();
+            }
+
+            // --- Menambahkan Awan Melayang ---
+            createClouds();
+        }
+
+        function createTree() {
+            const treeGroup = new THREE.Group();
+
+            // Batang pohon
+            const trunkGeo = new THREE.CylinderGeometry(0.4, 0.6, 2, 8);
+            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x795548 });
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = 1;
+            trunk.castShadow = true;
+            trunk.receiveShadow = true;
+            treeGroup.add(trunk);
+
+            // Daun pohon (kerucut)
+            const leavesGeo = new THREE.ConeGeometry(2, 4, 8);
+            const leavesMat = new THREE.MeshStandardMaterial({ color: 0x2E7D32 });
+            const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+            leaves.position.y = 3;
+            leaves.castShadow = true;
+            leaves.receiveShadow = true;
+            treeGroup.add(leaves);
+
+            // Posisi acak di atas pulau
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.random() * 12; // Jangan sampai keluar pulau
+            treeGroup.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
+            
+            // Skala acak agar tinggi pohon berbeda-beda
+            const scale = 0.5 + Math.random() * 0.8;
+            treeGroup.scale.set(scale, scale, scale);
+
+            scene.add(treeGroup);
+            
+            // Masukkan daun ke daftar objek interaktif agar warnanya bisa diklik
+            interactableObjects.push(leaves);
+        }
+
+        function createInteractiveBox() {
+            const size = 0.8 + Math.random() * 0.8;
+            const geometry = new THREE.BoxGeometry(size, size, size);
+            
+            // Warna warni cerah
+            const colors = [0xFF5252, 0xFFEB3B, 0x448AFF, 0xE040FB, 0xFF9800];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            const material = new THREE.MeshStandardMaterial({ 
+                color: randomColor, 
+                roughness: 0.2, 
+                metalness: 0.1 
+            });
+            
+            const box = new THREE.Mesh(geometry, material);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.random() * 13;
+            box.position.set(Math.cos(angle) * radius, size/2, Math.sin(angle) * radius);
+            
+            box.castShadow = true;
+            box.receiveShadow = true;
+            
+            // Putar secara acak
+            box.rotation.y = Math.random() * Math.PI;
+
+            scene.add(box);
+            interactableObjects.push(box); // Bisa diklik
+        }
+
+        function createClouds() {
+            const cloudGeo = new THREE.DodecahedronGeometry(2, 1);
+            const cloudMat = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff, 
+                flatShading: true,
+                transparent: true,
+                opacity: 0.9
+            });
+
+            for(let i=0; i<5; i++) {
+                const cloud = new THREE.Mesh(cloudGeo, cloudMat);
+                cloud.position.set(
+                    (Math.random() - 0.5) * 40,
+                    15 + Math.random() * 10,
+                    (Math.random() - 0.5) * 40
+                );
+                cloud.scale.set(1 + Math.random(), 0.5 + Math.random()*0.5, 1 + Math.random());
+                scene.add(cloud);
+            }
+        }
+
+        // Fungsi untuk menangani klik/sentuhan pada objek 3D
+        function onPointerDown(event) {
+            // Ubah posisi mouse/sentuhan ke koordinat normalisasi device (-1 sampai +1)
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // Tembakkan sinar virtual dari kamera ke arah kursor
+            raycaster.setFromCamera(mouse, camera);
+
+            // Cek apakah sinar mengenai objek yang ada di daftar interactableObjects
+            const intersects = raycaster.intersectObjects(interactableObjects);
+
+            if (intersects.length > 0) {
+                // Ambil objek pertama yang terkena (paling depan)
+                const objectHit = intersects[0].object;
+                
+                // Ubah warnanya secara acak
+                objectHit.material.color.setHex(Math.random() * 0xffffff);
+                
+                // Beri efek lompat kecil
+                const originalY = objectHit.position.y;
+                objectHit.position.y += 1;
+                
+                // Animasi sederhana turun kembali menggunakan setTimeout
+                setTimeout(() => {
+                    objectHit.position.y = originalY;
+                }, 150);
+            }
+        }
+
+        // Fungsi untuk menangani perubahan ukuran layar HP/Laptop
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Fungsi Looping Animasi (Game Loop)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update kontrol kamera (wajib jika enableDamping diaktifkan)
+            controls.update();
+
+            // Render pemandangan
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
