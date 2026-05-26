@@ -3,159 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Dunia 3D Interaktif</title>
+    <title>Dunia 3D Interaktif & Deteksi Jari</title>
+    
     <style>
         body {
             margin: 0;
             overflow: hidden;
             background-color: #87CEEB; /* Warna langit biru */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none; /* Mencegah scroll default di mobile saat menggeser canvas */
+            touch-action: none;
         }
         #ui-container {
             position: absolute;
             top: 20px;
             left: 20px;
             color: white;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             padding: 15px 20px;
-            border-radius: 12px;
-            pointer-events: none; /* Agar klik tembus ke canvas 3D */
+            border-radius: 16px;
+            pointer-events: none;
             user-select: none;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 10;
         }
-        h1 {
-            margin: 0 0 10px 0;
-            font-size: 20px;
-        }
-        p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
-        .instruction {
+        h1 { margin: 0 0 10px 0; font-size: 20px; }
+        p { margin: 5px 0; font-size: 13px; line-height: 1.4; }
+        .icon { font-size: 18px; }
+        
+        /* Tampilan Kamera dan UI AI */
+        #ai-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-end;
             gap: 10px;
-            margin-top: 10px;
+            z-index: 10;
         }
-        .icon {
-            font-size: 20px;
+
+        #cam-wrapper {
+            position: relative;
+            width: 160px;
+            height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid #38bdf8;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            display: none; /* Disembunyikan sebelum kamera aktif */
+            background-color: #000;
+        }
+
+        /* Video asli disembunyikan, kita hanya tampilkan canvas agar bisa digambar kerangka tangannya */
+        #input_video { display: none; }
+        
+        #output_canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Efek cermin agar gerakan tangan pas */
+        }
+
+        #start-cam-btn {
+            pointer-events: auto;
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #312e81;
+            transition: all 0.1s;
+        }
+        #start-cam-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #312e81;
+        }
+
+        #finger-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 16px;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 2px solid #fff;
+        }
+
+        /* Loading Spinner */
+        #loading {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            display: none;
+            text-align: center;
         }
     </style>
-    <!-- Muat Three.js dari CDN -->
+
+    <!-- Muat Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Muat OrbitControls untuk fitur geser & putar -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- Muat MediaPipe untuk Deteksi Tangan (AI) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-    <!-- Antarmuka Pengguna -->
+    <!-- UI Bantuan -->
     <div id="ui-container">
-        <h1>Pulau Melayang 3D</h1>
-        <p><span class="icon">👆</span> <b>Geser/Drag</b> untuk memutar kamera</p>
-        <p><span class="icon">🔍</span> <b>Scroll/Pinch</b> untuk zoom (perbesar/perkecil)</p>
-        <p><span class="icon">🖱️</span> <b>Klik/Sentuh</b> objek untuk mengubah warna!</p>
+        <h1>Pulau Ajaib 3D</h1>
+        <p><span class="icon">👆</span> <b>Geser/Drag</b> putar kamera</p>
+        <p><span class="icon">🔍</span> <b>Scroll/Pinch</b> zoom in/out</p>
+        <p><span class="icon">🖱️</span> <b>Klik objek</b> untuk interaksi</p>
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 8px 0;">
+        <p style="color: #fcd34d; font-weight: bold;">Keajaiban Kamera:</p>
+        <p>✌️ <b>1-3 Jari:</b> Ubah Waktu (Siang/Senja/Malam)</p>
+        <p>🖐️ <b>4 Jari:</b> Pohon Melompat</p>
+        <p>🖐️ <b>5 Jari:</b> Hujan Kotak Hadiah!</p>
+    </div>
+
+    <!-- UI Deteksi AI -->
+    <div id="ai-container">
+        <div id="finger-badge">Menunggu Tangan... 🤚</div>
+        <button id="start-cam-btn" onclick="startCamera()">📷 Aktifkan Kamera Ajaib</button>
+        <div id="cam-wrapper">
+            <video id="input_video"></video>
+            <canvas id="output_canvas" width="320" height="240"></canvas>
+            <div id="loading">Memuat AI...⏳</div>
+        </div>
     </div>
 
     <script>
-        // Variabel global
+        // ==========================================
+        // 1. SETUP DUNIA 3D (THREE.JS)
+        // ==========================================
         let scene, camera, renderer, controls;
-        let interactableObjects = []; // Array untuk menyimpan objek yang bisa diklik
+        let interactableObjects = []; 
+        let trees = [];
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
-        // Inisialisasi saat window dimuat
         window.onload = function() {
-            init();
-            animate();
+            init3D();
+            animate3D();
         };
 
-        function init() {
-            // 1. Buat Scene (Panggung 3D)
+        function init3D() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87CEEB); // Langit siang
-            scene.fog = new THREE.Fog(0x87CEEB, 20, 100); // Efek kabut di kejauhan
+            scene.background = new THREE.Color(0x87CEEB); 
+            scene.fog = new THREE.Fog(0x87CEEB, 20, 100); 
 
-            // 2. Buat Kamera
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 15, 30); // Posisi awal kamera
+            camera.position.set(0, 15, 30); 
 
-            // 3. Buat Renderer (Mesin Penggambar)
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true; // Aktifkan bayangan
+            renderer.shadowMap.enabled = true; 
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild(renderer.domElement);
 
-            // 4. Tambahkan Kontrol (Agar bisa digeser-geser)
             controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; // Efek gerakan halus saat dilepas
+            controls.enableDamping = true; 
             controls.dampingFactor = 0.05;
-            controls.maxPolarAngle = Math.PI / 2 + 0.1; // Batasi putaran ke bawah agar tidak terlalu ke bawah tanah
-            controls.minDistance = 10; // Zoom maksimal ke dalam
-            controls.maxDistance = 60; // Zoom maksimal ke luar
+            controls.maxPolarAngle = Math.PI / 2 + 0.1; 
+            controls.minDistance = 10; 
+            controls.maxDistance = 60; 
 
-            // 5. Tambahkan Pencahayaan
-            // Cahaya ambien merata ke seluruh objek
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            // Pencahayaan
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
             scene.add(ambientLight);
 
-            // Cahaya matahari dari satu arah yang menghasilkan bayangan
             const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
             dirLight.position.set(20, 40, 20);
             dirLight.castShadow = true;
             dirLight.shadow.mapSize.width = 1024;
             dirLight.shadow.mapSize.height = 1024;
-            dirLight.shadow.camera.left = -20;
-            dirLight.shadow.camera.right = 20;
-            dirLight.shadow.camera.top = 20;
-            dirLight.shadow.camera.bottom = -20;
             scene.add(dirLight);
 
-            // 6. Bangun Dunia (Pulau, Pohon, Awan, dll)
             buildWorld();
 
-            // 7. Event Listeners
             window.addEventListener('resize', onWindowResize);
-            window.addEventListener('pointerdown', onPointerDown); // Mendukung klik mouse dan sentuhan layar
+            window.addEventListener('pointerdown', onPointerDown);
         }
 
         function buildWorld() {
-            // --- Membuat Tanah (Pulau Melayang) ---
-            const groundGeometry = new THREE.CylinderGeometry(15, 12, 4, 32);
-            const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x4CAF50, roughness: 0.8 });
-            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-            ground.position.y = -2; // Turunkan sedikit agar permukaannya di Y=0
+            // Tanah Atas
+            const groundGeo = new THREE.CylinderGeometry(15, 12, 4, 32);
+            const groundMat = new THREE.MeshStandardMaterial({ color: 0x4CAF50, roughness: 0.8 });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.position.y = -2;
             ground.receiveShadow = true;
             scene.add(ground);
             
-            // Tambahkan dasar tanah cokelat
-            const dirtGeometry = new THREE.CylinderGeometry(12, 8, 5, 32);
-            const dirtMaterial = new THREE.MeshStandardMaterial({ color: 0x5D4037, roughness: 1 });
-            const dirt = new THREE.Mesh(dirtGeometry, dirtMaterial);
+            // Tanah Bawah
+            const dirtGeo = new THREE.CylinderGeometry(12, 8, 5, 32);
+            const dirtMat = new THREE.MeshStandardMaterial({ color: 0x5D4037, roughness: 1 });
+            const dirt = new THREE.Mesh(dirtGeo, dirtMat);
             dirt.position.y = -6.5;
             scene.add(dirt);
 
-            // --- Menambahkan Pohon Acak ---
-            const treeCount = 15;
-            for (let i = 0; i < treeCount; i++) {
-                createTree();
-            }
+            // Pohon
+            for (let i = 0; i < 15; i++) createTree();
 
-            // --- Menambahkan Kotak-kotak Hadiah (Interaktif) ---
-            const boxCount = 8;
-            for (let i = 0; i < boxCount; i++) {
-                createInteractiveBox();
-            }
+            // Kotak Awal
+            for (let i = 0; i < 5; i++) createInteractiveBox();
 
-            // --- Menambahkan Awan Melayang ---
+            // Awan
             createClouds();
         }
 
         function createTree() {
             const treeGroup = new THREE.Group();
 
-            // Batang pohon
             const trunkGeo = new THREE.CylinderGeometry(0.4, 0.6, 2, 8);
             const trunkMat = new THREE.MeshStandardMaterial({ color: 0x795548 });
             const trunk = new THREE.Mesh(trunkGeo, trunkMat);
@@ -164,7 +231,6 @@
             trunk.receiveShadow = true;
             treeGroup.add(trunk);
 
-            // Daun pohon (kerucut)
             const leavesGeo = new THREE.ConeGeometry(2, 4, 8);
             const leavesMat = new THREE.MeshStandardMaterial({ color: 0x2E7D32 });
             const leaves = new THREE.Mesh(leavesGeo, leavesMat);
@@ -173,118 +239,237 @@
             leaves.receiveShadow = true;
             treeGroup.add(leaves);
 
-            // Posisi acak di atas pulau
             const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * 12; // Jangan sampai keluar pulau
+            const radius = Math.random() * 12; 
             treeGroup.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
             
-            // Skala acak agar tinggi pohon berbeda-beda
             const scale = 0.5 + Math.random() * 0.8;
             treeGroup.scale.set(scale, scale, scale);
 
             scene.add(treeGroup);
-            
-            // Masukkan daun ke daftar objek interaktif agar warnanya bisa diklik
             interactableObjects.push(leaves);
+            trees.push(treeGroup); // Simpan pohon untuk animasi AI
         }
 
         function createInteractiveBox() {
             const size = 0.8 + Math.random() * 0.8;
             const geometry = new THREE.BoxGeometry(size, size, size);
-            
-            // Warna warni cerah
             const colors = [0xFF5252, 0xFFEB3B, 0x448AFF, 0xE040FB, 0xFF9800];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            
             const material = new THREE.MeshStandardMaterial({ 
-                color: randomColor, 
-                roughness: 0.2, 
-                metalness: 0.1 
+                color: colors[Math.floor(Math.random() * colors.length)], 
+                roughness: 0.2, metalness: 0.1 
             });
-            
             const box = new THREE.Mesh(geometry, material);
             
             const angle = Math.random() * Math.PI * 2;
             const radius = Math.random() * 13;
-            box.position.set(Math.cos(angle) * radius, size/2, Math.sin(angle) * radius);
+            box.position.set(Math.cos(angle) * radius, 15, Math.sin(angle) * radius); // Jatuh dari atas
             
-            box.castShadow = true;
-            box.receiveShadow = true;
-            
-            // Putar secara acak
+            box.castShadow = true; box.receiveShadow = true;
             box.rotation.y = Math.random() * Math.PI;
 
             scene.add(box);
-            interactableObjects.push(box); // Bisa diklik
+            interactableObjects.push(box);
+            
+            // Animasi jatuh sederhana
+            const dropInterval = setInterval(() => {
+                if(box.position.y > size/2) {
+                    box.position.y -= 0.5;
+                    box.rotation.x += 0.1;
+                } else {
+                    box.position.y = size/2;
+                    clearInterval(dropInterval);
+                }
+            }, 16);
         }
 
         function createClouds() {
             const cloudGeo = new THREE.DodecahedronGeometry(2, 1);
-            const cloudMat = new THREE.MeshStandardMaterial({ 
-                color: 0xffffff, 
-                flatShading: true,
-                transparent: true,
-                opacity: 0.9
-            });
-
+            const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true, transparent: true, opacity: 0.9 });
             for(let i=0; i<5; i++) {
                 const cloud = new THREE.Mesh(cloudGeo, cloudMat);
-                cloud.position.set(
-                    (Math.random() - 0.5) * 40,
-                    15 + Math.random() * 10,
-                    (Math.random() - 0.5) * 40
-                );
+                cloud.position.set((Math.random() - 0.5) * 40, 15 + Math.random() * 10, (Math.random() - 0.5) * 40);
                 cloud.scale.set(1 + Math.random(), 0.5 + Math.random()*0.5, 1 + Math.random());
                 scene.add(cloud);
             }
         }
 
-        // Fungsi untuk menangani klik/sentuhan pada objek 3D
         function onPointerDown(event) {
-            // Ubah posisi mouse/sentuhan ke koordinat normalisasi device (-1 sampai +1)
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            // Tembakkan sinar virtual dari kamera ke arah kursor
             raycaster.setFromCamera(mouse, camera);
-
-            // Cek apakah sinar mengenai objek yang ada di daftar interactableObjects
             const intersects = raycaster.intersectObjects(interactableObjects);
 
             if (intersects.length > 0) {
-                // Ambil objek pertama yang terkena (paling depan)
                 const objectHit = intersects[0].object;
-                
-                // Ubah warnanya secara acak
                 objectHit.material.color.setHex(Math.random() * 0xffffff);
                 
-                // Beri efek lompat kecil
                 const originalY = objectHit.position.y;
                 objectHit.position.y += 1;
-                
-                // Animasi sederhana turun kembali menggunakan setTimeout
-                setTimeout(() => {
-                    objectHit.position.y = originalY;
-                }, 150);
+                setTimeout(() => { objectHit.position.y = originalY; }, 150);
             }
         }
 
-        // Fungsi untuk menangani perubahan ukuran layar HP/Laptop
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // Fungsi Looping Animasi (Game Loop)
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Update kontrol kamera (wajib jika enableDamping diaktifkan)
+        function animate3D() {
+            requestAnimationFrame(animate3D);
             controls.update();
-
-            // Render pemandangan
             renderer.render(scene, camera);
+        }
+
+        // ==========================================
+        // 2. SETUP AI DETEKSI JARI (MEDIAPIPE)
+        // ==========================================
+        const videoElement = document.getElementById('input_video');
+        const canvasElement = document.getElementById('output_canvas');
+        const canvasCtx = canvasElement.getContext('2d');
+        const fingerBadge = document.getElementById('finger-badge');
+        const startBtn = document.getElementById('start-cam-btn');
+        const camWrapper = document.getElementById('cam-wrapper');
+        const loading = document.getElementById('loading');
+
+        let isAiActive = false;
+        let actionCooldown = 0; // Mencegah AI memicu animasi berkali-kali dalam 1 detik
+        let lastReportedFingers = 0;
+
+        function startCamera() {
+            startBtn.style.display = 'none';
+            camWrapper.style.display = 'block';
+            fingerBadge.style.display = 'block';
+            loading.style.display = 'block';
+
+            // Inisialisasi Hands AI
+            const hands = new Hands({locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+            }});
+            
+            hands.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.6,
+                minTrackingConfidence: 0.6
+            });
+            
+            hands.onResults(onHandResults);
+
+            // Nyalakan Kamera
+            const cameraUtils = new Camera(videoElement, {
+                onFrame: async () => {
+                    await hands.send({image: videoElement});
+                },
+                width: 320,
+                height: 240
+            });
+            cameraUtils.start();
+        }
+
+        function onHandResults(results) {
+            loading.style.display = 'none'; // Sembunyikan loading jika sudah ada frame
+            isAiActive = true;
+            
+            // Bersihkan canvas
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+            // Gambar ulang video ke canvas
+            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const landmarks = results.multiHandLandmarks[0];
+                
+                // Gambar Garis Tangan
+                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#00FF00', lineWidth: 2});
+                drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 1, radius: 2});
+
+                // Hitung Jari
+                let fingerCount = calculateFingers(landmarks);
+                fingerBadge.innerText = `Jari Terdeteksi: ${fingerCount} ✌️`;
+
+                // Pemicu Keajaiban 3D
+                handleMagicInteraction(fingerCount);
+
+            } else {
+                fingerBadge.innerText = `Tangan tidak terlihat 🤚`;
+            }
+            canvasCtx.restore();
+            
+            if (actionCooldown > 0) actionCooldown--;
+        }
+
+        function calculateFingers(landmarks) {
+            let count = 0;
+            
+            // Algoritma Pengecekan Jari Terangkat (Y-axis check)
+            // Ujung jari (Tip) harus lebih tinggi (Y lebih kecil di layar) dari pangkal jarinya (PIP)
+            
+            // Telunjuk (Index) - Tip: 8, PIP: 6
+            if (landmarks[8].y < landmarks[6].y) count++;
+            // Tengah (Middle) - Tip: 12, PIP: 10
+            if (landmarks[12].y < landmarks[10].y) count++;
+            // Manis (Ring) - Tip: 16, PIP: 14
+            if (landmarks[16].y < landmarks[14].y) count++;
+            // Kelingking (Pinky) - Tip: 20, PIP: 18
+            if (landmarks[20].y < landmarks[18].y) count++;
+
+            // Jempol (Thumb) sedikit berbeda karena bergerak ke samping.
+            // Kita ukur jarak ujung jempol ke pangkal kelingking (17) vs pangkal jempol ke pangkal kelingking
+            const thumbTipDist = Math.hypot(landmarks[4].x - landmarks[17].x, landmarks[4].y - landmarks[17].y);
+            const thumbMcpDist = Math.hypot(landmarks[2].x - landmarks[17].x, landmarks[2].y - landmarks[17].y);
+            if (thumbTipDist > thumbMcpDist + 0.05) count++; // Terangkat / Terbuka
+
+            return count;
+        }
+
+        function handleMagicInteraction(count) {
+            if (count === 0 || actionCooldown > 0) return;
+
+            // Memicu aksi jika jari stabil atau berubah
+            if (count !== lastReportedFingers) {
+                
+                lastReportedFingers = count;
+                actionCooldown = 60; // Jeda sekitar 1-2 detik sebelum aksi lain bisa dipicu
+
+                // Aksi Berdasarkan Jumlah Jari
+                if (count === 1) {
+                    // Siang Hari
+                    scene.background.setHex(0x87CEEB);
+                    scene.fog.color.setHex(0x87CEEB);
+                    fingerBadge.style.background = "#3b82f6"; // Biru
+                } 
+                else if (count === 2) {
+                    // Senja
+                    scene.background.setHex(0xFD5E53);
+                    scene.fog.color.setHex(0xFD5E53);
+                    fingerBadge.style.background = "#f97316"; // Oranye
+                } 
+                else if (count === 3) {
+                    // Malam
+                    scene.background.setHex(0x0B1D3A);
+                    scene.fog.color.setHex(0x0B1D3A);
+                    fingerBadge.style.background = "#1e1b4b"; // Biru Gelap
+                } 
+                else if (count === 4) {
+                    // Pohon Melompat
+                    fingerBadge.style.background = "#10b981"; // Hijau
+                    trees.forEach((tree, index) => {
+                        setTimeout(() => {
+                            const origY = tree.position.y;
+                            tree.position.y += 3;
+                            setTimeout(() => { tree.position.y = origY; }, 200);
+                        }, index * 50); // Lompat bergelombang
+                    });
+                } 
+                else if (count === 5) {
+                    // Hujan Kotak Hadiah
+                    fingerBadge.style.background = "#eab308"; // Kuning
+                    createInteractiveBox();
+                }
+            }
         }
     </script>
 </body>
