@@ -3,84 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Kamera Jari Ceria!</title>
+    <title>AI Deteksi Jari</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
                 }
             }
         }
     </script>
 
     <style>
-        /* Animasi Latar Belakang Ceria */
         body {
-            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background-color: #020617; /* Slate 950 */
+            color: #f8fafc;
             margin: 0;
             overflow-x: hidden;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Container Kamera dengan Efek Cermin */
+        /* Container Kamera */
         #output_canvas {
-            transform: scaleX(-1); /* Efek cermin agar gerakan tidak terbalik */
+            transform: scaleX(-1); /* Efek cermin */
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 1.5rem;
         }
 
-        .cam-frame {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 0 0 8px white;
-            position: relative;
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6); /* Slate 900 dengan transparansi */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Animasi Bouncy (Melompat) untuk Angka */
-        @keyframes pop {
-            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
-            60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        /* Animasi Transisi Halus */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .animate-pop {
-            animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        /* Tombol Mainan */
-        .toy-btn {
-            box-shadow: 0 6px 0 rgba(0,0,0,0.2); 
-            transition: all 0.1s;
-        }
-        .toy-btn:active {
-            box-shadow: 0 0px 0 rgba(0,0,0,0.2); 
-            transform: translateY(6px); 
-        }
-
-        /* Loading Spinner Animation */
+        /* Loading Spinner Modern */
         .spinner {
-            border: 6px solid rgba(255, 255, 255, 0.3);
-            border-top: 6px solid white;
+            border: 3px solid rgba(6, 182, 212, 0.2);
+            border-top: 3px solid #06b6d4; /* Cyan 500 */
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Pulse effect untuk counter */
+        .value-changed {
+            animation: pulseColor 0.3s ease-out;
+        }
+        @keyframes pulseColor {
+            0% { color: #fff; transform: scale(1.1); }
+            100% { color: #22d3ee; transform: scale(1); } /* Cyan 400 */
+        }
     </style>
 
     <!-- Muat MediaPipe untuk Deteksi Tangan (AI) -->
@@ -88,53 +81,69 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col">
 
-    <!-- Header Judul -->
-    <header class="text-center mb-6 mt-4 relative z-10">
-        <h1 class="text-4xl sm:text-6xl font-black text-white drop-shadow-lg tracking-tight mb-2">
-            🖐️ Jari Pintar!
-        </h1>
-        <p class="text-white/90 font-bold text-base sm:text-xl bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full inline-block shadow-sm">
-            Tunjukkan jarimu ke kamera!
-        </p>
+    <!-- Header Minimalis -->
+    <header class="w-full px-6 py-4 flex items-center justify-between border-b border-slate-800 bg-slate-950/80 backdrop-blur-md z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
+            <h1 class="text-xl md:text-2xl font-light tracking-wide text-slate-300">
+                Deteksi Jari <span class="font-bold text-cyan-400">AI</span>
+            </h1>
+        </div>
+        <div class="text-xs font-medium text-slate-500 tracking-wider uppercase">
+            Sistem Pengenalan Multi-Tangan
+        </div>
     </header>
 
-    <!-- Area Utama Kamera -->
-    <div class="relative w-full max-w-2xl aspect-[4/3] sm:aspect-video cam-frame bg-slate-800 rounded-3xl flex items-center justify-center z-10">
+    <!-- Area Utama Lebar -->
+    <main class="flex-grow flex items-center justify-center p-4 md:p-6 lg:p-8">
         
-        <!-- Video Input (Disembunyikan, hanya diambil datanya) -->
-        <video id="input_video" class="hidden" playsinline></video>
-        
-        <!-- Canvas Output (Tempat menggambar video + rangka tangan) -->
-        <canvas id="output_canvas" class="hidden"></canvas>
-        
-        <!-- Pesan Awal & Tombol Mulai -->
-        <div id="start-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-white/10 backdrop-blur-md rounded-3xl z-20">
-            <div class="text-8xl mb-6 drop-shadow-md animate-bounce">📷</div>
-            <button id="start-cam-btn" onclick="startCamera()" class="toy-btn bg-gradient-to-r from-pink-500 to-purple-500 text-white font-black text-xl sm:text-2xl px-8 py-4 rounded-2xl border-4 border-white">
-                Nyalakan Kamera!
-            </button>
+        <div class="relative w-full max-w-6xl aspect-video bg-slate-900 rounded-2xl overflow-hidden ring-1 ring-slate-800 shadow-2xl flex items-center justify-center">
+            
+            <!-- Video Input -->
+            <video id="input_video" class="hidden" playsinline></video>
+            
+            <!-- Canvas Output -->
+            <canvas id="output_canvas" class="hidden"></canvas>
+            
+            <!-- Layar Mulai -->
+            <div id="start-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm z-20">
+                <div class="mb-6 p-4 rounded-full bg-slate-800/50 ring-1 ring-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <button id="start-cam-btn" onclick="startCamera()" class="px-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white text-sm md:text-base font-semibold rounded-lg transition-all duration-200 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]">
+                    Inisialisasi Kamera
+                </button>
+                <p class="mt-4 text-sm text-slate-500 font-light">Mendukung deteksi hingga 4 tangan sekaligus.</p>
+            </div>
+
+            <!-- Layar Loading AI -->
+            <div id="loading-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md z-20 hidden">
+                <div class="spinner mb-5"></div>
+                <p class="font-medium text-slate-300 tracking-wide text-sm">Memuat Model AI...</p>
+            </div>
+
+            <!-- Panel Hasil Modern (Melayang di bawah) -->
+            <div id="result-board" class="absolute bottom-6 left-1/2 -translate-x-1/2 glass-panel px-6 py-3 rounded-2xl flex items-center gap-6 hidden fade-in z-10">
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mb-1">Status</span>
+                    <span class="text-xs font-medium text-emerald-400 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 block"></span> Aktif
+                    </span>
+                </div>
+                <div class="w-px h-10 bg-slate-700/50"></div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-medium text-slate-300 uppercase tracking-widest">Total Jari:</span>
+                    <span id="finger-number" class="text-4xl md:text-5xl font-mono font-bold text-cyan-400 w-12 text-center transition-colors">0</span>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Layar Loading AI -->
-        <div id="loading-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-indigo-900/80 backdrop-blur-sm rounded-3xl z-20 hidden text-white">
-            <div class="spinner mb-4"></div>
-            <p class="font-bold text-lg animate-pulse">Memanggil Keajaiban AI... ✨</p>
-        </div>
-
-    </div>
-
-    <!-- Papan Hasil Angka Jari -->
-    <div id="result-board" class="mt-8 bg-white p-6 rounded-[2rem] shadow-xl border-4 border-white hidden flex-col items-center w-full max-w-sm z-10 transition-colors duration-300 transform">
-        <p class="text-slate-400 font-bold uppercase tracking-widest text-sm mb-2">Jumlah Jarimu:</p>
-        <div id="finger-number" class="text-7xl sm:text-8xl font-black text-slate-200">
-            0
-        </div>
-        <div id="finger-text" class="mt-3 text-xl font-bold text-slate-500 text-center">
-            Ayo angkat tanganmu!
-        </div>
-    </div>
+    </main>
 
     <script>
         const videoElement = document.getElementById('input_video');
@@ -145,33 +154,20 @@
         const loadingOverlay = document.getElementById('loading-overlay');
         const resultBoard = document.getElementById('result-board');
         const fingerNumber = document.getElementById('finger-number');
-        const fingerText = document.getElementById('finger-text');
 
         let isAiActive = false;
-        let currentFingerCount = -1; // Menyimpan angka terakhir yang terdeteksi
-
-        // Warna-warni ceria untuk setiap jumlah jari
-        const colorPalette = {
-            0: { bg: 'bg-white', border: 'border-slate-200', textCol: 'text-slate-300', msg: 'Ayo angkat tanganmu! 👋' },
-            1: { bg: 'bg-red-50', border: 'border-red-400', textCol: 'text-red-500', msg: 'Satu! Seperti tiang ☝️' },
-            2: { bg: 'bg-orange-50', border: 'border-orange-400', textCol: 'text-orange-500', msg: 'Dua! Gunting damai ✌️' },
-            3: { bg: 'bg-yellow-50', border: 'border-yellow-400', textCol: 'text-yellow-500', msg: 'Tiga! Garpu kue 🤟' },
-            4: { bg: 'bg-emerald-50', border: 'border-emerald-400', textCol: 'text-emerald-500', msg: 'Empat! Kaki kucing 🐾' },
-            5: { bg: 'bg-blue-50', border: 'border-blue-400', textCol: 'text-blue-500', msg: 'Lima! Tos tinggi! 🖐️' }
-        };
+        let currentFingerCount = -1;
 
         function startCamera() {
-            // Sembunyikan tombol mulai, tampilkan loading
             startOverlay.classList.add('hidden');
             loadingOverlay.classList.remove('hidden');
 
-            // Inisialisasi MediaPipe Hands AI
             const hands = new Hands({locateFile: (file) => {
                 return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
             }});
             
             hands.setOptions({
-                maxNumHands: 1, // Fokus ke 1 tangan saja agar akurat
+                maxNumHands: 4, // Mendukung hingga 4 tangan sekaligus
                 modelComplexity: 1,
                 minDetectionConfidence: 0.7,
                 minTrackingConfidence: 0.7
@@ -179,55 +175,51 @@
             
             hands.onResults(onHandResults);
 
-            // Nyalakan Kamera
+            // Nyalakan Kamera dengan resolusi HD agar tampilan lebar jernih
             const cameraUtils = new Camera(videoElement, {
                 onFrame: async () => {
                     await hands.send({image: videoElement});
                 },
-                width: 640,
-                height: 480
+                width: 1280,
+                height: 720
             });
             
             cameraUtils.start().catch(err => {
-                alert("Wah, kameranya tidak bisa diakses. Pastikan kamu sudah memberikan izin kamera ya!");
+                alert("Gagal mengakses kamera. Harap pastikan izin kamera telah diberikan.");
                 startOverlay.classList.remove('hidden');
                 loadingOverlay.classList.add('hidden');
             });
         }
 
         function onHandResults(results) {
-            // Saat frame pertama berhasil diproses
             if (!isAiActive) {
                 isAiActive = true;
                 loadingOverlay.classList.add('hidden');
                 canvasElement.classList.remove('hidden');
                 resultBoard.classList.remove('hidden');
-                resultBoard.classList.add('flex');
             }
             
-            // Bersihkan canvas
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-            // Gambar ulang video asli dari kamera ke canvas
+            // Gambar video kamera
             canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
-            // Jika tangan terdeteksi
+            let totalFingers = 0;
+
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                const landmarks = results.multiHandLandmarks[0];
-                
-                // Gambar Garis Rangka Tangan (Warna Warni Ceria)
-                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#ffffff', lineWidth: 4});
-                drawLandmarks(canvasCtx, landmarks, {color: '#f472b6', lineWidth: 2, radius: 6}); // Warna pink untuk titik
-
-                // Hitung Jari
-                let fingerCount = calculateFingers(landmarks);
-                
-                // Update UI jika jumlah jari berubah
-                updateUI(fingerCount);
-
+                // Loop melalui semua tangan yang terdeteksi
+                for (const landmarks of results.multiHandLandmarks) {
+                    
+                    // Gambar kerangka tangan dengan gaya modern (Sleek Cyan/Blue)
+                    drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: 'rgba(6, 182, 212, 0.6)', lineWidth: 2}); // Cyan line
+                    drawLandmarks(canvasCtx, landmarks, {color: 'rgba(56, 189, 248, 0.9)', lineWidth: 1, radius: 3}); // Light blue dot
+                    
+                    // Tambahkan jumlah jari dari tangan ini ke total
+                    totalFingers += calculateFingers(landmarks);
+                }
+                updateUI(totalFingers);
             } else {
-                // Jika tangan tidak ada di layar
                 updateUI(0);
             }
             canvasCtx.restore();
@@ -236,54 +228,37 @@
         function calculateFingers(landmarks) {
             let count = 0;
             
-            // Algoritma Pengecekan Jari Terangkat (Y-axis check)
-            // Ujung jari (Tip) harus lebih tinggi (Y lebih kecil) dari sendi bawahnya (PIP/MCP)
-            
-            // Telunjuk (Index) - Tip: 8, PIP: 6
+            // Jari Telunjuk, Tengah, Manis, Kelingking (Cek sumbu Y)
             if (landmarks[8].y < landmarks[6].y) count++;
-            
-            // Tengah (Middle) - Tip: 12, PIP: 10
             if (landmarks[12].y < landmarks[10].y) count++;
-            
-            // Manis (Ring) - Tip: 16, PIP: 14
             if (landmarks[16].y < landmarks[14].y) count++;
-            
-            // Kelingking (Pinky) - Tip: 20, PIP: 18
             if (landmarks[20].y < landmarks[18].y) count++;
 
-            // Jempol (Thumb)
-            // Diukur jaraknya memanjang keluar dari telapak
+            // Jempol
+            // Untuk memastikan deteksi jempol akurat di berbagai jarak, kita bandingkan jaraknya
+            // relatif terhadap ukuran tangan itu sendiri.
+            const handSize = Math.hypot(landmarks[0].x - landmarks[9].x, landmarks[0].y - landmarks[9].y);
             const thumbTipDist = Math.hypot(landmarks[4].x - landmarks[17].x, landmarks[4].y - landmarks[17].y);
             const thumbMcpDist = Math.hypot(landmarks[2].x - landmarks[17].x, landmarks[2].y - landmarks[17].y);
-            if (thumbTipDist > thumbMcpDist + 0.05) count++; 
+            
+            // Jika jarak ujung jempol lebih jauh dari sendi pangkalnya (+ sedikit toleransi ukuran tangan)
+            if (thumbTipDist > thumbMcpDist + (handSize * 0.1)) {
+                count++;
+            }
 
             return count;
         }
 
         function updateUI(count) {
-            // Batasi angka 0-5
-            if (count < 0) count = 0;
-            if (count > 5) count = 5;
-
-            // Jika angka sama dengan sebelumnya, tidak perlu update animasi
             if (count === currentFingerCount) return;
-            
             currentFingerCount = count;
-            const style = colorPalette[count];
 
-            // Update teks dan warna
             fingerNumber.innerText = count;
-            fingerText.innerText = style.msg;
 
-            // Bersihkan kelas warna sebelumnya
-            resultBoard.className = `mt-8 p-6 rounded-[2rem] shadow-2xl flex flex-col items-center w-full max-w-sm z-10 transition-colors duration-300 border-4 ${style.bg} ${style.border}`;
-            fingerNumber.className = `text-[6rem] sm:text-[8rem] leading-none font-black ${style.textCol} drop-shadow-sm`;
-            fingerText.className = `mt-2 text-lg sm:text-xl font-bold text-center ${style.textCol}`;
-
-            // Mainkan Animasi Bouncy dengan me-reset elemen
-            fingerNumber.classList.remove('animate-pop');
-            void fingerNumber.offsetWidth; // Trigger reflow untuk mereset animasi css
-            fingerNumber.classList.add('animate-pop');
+            // Efek berdenyut (pulse) saat angka berubah
+            fingerNumber.classList.remove('value-changed');
+            void fingerNumber.offsetWidth; 
+            fingerNumber.classList.add('value-changed');
         }
     </script>
 </body>
