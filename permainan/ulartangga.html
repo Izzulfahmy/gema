@@ -223,7 +223,7 @@
         }
     </style>
 
-    <!-- Firebase SDK Config -->
+    <!-- Firebase SDK Setup -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -250,7 +250,7 @@
         window.fsUpdateDoc = updateDoc;
     </script>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-center items-center">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col justify-center items-center">
 
     <!-- INFOBAR IDENTITAS PERMAINAN AKTIF -->
     <div id="game-identity-bar" class="absolute top-4 left-4 z-[90] bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-4 py-2 rounded-2xl shadow-lg font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2">
@@ -315,63 +315,72 @@
         </div>
     </div>
 
-    <!-- VIEW 3: FULL SCREEN MANAGEMENT PANEL (TATA LETAK SPLIT-SCREEN KIRI-KANAN SIMPEL & RINGAN) -->
-    <div id="admin-modal" class="fixed inset-0 bg-slate-50 overflow-y-auto hidden flex flex-col p-4 sm:p-8 z-[20000]">
-        <div class="max-w-5xl w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-5 sm:p-6 flex flex-col min-h-[85vh]">
+    <!-- MODAL INPUT PROMPT GAYA DIALOG MODERN UNTUK KELAS / MAPEL (TIDAK POLOSAN) -->
+    <div id="input-prompt-modal" class="fixed inset-0 z-[30000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-[90%] border-t-4 border-emerald-500 space-y-4">
+            <h3 id="prompt-title" class="text-base font-black text-slate-700">Tambah Data Baru</h3>
+            <input type="text" id="prompt-input-text" class="w-full p-2.5 border-2 border-slate-200 rounded-xl text-sm font-bold uppercase outline-none focus:border-brand-500" placeholder="...">
+            <div class="flex gap-2 justify-end text-xs font-bold">
+                <button onclick="closePromptDialog(false)" class="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200">Batal</button>
+                <button onclick="closePromptDialog(true)" class="px-4 py-2 bg-brand-500 text-white rounded-xl hover:bg-brand-600 shadow-sm">Tambah</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 3: FULL SCREEN MANAGEMENT PANEL BANK SOAL -->
+    <div id="admin-modal" class="fixed inset-0 bg-slate-100 overflow-y-auto hidden flex flex-col p-4 sm:p-6 z-[20000]">
+        <div class="max-w-4xl w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-4 sm:p-5 flex flex-col h-[90vh] relative">
             
-            <!-- STICKY TOP HEADER -->
-            <div class="flex justify-between items-center border-b pb-3 mb-5 sticky top-0 bg-white z-[60]">
-                <h2 class="text-xl font-black text-brand-600 flex items-center gap-2">⚙️ Manajemen Data Pembelajaran</h2>
-                <button onclick="closeAdminModal()" class="text-slate-500 hover:text-slate-700 text-sm font-black bg-slate-100 px-3 py-1.5 rounded-xl transition-colors">✕</button>
+            <!-- TOP STICKY HEADER -->
+            <div class="flex justify-between items-center border-b pb-3 mb-4 sticky top-0 bg-white z-[60]">
+                <h2 class="text-xl font-black text-brand-600 flex items-center gap-1.5">⚙️ Pengaturan Bank Soal</h2>
+                <button onclick="closeAdminModal()" class="text-slate-500 hover:text-slate-700 text-xs font-black bg-slate-100 px-3 py-1.5 rounded-xl transition-colors">✕ Tutup</button>
             </div>
 
-            <!-- UTAMA: SPLIT SECTION (SISI KIRI KELAS | SISI KANAN MAPEL) -->
-            <div id="admin-split-workspace" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                
-                <!-- SISI KIRI: MANAGE KELAS -->
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider">Koleksi Kelas</h3>
-                        <button onclick="tambahKelasAdmin()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold p-1.5 rounded-lg text-xs shadow-sm" title="Tambah Kelas">➕</button>
-                    </div>
-                    <!-- Grid Kelas Maksimal 3 Kolom ke Kanan -->
-                    <div id="admin-kelas-grid" class="grid grid-cols-3 gap-2">
+            <!-- MENU BAR ATAS: DROPDOWN KELAS & PELAJARAN YANG RINGKAN DAN INDAH (CLEAN) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-200 mb-4 text-xs">
+                <!-- DROPDOWN KELAS -->
+                <div class="flex items-center gap-2">
+                    <span class="font-black text-slate-500 whitespace-nowrap">KELAS:</span>
+                    <select id="admin-select-kelas" onchange="gantiKelasAdminDropdown()" class="flex-1 p-2 border-2 border-slate-200 rounded-xl font-bold bg-white outline-none focus:border-blue-500 text-slate-700">
                         <!-- Dinamis -->
-                    </div>
+                    </select>
+                    <button onclick="pemicuTambahKelas()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded-xl" title="Tambah Kelas">➕</button>
+                    <button onclick="pemicuHapusKelas()" class="bg-rose-100 hover:bg-rose-200 text-rose-600 font-bold p-2 rounded-xl" title="Hapus Kelas">✕</button>
                 </div>
 
-                <!-- SISI KANAN: MANAGE MATA PELAJARAN -->
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider">Mata Pelajaran (Kelas: <span id="admin-label-kelas-aktif" class="text-blue-600 font-black">-</span>)</h3>
-                        <button id="admin-btn-add-mapel" onclick="tambahMapelAdmin()" disabled class="bg-purple-400 text-white font-bold p-1.5 rounded-lg text-xs opacity-50 cursor-not-allowed" title="Tambah Pelajaran">➕</button>
-                    </div>
-                    <!-- Grid Mapel Dinamis -->
-                    <div id="admin-mapel-grid" class="grid grid-cols-2 gap-2">
-                        <div class="col-span-2 text-center text-xs text-slate-400 font-bold py-4">Silakan klik/pilih salah satu kelas di sisi kiri</div>
-                    </div>
+                <!-- DROPDOWN MAPEL -->
+                <div class="flex items-center gap-2">
+                    <span class="font-black text-slate-500 whitespace-nowrap">MAPEL:</span>
+                    <select id="admin-select-mapel" onchange="gantiMapelAdminDropdown()" class="flex-1 p-2 border-2 border-slate-200 rounded-xl font-bold bg-white outline-none focus:border-purple-500 text-slate-700">
+                        <!-- Dinamis -->
+                    </select>
+                    <button id="admin-btn-add-mapel" onclick="pemicuTambahMapel()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold p-2 rounded-xl" title="Tambah Mapel">➕</button>
+                    <button id="admin-btn-del-mapel" onclick="pemicuHapusMapel()" class="bg-rose-100 hover:bg-rose-200 text-rose-600 font-bold p-2 rounded-xl" title="Hapus Mapel">✕</button>
                 </div>
-
             </div>
 
-            <!-- VIEW BANK SOAL INTEGRATED (DILUAR SPLIT - MUNCUL DI BAWAH KETIKA MAPEL DIKLIK) -->
-            <div id="admin-soal-view" class="space-y-4 flex-1 flex flex-col hidden mt-8 border-t pt-5 border-slate-200">
-                <div class="flex justify-between items-center bg-emerald-50/50 p-3 rounded-xl border border-emerald-200">
-                    <h3 class="text-xs font-black text-slate-700 uppercase">📝 Daftar Pertanyaan Bank Soal</h3>
-                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider">
-                        Scope Terkunci: <span id="admin-scope-kelas" class="text-blue-600"></span> - <span id="admin-scope-mapel" class="text-purple-600"></span>
+            <!-- LOWER SECTION: BANK FORM LINEAR (DENGAN SCROLL SCREEN INDEPENDEN) -->
+            <div id="admin-soal-view" class="space-y-4 flex-1 flex flex-col hidden overflow-hidden">
+                <div class="flex justify-between items-center bg-emerald-50/40 p-2.5 rounded-xl border border-emerald-100 shrink-0">
+                    <h3 class="text-xs font-black text-slate-700 uppercase">📋 Daftar pertanyaan</h3>
+                    <div class="flex items-center gap-1">
+                        <span id="admin-scope-kelas" class="text-[10px] font-black px-2 py-0.5 bg-white border border-blue-300 text-blue-600 rounded-md uppercase">Kelas</span>
+                        <span id="admin-scope-mapel" class="text-[10px] font-black px-2 py-0.5 bg-white border border-purple-300 text-purple-600 rounded-md uppercase">Mapel</span>
                     </div>
                 </div>
 
-                <div id="admin-linear-soal-stack" class="space-y-6 flex-1 max-h-[40vh] overflow-y-auto pr-1">
-                    <!-- Form Linear Auto-Save -->
+                <!-- AREA VERTICAL SCROLL DAFTAR PERTANYAAN -->
+                <div id="admin-linear-soal-stack" class="space-y-5 flex-1 overflow-y-auto pr-1 pb-4">
+                    <!-- Form Linear Auto-Save Injection -->
                 </div>
 
-                <div class="border-t pt-3 bg-white flex justify-between items-center sticky bottom-0 z-50">
-                    <button onclick="tambahBarisSoalOtomatis()" class="py-2 px-3 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow">
-                        ➕ Soal Baru
+                <!-- STICKY ACTION FOOTER BAR -->
+                <div class="border-t pt-3 bg-white flex justify-between items-center shrink-0">
+                    <button onclick="tambahBarisSoalOtomatis()" class="py-2 px-4 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow transition-colors">
+                        ➕ Tambah Soal Baru Ke Bawah
                     </button>
-                    <span class="text-[9px] text-green-600 font-black bg-green-50 px-2.5 py-1 rounded-lg">✨ Auto-Save Cloud Aktif</span>
+                    <span class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg">✨ Auto-Save Berjalan Otomatis</span>
                 </div>
             </div>
 
@@ -432,7 +441,7 @@
         </div>
     </div>
 
-    <div id="card-p3" class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-bottom-right">
+    <div id="card-p3" class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 hidden origin-bottom-right">
         <div class="w-10 h-10 rounded-full bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-xl shadow-inner">🐱</div>
         <div class="pl-2 text-right">
             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
@@ -440,10 +449,9 @@
         </div>
     </div>
 
-    <!-- CORE VIEW CONTAINER MAP -->
+    <!-- MAIN VIEW CONTAINER MAP -->
     <div class="w-full h-full flex justify-center items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
         <div class="board-wrapper">
-            <!-- ENGINE DICE CONTROLLER -->
             <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 w-[60px] sm:w-[80px]">
                 <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black">🎲</div>
                 <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-xs tracking-widest uppercase border border-brand-600">
@@ -451,7 +459,6 @@
                 </button>
             </div>
 
-            <!-- CONTAINER PAPAN GRIDS -->
             <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
                 <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
                     <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
@@ -483,7 +490,7 @@
         </div>
     </div>
 
-    <!-- FINISH COMPLETED MODAL -->
+    <!-- WIN MODAL LAYER -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
         <div class="bg-white/90 backdrop-blur-md p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500" id="win-modal">
             <div class="text-7xl mb-4">🏆</div>
@@ -495,7 +502,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT APP CONFIGURATION SCRIPT ENGINE -->
+    <!-- CORE SYSTEM RE-ENGINE JAVASCRIPT APP -->
     <script>
         const ladders = { 4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91 };
         const snakes = { 17: 7, 54: 34, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 99: 78 };
@@ -521,10 +528,11 @@
         let filteredSoalGame = []; 
         let soalAktif = null;
 
-        // Admin Workspace States
+        // Admin Scope Variables
         let selectedKelasAdmin = "";
         let selectedMapelAdmin = "";
         let localAdminSoalList = [];
+        let activePromptCallback = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             buildBoard();
@@ -640,14 +648,36 @@
                     token.classList.remove('hidden'); card.classList.remove('hidden'); card.classList.add('flex');
                     updatePlayerPosition(i, 1);
                 } else {
-                    token.classList.add('hidden'); card.classList.add('hidden');
+                    token.add('hidden'); card.classList.add('hidden');
                 }
             }
             updateTurnUI();
         }
 
         // ==========================================
-        // WORKFLOW GURU: WORKSPACE UTAMA SETTINGS (KIRI: KELAS | KANAN: MAPEL)
+        // DIALOG MODERN PROMPT ENGINE (ANTI POLOSAN)
+        // ==========================================
+        function openPromptDialog(title, placeholder, callback) {
+            document.getElementById('prompt-title').innerText = title;
+            const input = document.getElementById('prompt-input-text');
+            input.placeholder = placeholder;
+            input.value = '';
+            document.getElementById('input-prompt-modal').classList.remove('hidden');
+            input.focus();
+            activePromptCallback = callback;
+        }
+
+        function closePromptDialog(isConfirm) {
+            document.getElementById('input-prompt-modal').classList.add('hidden');
+            if(isConfirm && activePromptCallback) {
+                const val = document.getElementById('prompt-input-text').value.trim();
+                activePromptCallback(val);
+            }
+            activePromptCallback = null;
+        }
+
+        // ==========================================
+        // WORKFLOW GURU: WORKSPACE DROPDOWNS CLEAN BAR
         // ==========================================
         function openSettingsAuth() {
             document.getElementById('auth-modal').classList.remove('hidden');
@@ -661,13 +691,9 @@
                 document.getElementById('admin-modal').classList.remove('hidden');
                 
                 selectedKelasAdmin = ""; selectedMapelAdmin = "";
-                document.getElementById('admin-label-kelas-aktif').innerText = "-";
-                document.getElementById('admin-btn-add-mapel').disabled = true;
-                document.getElementById('admin-btn-add-mapel').classList.add('opacity-50', 'cursor-not-allowed');
                 document.getElementById('admin-soal-view').classList.add('hidden');
                 
-                renderAdminKelasWorkspaceGrid();
-                renderAdminMapelWorkspacePlaceholder();
+                renderAdminKelasDropdownOptions();
             } else {
                 alert('Password admin salah!');
             }
@@ -679,141 +705,134 @@
             muatMasterDataFirebase();
         }
 
-        // RENDER WORKSPACE UTAMA: SISI KIRI (KELAS)
-        function renderAdminKelasWorkspaceGrid() {
-            const grid = document.getElementById('admin-kelas-grid');
-            grid.innerHTML = '';
+        // RE-RENDER DROPDOWN SELEKSI KELAS ATAS
+        function renderAdminKelasDropdownOptions() {
+            const select = document.getElementById('admin-select-kelas');
+            select.innerHTML = '<option value="">-- PILIH KELAS --</option>';
+            
             const listKelas = [...new Set(bankSoalGlobal.map(item => item.kelas.toUpperCase()))].sort();
-
             listKelas.forEach(k => {
-                const selectStyle = (k === selectedKelasAdmin) ? 'border-blue-600 bg-blue-100' : 'border-blue-200 bg-blue-50';
-                
-                grid.innerHTML += `
-                    <div class="p-3 border-2 rounded-xl text-center text-xs font-black cursor-pointer relative group transition-all flex items-center justify-between gap-1 ${selectStyle}" onclick="klikPilihKelasAdmin('${k}')">
-                        <span class="truncate flex-1 text-blue-800">${k}</span>
-                        <!-- Tombol X Simbol Saja Di Samping Grid -->
-                        <span onclick="hapusKoleksiKelasAdmin(event, '${k}')" class="text-rose-500 hover:text-rose-700 font-bold p-0.5 rounded text-[11px] transition-colors">✕</span>
-                    </div>
-                `;
+                const selectedAttr = (k === selectedKelasAdmin) ? 'selected' : '';
+                select.innerHTML += `<option value="${k}" ${selectedAttr}>${k}</option>`;
+            });
+
+            renderAdminMapelDropdownOptions();
+        }
+
+        function pemicuTambahKelas() {
+            openPromptDialog("Tambah Koleksi Kelas Baru", "Misal: KELAS 5B", (val) => {
+                if(val !== "") {
+                    const kName = val.toUpperCase();
+                    selectedKelasAdmin = kName;
+                    if(!bankSoalGlobal.some(i => i.kelas.toUpperCase() === kName)) {
+                        bankSoalGlobal.push({ kelas: kName, mapel: 'PILIHAN BARU', soal: '' });
+                    }
+                    renderAdminKelasDropdownOptions();
+                    document.getElementById('admin-soal-view').classList.add('hidden');
+                }
             });
         }
 
-        function tambahKelasAdmin() {
-            const klsBaru = prompt("Masukkan Identifikasi Kelas Baru:");
-            if(klsBaru && klsBaru.trim() !== "") {
-                const kName = klsBaru.trim().toUpperCase();
-                klikPilihKelasAdmin(kName);
-                // Trigger render instan ke grid lokal memori
-                if(!bankSoalGlobal.some(i => i.kelas.toUpperCase() === kName)) {
-                    // Masukkan objek pemicu ke array global
-                    bankSoalGlobal.push({ kelas: kName, mapel: 'PILIHAN BARU', soal: '' });
-                }
-                renderAdminKelasWorkspaceGrid();
-            }
-        }
-
-        function klikPilihKelasAdmin(kls) {
-            selectedKelasAdmin = kls;
-            document.getElementById('admin-label-kelas-aktif').innerText = selectedKelasAdmin;
+        function pemicuHapusKelas() {
+            const kls = document.getElementById('admin-select-kelas').value;
+            if(!kls) { alert('Silakan pilih kelas terlebih dahulu!'); return; }
             
-            // Aktifkan tombol tambah mapel di sisi kanan
-            const addMapelBtn = document.getElementById('admin-btn-add-mapel');
-            addMapelBtn.disabled = false;
-            addMapelBtn.className = "bg-purple-600 hover:bg-purple-700 text-white font-bold p-1.5 rounded-lg text-xs shadow-sm";
+            if(!confirm(`Hapus seluruh koleksi data ${kls} secara permanen?`)) return;
 
-            document.getElementById('admin-soal-view').classList.add('hidden');
-            renderAdminKelasWorkspaceGrid(); // refresh style terpilih kiri
-            renderAdminMapelWorkspaceGrid(); // muat pelajaran di sisi kanan
+            pemicuEksekusiHapusKelas(kls);
         }
 
-        async function hapusKoleksiKelasAdmin(e, kls) {
-            e.stopPropagation(); // Mencegah pemicu klik pilih kelas
-            if(!confirm(`Hapus seluruh koleksi data ${kls} beserta mata pelajaran di dalamnya secara permanen?`)) return;
-
+        async function pemicuEksekusiHapusKelas(kls) {
             const targets = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === kls);
             for(let item of targets) {
                 if(item.id) await window.fsDeleteDoc(window.fsDoc(window.dbFirestore, "ular_tangga", item.id));
             }
-
             bankSoalGlobal = bankSoalGlobal.filter(i => i.kelas.toUpperCase() !== kls);
-            if(selectedKelasAdmin === kls) {
-                selectedKelasAdmin = "";
-                document.getElementById('admin-label-kelas-aktif').innerText = "-";
-                document.getElementById('admin-btn-add-mapel').disabled = true;
-                document.getElementById('admin-btn-add-mapel').classList.add('opacity-50', 'cursor-not-allowed');
-                renderAdminMapelWorkspacePlaceholder();
-                document.getElementById('admin-soal-view').classList.add('hidden');
-            }
-
-            renderAdminKelasWorkspaceGrid();
+            selectedKelasAdmin = ""; selectedMapelAdmin = "";
+            renderAdminKelasDropdownOptions();
+            document.getElementById('admin-soal-view').classList.add('hidden');
         }
 
-        // RENDER WORKSPACE UTAMA: SISI KANAN (MAPEL)
-        function renderAdminMapelWorkspacePlaceholder() {
-            document.getElementById('admin-mapel-grid').innerHTML = `
-                <div class="col-span-2 text-center text-xs text-slate-400 font-bold py-4">Silakan klik/pilih salah satu kelas di sisi kiri</div>
-            `;
+        function gantiKelasAdminDropdown() {
+            selectedKelasAdmin = document.getElementById('admin-select-kelas').value;
+            selectedMapelAdmin = "";
+            document.getElementById('admin-soal-view').classList.add('hidden');
+            renderAdminMapelDropdownOptions();
         }
 
-        function renderAdminMapelWorkspaceGrid() {
-            const grid = document.getElementById('admin-mapel-grid');
-            grid.innerHTML = '';
+        // RE-RENDER DROPDOWN SELEKSI PELAJARAN ATAS
+        function renderAdminMapelDropdownOptions() {
+            const select = document.getElementById('admin-select-mapel');
+            const addBtn = document.getElementById('admin-btn-add-mapel');
+            const delBtn = document.getElementById('admin-btn-del-mapel');
 
-            const filtered = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasAdmin && i.mapel !== 'PILIHAN BARU');
-            const listMapel = [...new Set(filtered.map(item => item.mapel.toUpperCase()))].sort();
-
-            if(listMapel.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center text-xs text-slate-400 font-bold py-4">Belum ada mata pelajaran. Klik simbol ➕ diatas.</div>`;
+            if(!selectedKelasAdmin) {
+                select.innerHTML = '<option value="">-- PILIH KELAS TERLEBIH DAHULU --</option>';
+                select.disabled = true;
+                addBtn.classList.add('opacity-50', 'pointer-events-none');
+                delBtn.classList.add('opacity-50', 'pointer-events-none');
                 return;
             }
 
-            listMapel.forEach(m => {
-                const selectStyle = (m === selectedMapelAdmin) ? 'border-purple-600 bg-purple-100' : 'border-purple-200 bg-purple-50';
+            select.disabled = false;
+            addBtn.classList.remove('opacity-50', 'pointer-events-none');
+            delBtn.classList.remove('opacity-50', 'pointer-events-none');
+            
+            select.innerHTML = '<option value="">-- PILIH MAPEL --</option>';
+            const filtered = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasAdmin && i.mapel !== 'PILIHAN BARU');
+            const listMapel = [...new Set(filtered.map(item => item.mapel.toUpperCase()))].sort();
 
-                grid.innerHTML += `
-                    <div class="p-3 border-2 rounded-xl text-center text-xs font-black cursor-pointer transition-all flex items-center justify-between gap-1 ${selectStyle}" onclick="bukaBankSoalView('${m}')">
-                        <span class="truncate flex-1 text-purple-800">${m}</span>
-                        <!-- Tombol X Simbol Saja Di Samping Grid -->
-                        <span onclick="hapusMataPelajaranAdmin(event, '${m}')" class="text-rose-500 hover:text-rose-700 font-bold p-0.5 rounded text-[11px] transition-colors">✕</span>
-                    </div>
-                `;
+            listMapel.forEach(m => {
+                const selectedAttr = (m === selectedMapelAdmin) ? 'selected' : '';
+                select.innerHTML += `<option value="${m}" ${selectedAttr}>${m}</option>`;
             });
         }
 
-        function tambahMapelAdmin() {
-            const mplBaru = prompt("Masukkan Nama Mata Pelajaran Baru:");
-            if(mplBaru && mplBaru.trim() !== "") {
-                const mName = mplBaru.trim().toUpperCase();
-                bukaBankSoalView(mName);
-                if(!bankSoalGlobal.some(i => i.kelas.toUpperCase() === selectedKelasAdmin && i.mapel.toUpperCase() === mName)) {
-                    bankSoalGlobal.push({ kelas: selectedKelasAdmin, mapel: mName, soal: '' });
-                }
-                renderAdminMapelWorkspaceGrid();
+        function gantiMapelAdminDropdown() {
+            selectedMapelAdmin = document.getElementById('admin-select-mapel').value;
+            if(selectedMapelAdmin) {
+                bukaBankSoalView(selectedMapelAdmin);
+            } else {
+                document.getElementById('admin-soal-view').classList.add('hidden');
             }
         }
 
-        async function hapusMataPelajaranAdmin(e, mpl) {
-            e.stopPropagation();
-            if(!confirm(`Hapus mata pelajaran ${mpl} pada ${selectedKelasAdmin} beserta seluruh bank soal di dalamnya?`)) return;
+        function pemicuTambahMapel() {
+            openPromptDialog(`Tambah Mapel (${selectedKelasAdmin})`, "Misal: MATEMATIKA", (val) => {
+                if(val !== "") {
+                    const mName = val.toUpperCase();
+                    selectedMapelAdmin = mName;
+                    if(!bankSoalGlobal.some(i => i.kelas.toUpperCase() === selectedKelasAdmin && i.mapel.toUpperCase() === mName)) {
+                        bankSoalGlobal.push({ kelas: selectedKelasAdmin, mapel: mName, soal: '' });
+                    }
+                    renderAdminMapelDropdownOptions();
+                    bukaBankSoalView(mName);
+                }
+            });
+        }
 
+        function pemicuHapusMapel() {
+            const mpl = document.getElementById('admin-select-mapel').value;
+            if(!mpl) { alert('Silakan pilih mata pelajaran terlebih dahulu!'); return; }
+            
+            if(!confirm(`Hapus pelajaran ${mpl} pada kelas ${selectedKelasAdmin} secara permanen?`)) return;
+
+            pemicuEksekusiHapusMapel(mpl);
+        }
+
+        async function pemicuEksekusiHapusMapel(mpl) {
             const targets = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasAdmin && i.mapel.toUpperCase() === mpl);
             for(let item of targets) {
                 if(item.id) await window.fsDeleteDoc(window.fsDoc(window.dbFirestore, "ular_tangga", item.id));
             }
-
             bankSoalGlobal = bankSoalGlobal.filter(i => !(i.kelas.toUpperCase() === selectedKelasAdmin && i.mapel.toUpperCase() === mpl));
-            if(selectedMapelAdmin === mpl) {
-                selectedMapelAdmin = "";
-                document.getElementById('admin-soal-view').classList.add('hidden');
-            }
-            renderAdminMapelWorkspaceGrid();
+            selectedMapelAdmin = "";
+            renderAdminMapelDropdownOptions();
+            document.getElementById('admin-soal-view').classList.add('hidden');
         }
 
-        // VIEW LOWER SECTION: BANK FORM LINEAR AUTO-SAVE
+        // VIEW LOWER SECTION: BANK FORM LINEAR AUTO-SAVE WITH SCROLL
         function bukaBankSoalView(mpl) {
-            selectedMapelAdmin = mpl;
-            renderAdminMapelWorkspaceGrid(); // refresh active style kanan
-
             document.getElementById('admin-soal-view').classList.remove('hidden');
             document.getElementById('admin-scope-kelas').innerText = selectedKelasAdmin;
             document.getElementById('admin-scope-mapel').innerText = selectedMapelAdmin;
@@ -823,20 +842,14 @@
             renderLinearSoalStackHTML();
         }
 
-        function kembaliKeMapelDariSoal() {
-            document.getElementById('admin-soal-view').classList.add('hidden');
-            selectedMapelAdmin = "";
-            renderAdminMapelWorkspaceGrid();
-        }
-
         function renderLinearSoalStackHTML() {
             const container = document.getElementById('admin-linear-soal-stack');
             container.innerHTML = '';
 
             if(localAdminSoalList.length === 0) {
                 container.innerHTML = `
-                    <div id="admin-empty-card" class="text-center py-6 text-slate-400 font-bold text-xs bg-slate-50 border border-dashed border-slate-300 rounded-xl">
-                        Belum ada data pertanyaan. Klik simbol ➕ "Soal Baru" di bawah!
+                    <div id="admin-empty-card" class="text-center py-8 text-slate-400 font-bold text-xs bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                        Belum ada data pertanyaan. Klik "Tambah Soal Baru" di bawah!
                     </div>
                 `;
                 return;
@@ -848,7 +861,8 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center border-b pb-1 border-slate-200">
                         <span class="text-xs font-black text-slate-600 uppercase">Pertanyaan #${index + 1}</span>
-                        <button onclick="hapusBarisSoal(${index})" class="text-rose-500 font-black text-[10px] hover:underline">✕ Hapus</button>
+                        <!-- Tombol Hapus Butir Soal Minimalis Berwarna Soft -->
+                        <button onclick="hapusBarisSoal(${index})" class="text-red-500 font-black text-[10px] bg-red-50 hover:bg-red-100 px-2 py-0.5 rounded-md transition-colors">✕ Hapus</button>
                     </div>
                     <div>
                         <input type="text" id="auto-soal-${index}" onblur="autoSaveSoalKeFirebase(${index})" value="${item.soal || ''}" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold outline-none focus:border-brand-500 bg-white" placeholder="Tulis kalimat pertanyaan disini...">
@@ -907,6 +921,12 @@
                 soal: '', a: '', b: '', c: '', d: '', kunci: 'A', id: ''
             });
             renderLinearSoalStackHTML();
+
+            // Auto Scroll Stack Pertanyaan Kebawah
+            setTimeout(() => {
+                const container = document.getElementById('admin-linear-soal-stack');
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            }, 50);
         }
 
         async function autoSaveSoalKeFirebase(index) {
