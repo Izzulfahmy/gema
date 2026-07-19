@@ -25,7 +25,6 @@
     </script>
 
     <style>
-        /* Menggunakan warna statis ringan agar performa UI/UX lancar */
         .light-bg {
             background-color: #f0fdf4;
         }
@@ -271,71 +270,86 @@
         </div>
     </div>
 
-    <!-- MODAL 3: MANAGEMENT PANEL CRUD GURU (DENGAN SOAL FILTERED & LIST EDIT/DELETE) -->
+    <!-- MODAL 3: MANAGEMENT PANEL CRUD GURU -->
     <div id="admin-modal" class="fixed inset-0 z-[10002] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
         <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-xl max-w-4xl w-[95%] max-h-[92vh] overflow-y-auto border border-green-100 flex flex-col md:flex-row gap-5">
             
-            <!-- SEKSI KIRI: FORM CRUD (TAMBAH / EDIT) -->
+            <!-- SEKSI KIRI: CONFIG SCOPE & FORM TAMBAH/EDIT SOAL -->
             <div class="w-full md:w-5/12 space-y-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-                <h3 id="form-crud-title" class="text-base font-black text-green-700 uppercase tracking-wide border-b pb-1">➕ Tambah Soal Baru</h3>
-                <input type="hidden" id="crud-id-soal"> 
-
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">KELAS</label>
-                        <input type="text" id="input-kelas" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-bold uppercase outline-none" placeholder="MISAL: KELAS 5">
+                
+                <!-- LANGKAH 1: KUNCI SCOPE IDENTITAS -->
+                <div class="bg-white p-2.5 rounded-lg border border-slate-200 space-y-2">
+                    <h4 class="text-[11px] font-black text-slate-500 tracking-wider uppercase">Langkah 1: Ruang Lingkup Soal</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400">KELAS</label>
+                            <input type="text" id="input-kelas" oninput="checkScopeLock()" class="w-full p-1.5 border border-slate-200 rounded text-xs font-bold uppercase outline-none" placeholder="CONTOH: KELAS 5">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400">MAPEL</label>
+                            <input type="text" id="input-mapel" oninput="checkScopeLock()" class="w-full p-1.5 border border-slate-200 rounded text-xs font-bold uppercase outline-none" placeholder="CONTOH: IPA">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">MAPEL</label>
-                        <input type="text" id="input-mapel" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-bold uppercase outline-none" placeholder="MISAL: IPA">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 mb-0.5">BUTIR PERTANYAAN</label>
-                    <textarea id="input-soal" rows="2" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-medium outline-none" placeholder="Isi soal..."></textarea>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400">Pilihan A</label>
-                        <input type="text" id="input-a" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400">Pilihan B</label>
-                        <input type="text" id="input-b" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400">Pilihan C</label>
-                        <input type="text" id="input-c" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400">Pilihan D</label>
-                        <input type="text" id="input-d" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
+                    <!-- Indikator Kunci Otomatis -->
+                    <div id="scope-status" class="text-[10px] text-center font-bold text-red-500 bg-red-50 py-1 rounded">
+                        Tentukan Kelas & Mapel Terlebih Dahulu
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 mb-0.5">KUNCI JAWABAN</label>
-                    <select id="input-kunci" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-bold outline-none bg-white">
-                        <option value="A">Opsi A</option>
-                        <option value="B">Opsi B</option>
-                        <option value="C">Opsi C</option>
-                        <option value="D">Opsi D</option>
-                    </select>
+                <!-- LANGKAH 2: INPUT ELEMENT PERTANYAAN (DIBUKA JIKA KELAS & MAPEL TERISI) -->
+                <div id="crud-form-box" class="opacity-50 pointer-events-none transition-opacity duration-200 space-y-3">
+                    <h3 id="form-crud-title" class="text-xs font-black text-green-700 uppercase tracking-wide border-b pb-1">➕ Tambah Butir Soal</h3>
+                    <input type="hidden" id="crud-id-soal"> 
+
+                    <div>
+                        <label class="block text-[9px] font-bold text-slate-500 mb-0.5">BUTIR PERTANYAAN</label>
+                        <textarea id="input-soal" rows="2" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-medium outline-none" placeholder="Tulis soal kuis di sini..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400">Pilihan A</label>
+                            <input type="text" id="input-a" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400">Pilihan B</label>
+                            <input type="text" id="input-b" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400">Pilihan C</label>
+                            <input type="text" id="input-c" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-400">Pilihan D</label>
+                            <input type="text" id="input-d" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[9px] font-bold text-slate-500 mb-0.5">KUNCI JAWABAN</label>
+                        <select id="input-kunci" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-bold outline-none bg-white">
+                            <option value="A">Opsi A</option>
+                            <option value="B">Opsi B</option>
+                            <option value="C">Opsi C</option>
+                            <option value="D">Opsi D</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-2 pt-1">
+                        <button type="button" onclick="resetSoalOnly()" class="w-1/3 py-2 bg-slate-200 hover:bg-slate-300 font-bold rounded-lg text-xs transition-colors">Clear</button>
+                        <button type="button" onclick="prosesSimpanCRUD()" class="w-2/3 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg text-xs shadow-sm transition-colors">Simpan Soal</button>
+                    </div>
                 </div>
 
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="resetCrudForm()" class="w-1/3 py-2 bg-slate-200 hover:bg-slate-300 font-bold rounded-lg text-xs transition-colors">Reset</button>
-                    <button type="button" onclick="prosesSimpanCRUD()" class="w-2/3 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg text-xs shadow-sm transition-colors">Simpan Data</button>
+                <div class="border-t pt-2">
+                    <button type="button" onclick="closeAdminModal()" class="w-full py-2 border border-slate-300 text-slate-500 font-bold rounded-lg text-xs hover:bg-slate-100 transition-colors">Keluar Panel Admin</button>
                 </div>
-                <button type="button" onclick="closeAdminModal()" class="w-full py-1.5 border border-slate-300 text-slate-500 font-bold rounded-lg text-xs mt-1 hover:bg-slate-100 transition-colors">Keluar Panel Admin</button>
             </div>
 
-            <!-- SEKSI KANAN: TABEL READ & DELETE (READ DATA) -->
+            <!-- SEKSI KANAN: LIST DAFTAR BAN SOAL -->
             <div class="w-full md:w-7/12 flex flex-col">
                 <div class="flex justify-between items-center border-b pb-2 mb-2">
-                    <h3 class="text-base font-black text-slate-700">📋 Daftar Bank Soal</h3>
+                    <h3 class="text-base font-black text-slate-700">📋 Daftar Bank Soal Cloud</h3>
                     <div class="flex gap-1">
                         <input type="text" id="filter-tabel-kelas" oninput="renderTabelAdmin()" placeholder="Filter Kelas" class="p-1 border text-xs rounded-lg w-24 outline-none">
                         <input type="text" id="filter-tabel-mapel" oninput="renderTabelAdmin()" placeholder="Filter Mapel" class="p-1 border text-xs rounded-lg w-24 outline-none">
@@ -500,8 +514,8 @@
 
         const posOffsets = [{ dx: -2, dy: -2 }, { dx: 2, dy: -2 }, { dx: -2, dy: 2 }, { dx: 2, dy: 2 }];
 
-        let bankSoalGlobal = []; // Menyimpan master seluruh data dari Firebase
-        let filteredSoalGame = []; // Soal khusus yang dimainkan
+        let bankSoalGlobal = []; 
+        let filteredSoalGame = []; 
         let soalAktif = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -511,22 +525,19 @@
         });
 
         // ==========================================
-        // DYNAMIC DROPDOWN & CLOUD SYNC INITIALIZER
+        // DYNAMIC DROPDOWN INITIALIZER
         // ==========================================
         async function inisialisasiDataAwalApp() {
             try {
-                // Tarik koleksi awal ular_tangga
                 const querySnapshot = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
                 bankSoalGlobal = [];
                 querySnapshot.forEach((doc) => {
                     let data = doc.data();
-                    data.id = doc.id; // Inject ID dokumen untuk CRUD update/delete
+                    data.id = doc.id; 
                     bankSoalGlobal.push(data);
                 });
 
-                // Ekstrak Opsi Unik untuk Kelas
                 const listKelasUnik = [...new Set(bankSoalGlobal.map(item => item.kelas.toUpperCase()))].sort();
-                
                 const selectKelas = document.getElementById('play-kelas');
                 selectKelas.innerHTML = '<option value="">-- Pilih Kelas --</option>';
                 
@@ -551,7 +562,6 @@
                 return;
             }
 
-            // Ekstrak Opsi Unik Mapel berdasarkan kelas yang dipilih
             const mapelFiltered = bankSoalGlobal.filter(item => item.kelas.toUpperCase() === klsTerpilih);
             const listMapelUnik = [...new Set(mapelFiltered.map(item => item.mapel.toUpperCase()))].sort();
 
@@ -590,7 +600,6 @@
             document.getElementById('bar-mapel').innerText = activeMapel;
             document.getElementById('game-identity-bar').classList.remove('hidden');
 
-            // Saring soal khusus untuk sesi permainan berjalan
             filteredSoalGame = bankSoalGlobal.filter(item => 
                 item.kelas.toUpperCase() === activeKelas && item.mapel.toUpperCase() === activeMapel
             );
@@ -623,8 +632,25 @@
         }
 
         // ==========================================
-        // PANEL SISTEM CRUD LENGKAP GURU (ADMIN)
+        // WORKFLOW GURU: KUNCI SCOPE & DONT RE-ENTER KELAS/MAPEL
         // ==========================================
+        function checkScopeLock() {
+            const kelas = document.getElementById('input-kelas').value.trim();
+            const mapel = document.getElementById('input-mapel').value.trim();
+            const formBox = document.getElementById('crud-form-box');
+            const statusBar = document.getElementById('scope-status');
+
+            if (kelas !== "" && mapel !== "") {
+                formBox.classList.remove('opacity-50', 'pointer-events-none');
+                statusBar.innerText = `🔒 Terkunci: ${kelas.toUpperCase()} - ${mapel.toUpperCase()}`;
+                statusBar.className = "text-[10px] text-center font-bold text-green-600 bg-green-50 py-1 rounded";
+            } else {
+                formBox.classList.add('opacity-50', 'pointer-events-none');
+                statusBar.innerText = "Tentukan Kelas & Mapel Terlebih Dahulu";
+                statusBar.className = "text-[10px] text-center font-bold text-red-500 bg-red-50 py-1 rounded";
+            }
+        }
+
         function openSettingsAuth() {
             document.getElementById('auth-modal').classList.remove('hidden');
             document.getElementById('admin-pass').value = '';
@@ -639,7 +665,7 @@
             if(document.getElementById('admin-pass').value === 'admin') {
                 closeAuthModal();
                 document.getElementById('admin-modal').classList.remove('hidden');
-                resetCrudForm();
+                resetCrudFormTotal();
                 renderTabelAdmin();
             } else {
                 alert('Kata sandi admin tidak tepat!');
@@ -648,24 +674,28 @@
 
         function closeAdminModal() {
             document.getElementById('admin-modal').classList.add('hidden');
-            // Reload inisialisasi dropdown awal barangkali ada data baru berubah
             inisialisasiDataAwalApp();
         }
 
-        function resetCrudForm() {
+        function resetCrudFormTotal() {
             document.getElementById('crud-id-soal').value = '';
             document.getElementById('input-kelas').value = '';
             document.getElementById('input-mapel').value = '';
+            resetSoalOnly();
+            checkScopeLock();
+        }
+
+        function resetSoalOnly() {
+            document.getElementById('crud-id-soal').value = '';
             document.getElementById('input-soal').value = '';
             document.getElementById('input-a').value = '';
             document.getElementById('input-b').value = '';
             document.getElementById('input-c').value = '';
             document.getElementById('input-d').value = '';
             document.getElementById('input-kunci').value = 'A';
-            document.getElementById('form-crud-title').innerText = "➕ Tambah Soal Baru";
+            document.getElementById('form-crud-title').innerText = "➕ Tambah Butir Soal";
         }
 
-        // ENGINE RE-RENDER TABEL DAFTAR DATA CRUD (READ)
         function renderTabelAdmin() {
             const tbody = document.getElementById('tbody-admin-crud');
             const fKelas = document.getElementById('filter-tabel-kelas').value.toUpperCase();
@@ -700,7 +730,6 @@
             });
         }
 
-        // PROCESS CONTROLLER CREATE & UPDATE (CREATE/UPDATE)
         async function prosesSimpanCRUD() {
             const idSoal = document.getElementById('crud-id-soal').value;
             const kelas = document.getElementById('input-kelas').value.trim();
@@ -712,8 +741,8 @@
             const pilD = document.getElementById('input-d').value.trim();
             const kunci = document.getElementById('input-kunci').value;
 
-            if(!kelas || !mapel || !soal || !pilA || !pilB || !pilC || !pilD) {
-                alert('Harap isi lengkap seluruh form input data soal pilihan ganda!');
+            if(!soal || !pilA || !pilB || !pilC || !pilD) {
+                alert('Harap isi lengkap butir pertanyaan dan seluruh pilihan jawaban!');
                 return;
             }
 
@@ -725,18 +754,17 @@
 
             try {
                 if(idSoal) {
-                    // JALUR UPDATE DATA
                     const docRef = window.fsDoc(window.dbFirestore, "ular_tangga", idSoal);
                     await window.fsUpdateDoc(docRef, payload);
-                    alert('Data soal berhasil diperbarui di cloud database!');
+                    alert('Data soal berhasil diperbarui!');
                 } else {
-                    // JALUR TAMBAH DATA (CREATE)
                     await window.fsAddDoc(window.fsCollection(window.dbFirestore, "ular_tangga"), payload);
-                    alert('Data soal baru berhasil ditambahkan ke cloud database!');
+                    alert('Data soal berhasil ditambahkan! Silakan buat soal berikutnya.');
                 }
 
-                resetCrudForm();
-                // Tarik ulang data mentah dari database untuk memperbarui tampilan tabel list internal
+                // HANYA reset input pertanyaan & opsi. KELAS DAN MAPEL TETAP DIKUNCI / DIPERTAHANKAN
+                resetSoalOnly();
+
                 const snap = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
                 bankSoalGlobal = [];
                 snap.forEach(d => {
@@ -765,20 +793,19 @@
             document.getElementById('input-kunci').value = item.kunci;
 
             document.getElementById('form-crud-title').innerText = "✏️ Edit Soal Aktif";
+            checkScopeLock();
         }
 
-        // AKSI HAPUS SOAL (DELETE)
         async function hapusSoal(id) {
-            if(!confirm('Apakah Anda yakin ingin menghapus butir soal kuis ini secara permanen dari Cloud database?')) return;
+            if(!confirm('Hapus butir soal kuis ini secara permanen?')) return;
 
             try {
                 const docRef = window.fsDoc(window.dbFirestore, "ular_tangga", id);
                 await window.fsDeleteDoc(docRef);
                 
-                // Sinkronisasi local state array
                 bankSoalGlobal = bankSoalGlobal.filter(item => item.id !== id);
                 renderTabelAdmin();
-                alert('Soal sukses dihapus dari database.');
+                alert('Soal sukses dihapus.');
             } catch (err) {
                 alert('Gagal menghapus data: ' + err.message);
             }
@@ -1052,7 +1079,6 @@
                 mc.classList.add('hidden');
                 document.getElementById('game-identity-bar').classList.add('hidden');
                 document.getElementById('startup-modal').classList.remove('hidden');
-                // Refresh data bank soal awal aplikasi
                 inisialisasiDataAwalApp();
             }, 200);
         }
