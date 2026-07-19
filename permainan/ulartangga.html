@@ -223,7 +223,7 @@
         }
     </style>
 
-    <!-- Firebase SDK Modular Setup -->
+    <!-- Firebase SDK Setup -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -241,7 +241,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Tempelkan fungsi database ke object window agar bisa diakses fungsi Javascript biasa
         window.dbFirestore = db;
         window.fsCollection = collection;
         window.fsAddDoc = addDoc;
@@ -250,11 +249,15 @@
 </head>
 <body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col justify-center items-center">
 
-    <!-- MODAL 1: STARTUP (PILIH PEMAIN) -->
+    <!-- INFOBAR IDENTITAS PERMAINAN AKTIF (ATAS TENGAH) -->
+    <div id="game-identity-bar" class="absolute top-4 left-4 z-[90] bg-white/80 backdrop-blur-md border border-white px-4 py-2 rounded-2xl shadow-sm font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2">
+        <span>🏫</span> <span id="bar-kelas">Kelas</span> | <span id="bar-mapel">Mapel</span>
+    </div>
+
+    <!-- MODAL 1: STARTUP FORMULIR PERMAINAN -->
     <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-md w-[90%] text-center transform transition-all border-4 border-emerald-100 relative">
+        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-md w-[90%] transform transition-all border-4 border-emerald-100 relative">
             
-            <!-- Tombol Pengaturan Berlogo Roda Gigi -->
             <button onclick="openSettingsAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors" title="Pengaturan Guru">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -262,16 +265,40 @@
                 </svg>
             </button>
 
-            <div class="text-6xl mb-4 drop-shadow-md">🐍🪜</div>
-            <h2 class="text-3xl font-black text-emerald-600 mb-2">Pilih Pemain</h2>
-            <p class="text-slate-500 mb-6 font-bold text-sm sm:text-base">Tentukan jumlah teman yang ikut main. Semakin ramai, semakin seru!</p>
-            
-            <div class="flex flex-col gap-3 sm:gap-4">
-                <button onclick="startGame(1)" class="py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-2xl font-black text-lg transition-all border-2 border-blue-200 hover:-translate-y-1 hover:shadow-md flex items-center justify-center gap-2">1 Pemain <span class="text-2xl">🐰</span></button>
-                <button onclick="startGame(2)" class="py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl font-black text-lg transition-all border-2 border-red-200 hover:-translate-y-1 hover:shadow-md flex items-center justify-center gap-2">2 Pemain <span class="text-2xl">🐰🐐</span></button>
-                <button onclick="startGame(3)" class="py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-2xl font-black text-lg transition-all border-2 border-emerald-200 hover:-translate-y-1 hover:shadow-md flex items-center justify-center gap-2">3 Pemain <span class="text-2xl">🐰🐐🐸</span></button>
-                <button onclick="startGame(4)" class="py-3 bg-yellow-50 hover:bg-yellow-100 text-yellow-600 rounded-2xl font-black text-lg transition-all border-2 border-yellow-200 hover:-translate-y-1 hover:shadow-md flex items-center justify-center gap-2">4 Pemain <span class="text-2xl">🐰🐐🐸🐱</span></button>
+            <div class="text-center">
+                <div class="text-5xl mb-2 drop-shadow-md">🐍🪜</div>
+                <h2 class="text-3xl font-black text-emerald-600 mb-1">Ular Tangga Edukasi</h2>
+                <p class="text-slate-400 font-bold text-xs mb-6">Lengkapi identitas ruang bermain Anda</p>
             </div>
+            
+            <div class="space-y-4 mb-6">
+                <!-- Pilihan Jumlah Pemain -->
+                <div>
+                    <label class="block text-xs font-black text-slate-500 mb-1.5 uppercase tracking-wide">1. Tentukan Jumlah Pemain</label>
+                    <div class="grid grid-cols-4 gap-2" id="player-select-group">
+                        <button type="button" onclick="setPlayerCount(1)" id="btn-pcount-1" class="py-2.5 bg-brand-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-center shadow-sm">1 🐰</button>
+                        <button type="button" onclick="setPlayerCount(2)" id="btn-pcount-2" class="py-2.5 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-black rounded-xl text-center">2 🐐</button>
+                        <button type="button" onclick="setPlayerCount(3)" id="btn-pcount-3" class="py-2.5 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-black rounded-xl text-center">3 🐸</button>
+                        <button type="button" onclick="setPlayerCount(4)" id="btn-pcount-4" class="py-2.5 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-black rounded-xl text-center">4 🐱</button>
+                    </div>
+                </div>
+
+                <!-- Input Identifikasi Kelas -->
+                <div>
+                    <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wide">2. Nama Kelas</label>
+                    <input type="text" id="play-kelas" class="w-full p-3 border-2 border-slate-200 rounded-xl font-bold focus:border-brand-500 outline-none placeholder:text-slate-300" placeholder="Contoh: Kelas 5B">
+                </div>
+
+                <!-- Input Mata Pelajaran -->
+                <div>
+                    <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wide">3. Mata Pelajaran</label>
+                    <input type="text" id="play-mapel" class="w-full p-3 border-2 border-slate-200 rounded-xl font-bold focus:border-brand-500 outline-none placeholder:text-slate-300" placeholder="Contoh: Matematika">
+                </div>
+            </div>
+
+            <button onclick="validateAndStartGame()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl text-lg transition-all shadow-[0_4px_0_#059669] active:translate-y-1 active:shadow-none flex items-center justify-center gap-2">
+                Mulai Petualangan! 🚀
+            </button>
         </div>
     </div>
 
@@ -371,7 +398,7 @@
         </div>
     </div>
 
-    <!-- HUD UTAMA PERMAINAN -->
+    <!-- HUD MENU UTAMA PERMAINAN -->
     <div class="absolute top-4 right-4 z-[100] flex gap-2">
         <button onclick="resetGame()" class="bg-white/80 backdrop-blur-md border border-white/60 text-rose-500 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Ulang Permainan">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
@@ -493,31 +520,121 @@
             'bg-purple-50 text-purple-500', 'bg-pink-50 text-pink-500'
         ];
 
+        // State Inisialisasi Default
+        let tempPlayerCount = 1; 
         let numPlayers = 1;
         let currentPlayer = 0;
         let playerPositions = [1, 1, 1, 1];
         let isMoving = false;
+
+        let activeKelas = "";
+        let activeMapel = "";
 
         const playerNames = ['🐰 Kelinci', '🐐 Kambing', '🐸 Katak', '🐱 Kucing'];
         const playerColorClasses = ['text-blue-600', 'text-red-600', 'text-emerald-600', 'text-yellow-600'];
         const playerRingClasses = ['ring-blue-400', 'ring-red-400', 'ring-emerald-400', 'ring-yellow-400'];
 
         const posOffsets = [
-            { dx: -2, dy: -2 }, 
-            { dx: 2, dy: -2 },  
-            { dx: -2, dy: 2 },  
-            { dx: 2, dy: 2 }    
+            { dx: -2, dy: -2 }, { dx: 2, dy: -2 },  
+            { dx: -2, dy: 2 }, { dx: 2, dy: 2 }    
         ];
 
-        // Global State Kuis Edukasi
         let bankSoal = [];
+        let filteredSoal = [];
         let soalAktif = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             buildBoard();
             drawSnakesAndLadders();
-            muatSoalDariFirebase(); // Ambil data saat inisialisasi awal app
         });
+
+        // ==========================================
+        // SISTEM SELEKSI INTERFACES PADA LAYAR UTAMA
+        // ==========================================
+        function setPlayerCount(count) {
+            tempPlayerCount = count;
+            // Ubah visual aktif button group
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`btn-pcount-${i}`);
+                if (i === count) {
+                    btn.className = "py-2.5 bg-brand-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-center shadow-sm";
+                } else {
+                    btn.className = "py-2.5 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-black rounded-xl text-center";
+                }
+            }
+        }
+
+        async function validateAndStartGame() {
+            const kelasInput = document.getElementById('play-kelas').value.trim();
+            const mapelInput = document.getElementById('play-mapel').value.trim();
+
+            if (!kelasInput || !mapelInput) {
+                alert('Silakan masukkan nama Kelas dan Mata Pelajaran terlebih dahulu!');
+                return;
+            }
+
+            activeKelas = kelasInput;
+            activeMapel = mapelInput;
+            numPlayers = tempPlayerCount;
+
+            // Update Teks Identitas atas layar
+            document.getElementById('bar-kelas').innerText = activeKelas;
+            document.getElementById('bar-mapel').innerText = activeMapel;
+            document.getElementById('game-identity-bar').classList.remove('hidden');
+
+            // Ambil data terbaru dari cloud database dan lakukan filter spesifik
+            await sinkronisasiDanFilterSoal();
+
+            // Jalankan inisialisasi awal papan
+            executeStartGame();
+        }
+
+        async function sinkronisasiDanFilterSoal() {
+            try {
+                const querySnapshot = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
+                bankSoal = [];
+                querySnapshot.forEach((doc) => {
+                    bankSoal.push(doc.data());
+                });
+
+                // Proses penyaringan (case-insensitive filter)
+                filteredSoal = bankSoal.filter(item => 
+                    item.kelas.toLowerCase() === activeKelas.toLowerCase() &&
+                    item.mapel.toLowerCase() === activeMapel.toLowerCase()
+                );
+
+                console.log(`Sinkronisasi Selesai. Ditemukan ${filteredSoal.length} soal untuk ${activeKelas} - ${activeMapel}`);
+            } catch (error) {
+                console.error("Gagal memuat bank soal dari cloud: ", error);
+            }
+        }
+
+        function executeStartGame() {
+            currentPlayer = 0;
+            playerPositions = [1, 1, 1, 1];
+            isMoving = false;
+            
+            document.getElementById('startup-modal').classList.add('hidden');
+            
+            for (let i = 0; i < 4; i++) {
+                const token = document.getElementById(`player-token-${i}`);
+                const card = document.getElementById(`card-p${i}`);
+                
+                if (i < numPlayers) {
+                    token.classList.remove('hidden');
+                    card.classList.remove('hidden');
+                    card.classList.add('flex');
+                    updatePlayerPosition(i, 1);
+                } else {
+                    token.classList.add('hidden');
+                    card.classList.add('hidden');
+                    card.classList.remove('flex');
+                }
+            }
+            updateTurnUI();
+            document.getElementById('mini-dice-visual').innerHTML = '🎲';
+            document.getElementById('btn-roll').disabled = false;
+        }
 
         // ==========================================
         // SYSTEM AUTH & PANEL SETTINGS GURU
@@ -546,9 +663,6 @@
             document.getElementById('admin-modal').classList.add('hidden');
         }
 
-        // ==========================================
-        // FITUR INTERAKSI CLOUD FIREBASE FIRESTORE
-        // ==========================================
         async function simpanSoalFirebase() {
             const kelas = document.getElementById('input-kelas').value.trim();
             const mapel = document.getElementById('input-mapel').value.trim();
@@ -565,7 +679,6 @@
             }
 
             try {
-                // Menambahkan data ke subkoleksi awal "ular_tangga"
                 await window.fsAddDoc(window.fsCollection(window.dbFirestore, "ular_tangga"), {
                     kelas: kelas,
                     mapel: mapel,
@@ -578,68 +691,22 @@
                     timestamp: new Date().getTime()
                 });
 
-                alert('Berhasil! Soal baru terunggah ke Database Firebase Firestore.');
+                alert('Berhasil! Soal baru terunggah ke Database Firebase.');
                 
-                // Reset form soal
                 document.getElementById('input-soal').value = '';
                 document.getElementById('input-a').value = '';
                 document.getElementById('input-b').value = '';
                 document.getElementById('input-c').value = '';
                 document.getElementById('input-d').value = '';
-                
-                // Sinkronisasi data terbaru local array bankSoal
-                muatSoalDariFirebase();
 
             } catch (error) {
-                console.error("Error Firebase:", error);
                 alert("Gagal menyimpan data: " + error.message);
-            }
-        }
-
-        async function muatSoalDariFirebase() {
-            try {
-                const querySnapshot = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
-                bankSoal = [];
-                querySnapshot.forEach((doc) => {
-                    bankSoal.push(doc.data());
-                });
-                console.log("Bank Soal Firebase ter-sinkronisasi. Total: " + bankSoal.length + " soal.");
-            } catch (error) {
-                console.error("Gagal memuat bank soal dari cloud: ", error);
             }
         }
 
         // ==========================================
         // LOGIKA CORE PERMAINAN & KUIS EVALUASI
         // ==========================================
-        function startGame(playersCount) {
-            numPlayers = playersCount;
-            currentPlayer = 0;
-            playerPositions = [1, 1, 1, 1];
-            isMoving = false;
-            
-            document.getElementById('startup-modal').classList.add('hidden');
-            
-            for (let i = 0; i < 4; i++) {
-                const token = document.getElementById(`player-token-${i}`);
-                const card = document.getElementById(`card-p${i}`);
-                
-                if (i < numPlayers) {
-                    token.classList.remove('hidden');
-                    card.classList.remove('hidden');
-                    card.classList.add('flex');
-                    updatePlayerPosition(i, 1);
-                } else {
-                    token.classList.add('hidden');
-                    card.classList.add('hidden');
-                    card.classList.remove('flex');
-                }
-            }
-            updateTurnUI();
-            document.getElementById('mini-dice-visual').innerHTML = '🎲';
-            document.getElementById('btn-roll').disabled = false;
-        }
-
         function buildBoard() {
             const grid = document.getElementById('board-grid');
             grid.innerHTML = '';
@@ -773,9 +840,6 @@
             }, stepDelay);
         }
 
-        // ==========================================
-        // DADU 3D ANIMATION CORE
-        // ==========================================
         function rollDice3D() {
             if (isMoving) return;
             isMoving = true;
@@ -852,7 +916,6 @@
                         }
                         
                         moveTokenStepByStep(currentPlayer, currentPosTemp, targetPos, 400, () => {
-                            // Setelah pion selesai melompat, munculkan tantangan Kuis Edukasi dari Firebase
                             bukaKuisSiswa(targetPos);
                         });
 
@@ -861,23 +924,18 @@
             }, 50); 
         }
 
-        // ==========================================
-        // ALGORITMA EVALUASI INTERAKTIF SOAL SISWA
-        // ==========================================
         function bukaKuisSiswa(targetPos) {
-            // Cek ketersediaan bankSoal local cache
-            if(bankSoal.length === 0) {
-                // Jika database kosong, berikan fallback otomatis tanpa interupsi game
+            // Cek ketersediaan bank soal yang telah difilter berdasarkan kelas & mapel
+            if(filteredSoal.length === 0) {
+                // Jika tidak ada soal yang cocok, jalankan pengecekan ular/tangga langsung
                 checkSnakesLadders(currentPlayer, targetPos);
                 return;
             }
 
-            // Dapatkan Soal Acak (Randomized) dari Database Firebase
-            const indexAcak = Math.floor(Math.random() * bankSoal.length);
-            soalAktif = bankSoal[indexAcak];
-            soalAktif.targetPos = targetPos; // Simpan posisi sementara
+            const indexAcak = Math.floor(Math.random() * filteredSoal.length);
+            soalAktif = filteredSoal[indexAcak];
+            soalAktif.targetPos = targetPos; 
 
-            // Tampilkan Data ke Struktur Modal
             document.getElementById('quiz-identity').innerText = `${soalAktif.kelas} - ${soalAktif.mapel}`;
             document.getElementById('quiz-player-tag').innerText = `Tantangan untuk ${playerNames[currentPlayer]}`;
             document.getElementById('quiz-text').innerText = soalAktif.soal;
@@ -886,12 +944,10 @@
             document.getElementById('text-ans-c').innerText = soalAktif.c;
             document.getElementById('text-ans-d').innerText = soalAktif.d;
 
-            // Bersihkan styling lama feedback
             const feedback = document.getElementById('quiz-feedback');
             feedback.classList.add('hidden');
             resetButtonStyles();
 
-            // Tampilkan Modal Tantangan Soal
             document.getElementById('quiz-modal').classList.remove('hidden');
         }
 
@@ -905,27 +961,23 @@
 
         function checkJawabanSiswa(jawabanDipilih) {
             const feedback = document.getElementById('quiz-feedback');
-            const kunciBenar = soalAktif.kunci; // A, B, C, atau D
+            const kunciBenar = soalAktif.kunci; 
 
-            // Nonaktifkan semua pilihan jawaban agar tidak bisa di-klik ulang
             ['a','b','c','d'].forEach(ch => document.getElementById(`btn-ans-${ch}`).disabled = true);
 
             const btnTerpilih = document.getElementById(`btn-ans-${jawabanDipilih.toLowerCase()}`);
 
             if(jawabanDipilih === kunciBenar) {
-                // Jawaban Benar!
                 btnTerpilih.className = "w-full py-3 px-4 bg-emerald-100 text-left rounded-2xl border-2 border-emerald-400 font-bold transition-all flex gap-3 text-sm sm:text-base text-emerald-700";
                 feedback.innerHTML = "🎉 HEBAT! Jawabanmu Benar. Kamu aman di petak ini.";
                 feedback.className = "mt-4 text-center font-black text-sm text-emerald-600 block";
 
                 setTimeout(() => {
                     document.getElementById('quiz-modal').classList.add('hidden');
-                    // Cek Ular & Tangga normal jalankan
                     checkSnakesLadders(currentPlayer, soalAktif.targetPos);
                 }, 2000);
 
             } else {
-                // Jawaban Salah! Mundur 2 langkah sebagai hukuman edukatif
                 btnTerpilih.className = "w-full py-3 px-4 bg-rose-100 text-left rounded-2xl border-2 border-rose-400 font-bold transition-all flex gap-3 text-sm sm:text-base text-rose-700";
                 
                 const btnBenar = document.getElementById(`btn-ans-${kunciBenar.toLowerCase()}`);
@@ -937,13 +989,11 @@
                 setTimeout(() => {
                     document.getElementById('quiz-modal').classList.add('hidden');
                     
-                    // Hitung posisi baru mundur (minimal di petak 1)
                     let posisiMundur = Math.max(1, soalAktif.targetPos - 2);
                     playerPositions[currentPlayer] = posisiMundur;
                     updatePlayerPosition(currentPlayer, posisiMundur);
 
                     setTimeout(() => {
-                        // Cek apakah di tempat mundur yang baru ada ular/tangga
                         checkSnakesLadders(currentPlayer, posisiMundur);
                     }, 800);
 
@@ -1004,6 +1054,7 @@
             
             setTimeout(() => {
                 modalContainer.classList.add('hidden');
+                document.getElementById('game-identity-bar').classList.add('hidden');
                 document.getElementById('startup-modal').classList.remove('hidden');
             }, 300);
         }
