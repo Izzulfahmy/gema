@@ -223,7 +223,7 @@
         }
     </style>
 
-    <!-- Firebase SDK Setup -->
+    <!-- Firebase SDK Config -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -250,58 +250,59 @@
         window.fsUpdateDoc = updateDoc;
     </script>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col justify-center items-center">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-center items-center">
 
     <!-- INFOBAR IDENTITAS PERMAINAN AKTIF -->
     <div id="game-identity-bar" class="absolute top-4 left-4 z-[90] bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-4 py-2 rounded-2xl shadow-lg font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2">
         <span>🏫</span> <span id="bar-kelas">Kelas</span> | <span>📖</span> <span id="bar-mapel">Mapel</span>
     </div>
 
-    <!-- MODAL 1: STARTUP FORM SELEKSI KELAS & MAPEL -->
+    <!-- MODAL 1: STARTUP PERMAINAN DENGAN KOLEKSI GRID CARD INTERAKTIF RINGAN -->
     <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-md w-[90%] transform transition-all border-4 border-emerald-100 relative">
+        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-lg w-[92%] max-h-[90vh] overflow-y-auto border-4 border-emerald-100 relative space-y-5">
             
             <button onclick="openSettingsAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors" title="Pengaturan Guru">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <svg xmlns="http://www.w3.org/2000/xl" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             </button>
 
             <div class="text-center">
-                <div class="text-5xl mb-2 drop-shadow-md">🐍🪜</div>
-                <h2 class="text-3xl font-black text-emerald-600 mb-1">Ular Tangga Edukasi</h2>
-                <p class="text-slate-400 font-bold text-xs mb-6">Pilih ruang kelas dan materi belajar</p>
+                <div class="text-4xl mb-1 drop-shadow-sm">🐍🪜</div>
+                <h2 class="text-2xl font-black text-emerald-600">Mulai Permainan</h2>
+                <p class="text-slate-400 font-bold text-[11px]">Tentukan konfigurasi ruang petualangan kuis</p>
             </div>
             
-            <div class="space-y-4 mb-6">
-                <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1.5 uppercase tracking-wide">1. Jumlah Pemain</label>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button type="button" onclick="setPlayerCount(1)" id="btn-pcount-1" class="py-2 bg-emerald-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-center shadow-sm">1 🐰</button>
-                        <button type="button" onclick="setPlayerCount(2)" id="btn-pcount-2" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-center">2 🐐</button>
-                        <button type="button" onclick="setPlayerCount(3)" id="btn-pcount-3" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-center">3 🐸</button>
-                        <button type="button" onclick="setPlayerCount(4)" id="btn-pcount-4" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-center">4 🐱</button>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wide">2. Pilih Kelas Tersedia</label>
-                    <select id="play-kelas" onchange="filterMapelDropdown()" class="w-full p-3 border-2 border-slate-200 rounded-xl font-bold bg-white outline-none focus:border-brand-500 text-slate-700">
-                        <option value="">-- Memuat Kelas --</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wide">3. Pilih Mata Pelajaran</label>
-                    <select id="play-mapel" class="w-full p-3 border-2 border-slate-200 rounded-xl font-bold bg-white outline-none focus:border-brand-500 text-slate-700">
-                        <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
-                    </select>
+            <!-- STEP 1: PILIH JUMLAH PEMAIN -->
+            <div class="space-y-1.5">
+                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wide">1. Jumlah Pemain</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <button type="button" onclick="setPlayerCount(1)" id="btn-pcount-1" class="py-2 bg-emerald-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-xs text-center shadow-sm">1 🐰</button>
+                    <button type="button" onclick="setPlayerCount(2)" id="btn-pcount-2" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-xs text-center">2 🐐</button>
+                    <button type="button" onclick="setPlayerCount(3)" id="btn-pcount-3" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-xs text-center">3 🐸</button>
+                    <button type="button" onclick="setPlayerCount(4)" id="btn-pcount-4" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-xs text-center">4 🐱</button>
                 </div>
             </div>
 
-            <button onclick="validateAndStartGame()" class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl text-lg transition-all shadow-[0_4px_0_#059669] active:translate-y-1 active:shadow-none flex items-center justify-center gap-2">
-                Mulai Petualangan! 🚀
+            <!-- STEP 2: GRID SELEKSI KELAS -->
+            <div class="space-y-1.5">
+                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wide">2. Pilih Kelas</label>
+                <div id="play-kelas-grid" class="grid grid-cols-3 gap-2 max-h-[120px] overflow-y-auto p-0.5">
+                    <!-- Dinamis Diisi Koleksi Grid Ringan -->
+                </div>
+            </div>
+
+            <!-- STEP 3: GRID SELEKSI MAPEL -->
+            <div class="space-y-1.5">
+                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wide">3. Pilih Mata Pelajaran</label>
+                <div id="play-mapel-grid" class="grid grid-cols-2 gap-2 max-h-[120px] overflow-y-auto p-0.5 bg-slate-50 rounded-xl p-2 border">
+                    <div class="col-span-2 text-center text-xs text-slate-400 py-4 font-bold">Silakan tentukan pilihan kelas terlebih dahulu</div>
+                </div>
+            </div>
+
+            <button onclick="validateAndStartGame()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl text-base transition-all shadow-md flex items-center justify-center gap-1.5">
+                Masuk ke Papan 🚀
             </button>
         </div>
     </div>
@@ -319,65 +320,63 @@
         </div>
     </div>
 
-    <!-- MODAL 3: MANAGEMENT PANEL BANK SOAL PENGATURAN (ALUR SESUAI INSTRUKSI) -->
-    <div id="admin-modal" class="fixed inset-0 z-[10002] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
-        <div class="bg-white p-6 rounded-[2rem] shadow-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto border-4 border-brand-100 flex flex-col relative">
+    <!-- VIEW 3: FULL SCREEN MANAGEMENT PANEL BANK SOAL (SIMPLE, RINGAN & BAGUS) -->
+    <div id="admin-modal" class="fixed inset-0 z-[10002] bg-slate-50 overflow-y-auto hidden flex flex-col p-4 sm:p-8 animate-[fadeIn_0.15s_ease]">
+        <div class="max-w-4xl w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-5 sm:p-6 flex flex-col min-h-[85vh] relative">
             
-            <div class="flex justify-between items-center border-b pb-3 mb-4 bg-white z-[60]">
-                <h2 class="text-2xl font-black text-brand-600 flex items-center gap-2">⚙️ Panel Pengaturan Guru</h2>
-                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+            <div class="flex justify-between items-center border-b pb-3 mb-5 sticky top-0 bg-white z-[60]">
+                <h2 class="text-2xl font-black text-brand-600 flex items-center gap-2">⚙️ Pengaturan Bank Soal (Full Screen)</h2>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold bg-slate-100 px-3 py-1 rounded-xl">✕ Tutup</button>
             </div>
 
-            <!-- VIEW 1: GRID KOLEKSI KELAS (GRID KE KANAN 3) -->
+            <!-- SUB-VIEW A: KOLEKSI KELAS GRID VIEW (Maksimal Grid Kanan 3) -->
             <div id="admin-kelas-view" class="space-y-4">
                 <div class="flex justify-between items-center">
                     <h3 class="text-base font-black text-slate-700 uppercase tracking-wide">Pilih Koleksi Kelas</h3>
                     <button onclick="tambahKelasAdmin()" class="bg-blue-500 hover:bg-blue-600 text-white font-black px-3 py-1.5 rounded-xl text-xs shadow-sm">➕ Tambah Kelas Baru</button>
                 </div>
-                <!-- Grid Ke Kanan 3 Kolom -->
                 <div id="admin-kelas-grid" class="grid grid-cols-3 gap-4">
-                    <!-- Dinamis -->
+                    <!-- Diisi Dinamis -->
                 </div>
             </div>
 
-            <!-- VIEW 2: POPUP DINAMIS AREA UNTUK MEMILIH MATA PELAJARAN (GRID VIEW) -->
-            <div id="admin-mapel-popup" class="absolute inset-x-6 top-16 bottom-6 bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 z-[70] hidden flex flex-col animate-[fadeIn_0.2s_ease]">
-                <div class="flex justify-between items-center border-b pb-2 mb-4">
-                    <button onclick="tutupMapelPopup()" class="text-xs font-bold text-slate-500 hover:text-slate-700">⬅️ Kembali ke Kelas</button>
-                    <h3 class="text-sm font-black text-slate-700 uppercase">Mata Pelajaran: Kelas <span id="admin-span-kelas-aktif"></span></h3>
-                    <button onclick="tambahMapelAdmin()" class="bg-purple-500 hover:bg-purple-600 text-white font-black px-2.5 py-1 rounded-lg text-xs">➕ Tambah Mapel</button>
+            <!-- SUB-VIEW B: POPUP DI DALAM GRID VIEW UNTUK MATA PELAJARAN -->
+            <div id="admin-mapel-popup" class="bg-slate-50 border border-slate-200 rounded-2xl shadow-inner p-5 mt-4 hidden flex flex-col space-y-4 animate-[fadeIn_0.2s_ease]">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <button onclick="tutuppMapelPopup()" class="text-xs font-black text-slate-500 hover:text-slate-700">⬅️ Tutup Menu Mapel</button>
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-wide">Mata Pelajaran Kelas: <span id="admin-span-kelas-aktif" class="text-blue-600 font-black"></span></h3>
+                    <button onclick="tambahMapelAdmin()" class="bg-purple-500 hover:bg-purple-600 text-white font-black px-3 py-1 rounded-lg text-xs">+] Tambah Mapel</button>
                 </div>
-                <div id="admin-mapel-grid" class="grid grid-cols-3 gap-4 overflow-y-auto flex-1 p-1">
-                    <!-- Dinamis -->
+                <div id="admin-mapel-grid" class="grid grid-cols-3 gap-4 p-1">
+                    <!-- Diisi Dinamis -->
                 </div>
             </div>
 
-            <!-- VIEW 3: BANK SOAL VERTIKAL STACK DENGAN FITUR LENGKAP PENYIMPANAN OTOMATIS -->
-            <div id="admin-soal-view" class="space-y-4 flex-1 flex flex-col hidden">
-                <div class="flex justify-between items-center border-b pb-2 bg-slate-50 p-3 rounded-xl border">
-                    <button onclick="kembaliKeMapelDariSoal()" class="text-xs font-black text-slate-600 hover:text-slate-800 flex items-center gap-1">⬅️ Kembali ke Mapel</button>
+            <!-- SUB-VIEW C: LINEAR BANK SOAL VERTICAL STACK (AUTO-SAVE ENGINE) -->
+            <div id="admin-soal-view" class="space-y-4 flex-1 flex flex-col hidden mt-4">
+                <div class="flex justify-between items-center border-b pb-2 bg-emerald-50/50 p-3 rounded-xl border border-emerald-200">
+                    <button onclick="kembaliKeMapelDariSoal()" class="text-xs font-black text-slate-600 hover:text-slate-800 flex items-center gap-1">⬅️ Kembali</button>
                     <div class="text-[11px] font-black text-slate-500 uppercase tracking-wider">
-                        Ruang: <span id="admin-scope-kelas" class="text-blue-600"></span> - <span id="admin-scope-mapel" class="text-purple-600"></span>
+                        Scope Terkunci: <span id="admin-scope-kelas" class="text-blue-600"></span> - <span id="admin-scope-mapel" class="text-purple-600"></span>
                     </div>
                 </div>
 
-                <!-- STACK VERTIKAL LINEAR SOAL KE BAWAH -->
-                <div id="admin-linear-soal-stack" class="space-y-6 flex-1 max-h-[50vh] overflow-y-auto pr-1">
-                    <!-- Struktur input form otomatis -->
+                <div id="admin-linear-soal-stack" class="space-y-6 flex-1 pr-1">
+                    <!-- Form Otomatis Linear Tanpa Tombol Simpan -->
                 </div>
 
-                <div class="border-t pt-4 bg-white flex justify-between items-center sticky bottom-0">
+                <div class="border-t pt-4 bg-white flex justify-between items-center sticky bottom-0 z-50">
                     <button onclick="tambahBarisSoalOtomatis()" class="py-2.5 px-4 bg-brand-500 hover:bg-brand-600 text-white font-black text-xs rounded-xl shadow">
-                        ➕ Tambah Soal Baru Ke Bawah
+                        ➕ Tambah Baris Soal Ke Bawah
                     </button>
-                    <span class="text-[10px] text-green-600 font-bold bg-green-50 px-2.5 py-1 rounded-lg">✨ Penyelarasan Otomatis Aktif (Auto-Save)</span>
+                    <span class="text-[10px] text-green-600 font-bold bg-green-50 px-2.5 py-1 rounded-lg">✨ Sistem Auto-Save Cloud Aktif</span>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- MODAL 4: TAMPILAN KUIS SISWA SAAT PERMAINAN -->
+    <!-- MODAL 4: TAMPILAN KUIS SISWA SAAT GAME PLAY -->
     <div id="quiz-modal" class="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/70 backdrop-blur-md hidden">
         <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-lg w-[90%] border-4 border-blue-400 relative animate-[bounce_0.5s_ease-in-out_1]">
             <div class="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-blue-400 text-white font-black px-6 py-1.5 rounded-full shadow-md text-xs tracking-widest uppercase">
@@ -399,15 +398,15 @@
         </div>
     </div>
 
-    <!-- TOP CONTROL HUD -->
+    <!-- HUD RE-START GAME CONTROLLER -->
     <div class="absolute top-4 right-4 z-[100]">
         <button onclick="resetGame()" class="bg-white/80 backdrop-blur-md border border-white/60 text-rose-500 p-2 sm:p-2.5 rounded-xl shadow-lg hover:bg-white hover:scale-105 transition-all flex justify-center items-center" title="Ulang Permainan">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
         </button>
     </div>
 
-    <!-- HUD CARD POSISI PION SUDUT -->
-    <div id="card-p0" class="absolute top-20 left-4 sm:top-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 transition-all duration-300 hidden origin-top-left">
+    <!-- HUD CARD POSITIONING -->
+    <div id="card-p0" class="absolute top-20 left-4 sm:top-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 hidden origin-top-left">
         <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-xl shadow-inner">🐰</div>
         <div class="pr-2">
             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
@@ -415,7 +414,7 @@
         </div>
     </div>
     
-    <div id="card-p1" class="absolute top-20 right-4 sm:top-24 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-red-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-top-right">
+    <div id="card-p1" class="absolute top-20 right-4 sm:top-24 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-red-200 flex flex-row-reverse items-center gap-2 hidden origin-top-right">
         <div class="w-10 h-10 rounded-full bg-red-100 border border-red-400 flex items-center justify-center font-black text-xl shadow-inner">🐐</div>
         <div class="pl-2 text-right">
             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
@@ -423,7 +422,7 @@
         </div>
     </div>
 
-    <div id="card-p2" class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
+    <div id="card-p2" class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 hidden origin-bottom-left">
         <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-xl shadow-inner">🐸</div>
         <div class="pr-2">
             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
@@ -431,7 +430,7 @@
         </div>
     </div>
 
-    <div id="card-p3" class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-bottom-right">
+    <div id="card-p3" class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 hidden origin-bottom-right">
         <div class="w-10 h-10 rounded-full bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-xl shadow-inner">🐱</div>
         <div class="pl-2 text-right">
             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
@@ -439,24 +438,21 @@
         </div>
     </div>
 
-    <!-- MAIN BOARD CONTAINER -->
+    <!-- CORE VIEW CONTAINER MAP -->
     <div class="w-full h-full flex justify-center items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
         <div class="board-wrapper">
-            
-            <!-- CONTROLLER DADU -->
-            <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 transition-transform w-[60px] sm:w-[80px]">
-                <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black transition-all">🎲</div>
+            <!-- ENGINE DICE CONTROLLER -->
+            <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 w-[60px] sm:w-[80px]">
+                <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black">🎲</div>
                 <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-xs tracking-widest uppercase border border-brand-600">
                     KOCOK
                 </button>
             </div>
 
-            <!-- GRID BOARD KOTAK -->
+            <!-- CONTAINER PAPAN GRIDS -->
             <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
                 <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
-                    
                     <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-
                     <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full"></div>
 
                     <div id="tokens-container">
@@ -467,11 +463,10 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- DICE 3D OVERLAY POPUP LAYER -->
+    <!-- DICE VIEWPORT OVERLAY -->
     <div id="dice-3d-overlay" class="fixed inset-0 z-[1000] perspective-1000 pointer-events-none flex items-center justify-center opacity-0 hidden transition-opacity duration-300">
         <div id="dice-wrapper" class="flex flex-col items-center">
             <div id="dice-cube" class="dice-cube shadow-xl rounded-2xl">
@@ -486,7 +481,7 @@
         </div>
     </div>
 
-    <!-- WIN MODAL LAYER -->
+    <!-- FINISH COMPLETED MODAL -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
         <div class="bg-white/90 backdrop-blur-md p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500" id="win-modal">
             <div class="text-7xl mb-4">🏆</div>
@@ -498,7 +493,7 @@
         </div>
     </div>
 
-    <!-- SYSTEM CORE PLAY ENGINE LOGIC -->
+    <!-- CORE SYSTEM RE-ENGINE JAVASCRIPT APP -->
     <script>
         const ladders = { 4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91 };
         const snakes = { 17: 7, 54: 34, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 99: 78 };
@@ -511,8 +506,8 @@
         let playerPositions = [1, 1, 1, 1];
         let isMoving = false;
 
-        let activeKelas = "";
-        let activeMapel = "";
+        let selectedKelasPlay = "";
+        let selectedMapelPlay = "";
 
         const playerNames = ['🐰 Kelinci', '🐐 Kambing', '🐸 Katak', '🐱 Kucing'];
         const playerColorClasses = ['text-blue-600', 'text-red-600', 'text-emerald-600', 'text-yellow-600'];
@@ -524,7 +519,7 @@
         let filteredSoalGame = []; 
         let soalAktif = null;
 
-        // Admin State Variables
+        // Admin Scope Variables
         let selectedKelasAdmin = "";
         let selectedMapelAdmin = "";
         let localAdminSoalList = [];
@@ -536,7 +531,7 @@
         });
 
         // ==========================================
-        // FIREBASE SINKRONISASI INITIAL DATA DROPDOWN
+        // SCREEN STARTUP: RENDER KOLEKSI GRID CARD RINGAN
         // ==========================================
         async function muatMasterDataFirebase() {
             try {
@@ -547,54 +542,96 @@
                     bankSoalGlobal.push(d);
                 });
 
-                const listKelas = [...new Set(bankSoalGlobal.map(item => item.kelas.toUpperCase()))].sort();
-                const selKelas = document.getElementById('play-kelas');
-                selKelas.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-                listKelas.forEach(k => {
-                    selKelas.innerHTML += `<option value="${k}">${k}</option>`;
-                });
+                // Render Grid Pilihan Kelas di Layar Depan
+                renderPlayKelasGridHTML();
             } catch (err) {
                 console.error("Gagal sinkron database:", err);
             }
         }
 
-        function filterMapelDropdown() {
-            const kls = document.getElementById('play-kelas').value;
-            const selMapel = document.getElementById('play-mapel');
-            if(!kls) {
-                selMapel.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
+        function renderPlayKelasGridHTML() {
+            const container = document.getElementById('play-kelas-grid');
+            container.innerHTML = '';
+
+            const listKelas = [...new Set(bankSoalGlobal.map(item => item.kelas.toUpperCase()))].sort();
+
+            if(listKelas.length === 0) {
+                container.innerHTML = `<div class="col-span-3 text-center text-xs text-slate-400 font-bold py-2">Belum ada data di database</div>`;
                 return;
             }
-            const filtered = bankSoalGlobal.filter(item => item.kelas.toUpperCase() === kls);
-            const listMapel = [...new Set(filtered.map(item => item.mapel.toUpperCase()))].sort();
-            selMapel.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
-            listMapel.forEach(m => {
-                selMapel.innerHTML += `<option value="${m}">${m}</option>`;
+
+            listKelas.forEach(k => {
+                const activeStyle = (k === selectedKelasPlay) 
+                    ? "bg-blue-500 border-blue-600 text-white" 
+                    : "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100";
+
+                container.innerHTML += `
+                    <div onclick="selectPlayKelasCard('${k}')" class="p-2.5 border-2 rounded-xl text-center text-xs font-black cursor-pointer transition-all shadow-sm ${activeStyle}">
+                        ${k}
+                    </div>
+                `;
             });
+        }
+
+        function selectPlayKelasCard(kls) {
+            selectedKelasPlay = kls;
+            selectedMapelPlay = ""; // reset mapel
+            renderPlayKelasGridHTML(); // refresh class style
+
+            // Render Grid Pilihan Mapel Penyesuaian
+            renderPlayMapelGridHTML();
+        }
+
+        function renderPlayMapelGridHTML() {
+            const container = document.getElementById('play-mapel-grid');
+            container.innerHTML = '';
+
+            const filtered = bankSoalGlobal.filter(item => item.kelas.toUpperCase() === selectedKelasPlay);
+            const listMapel = [...new Set(filtered.map(item => item.mapel.toUpperCase()))].sort();
+
+            if(listMapel.length === 0) {
+                container.innerHTML = `<div class="col-span-2 text-center text-xs text-slate-400 font-bold py-2">Mata pelajaran tidak ditemukan</div>`;
+                return;
+            }
+
+            listMapel.forEach(m => {
+                const activeStyle = (m === selectedMapelPlay)
+                    ? "bg-purple-500 border-purple-600 text-white"
+                    : "bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100";
+
+                container.innerHTML += `
+                    <div onclick="selectPlayMapelCard('${m}')" class="p-2.5 border-2 rounded-xl text-center text-xs font-black cursor-pointer transition-all shadow-sm ${activeStyle}">
+                        ${m}
+                    </div>
+                `;
+            });
+        }
+
+        function selectPlayMapelCard(mpl) {
+            selectedMapelPlay = mpl;
+            renderPlayMapelGridHTML();
         }
 
         function setPlayerCount(count) {
             tempPlayerCount = count;
             for(let i=1; i<=4; i++) {
                 document.getElementById(`btn-pcount-${i}`).className = (i === count)
-                    ? "py-2 bg-emerald-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-center shadow-sm"
-                    : "py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-center";
+                    ? "py-2 bg-emerald-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-xs text-center shadow-sm"
+                    : "py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-xs text-center";
             }
         }
 
         function validateAndStartGame() {
-            const kls = document.getElementById('play-kelas').value;
-            const mpl = document.getElementById('play-mapel').value;
-            if(!kls || !mpl) {
-                alert('Silakan pilih opsi Kelas dan Mata Pelajaran yang tersedia!');
+            if(!selectedKelasPlay || !selectedMapelPlay) {
+                alert('Silakan pilih salah satu kartu Kelas dan Mata Pelajaran terlebih dahulu!');
                 return;
             }
-            activeKelas = kls; activeMapel = mpl; numPlayers = tempPlayerCount;
-            document.getElementById('bar-kelas').innerText = activeKelas;
-            document.getElementById('bar-mapel').innerText = activeMapel;
+            numPlayers = tempPlayerCount;
+            document.getElementById('bar-kelas').innerText = selectedKelasPlay;
+            document.getElementById('bar-mapel').innerText = selectedMapelPlay;
             document.getElementById('game-identity-bar').classList.remove('hidden');
 
-            filteredSoalGame = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === activeKelas && i.mapel.toUpperCase() === activeMapel);
+            filteredSoalGame = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasPlay && i.mapel.toUpperCase() === selectedMapelPlay);
             executeStartGame();
         }
 
@@ -615,7 +652,7 @@
         }
 
         // ==========================================
-        // PANEL SETTINGS GURU: GRID KELAS, GRID MAPEL POPUP & AUTO-SAVE
+        // PANEL SETTINGS GURU: FULL SCREEN ENGINE (AUTO-SAVE)
         // ==========================================
         function openSettingsAuth() {
             document.getElementById('auth-modal').classList.remove('hidden');
@@ -635,6 +672,8 @@
         
         function closeAdminModal() {
             document.getElementById('admin-modal').classList.add('hidden');
+            selectedKelasPlay = "";
+            selectedMapelPlay = "";
             muatMasterDataFirebase();
         }
 
@@ -665,7 +704,7 @@
             }
         }
 
-        // VIEW 2: POPUP MEMILIH MATA PELAJARAN (GRID VIEW)
+        // VIEW 2: AREA POPUP DI DALAM GRID VIEW MATA PELAJARAN (3 KOLOM KE KANAN)
         function bukaMapelPopup(kls) {
             selectedKelasAdmin = kls;
             document.getElementById('admin-span-kelas-aktif').innerText = selectedKelasAdmin;
@@ -693,18 +732,16 @@
         function tambahMapelAdmin() {
             const mplBaru = prompt("Masukkan Nama Mata Pelajaran Baru:");
             if(mplBaru && mplBaru.trim() !== "") {
-                const checkedMpl = mplBaru.trim().toUpperCase();
-                // Langsung daftarkan baru ke grid memori lokal agar lsg tampil
-                bukaBankSoalView(checkedMpl);
+                bukaBankSoalView(mplBaru.trim().toUpperCase());
             }
         }
 
-        function tutupMapelPopup() {
+        function tutuppMapelPopup() {
             document.getElementById('admin-mapel-popup').classList.add('hidden');
             showAdminKelasView();
         }
 
-        // VIEW 3: BANK SOAL VIEW DENGAN STRUKTUR PENGISIAN OTOMATIS (AUTO-SAVE)
+        // VIEW 3: FORM LINEAR BANK SOAL VERTICAL STACK (AUTO-SAVE)
         function bukaBankSoalView(mpl) {
             selectedMapelAdmin = mpl;
             document.getElementById('admin-mapel-popup').classList.add('hidden');
@@ -746,13 +783,9 @@
                         <span class="text-xs font-black text-slate-600 uppercase">Question #${index + 1}</span>
                         <button onclick="hapusBarisSoal(${index})" class="text-rose-500 font-black text-[10px] hover:underline">Hapus Soal</button>
                     </div>
-
-                    <!-- Input Pertanyaan (Auto-Save on blur/input change) -->
                     <div>
                         <input type="text" id="auto-soal-${index}" onblur="autoSaveSoalKeFirebase(${index})" value="${item.soal || ''}" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold outline-none focus:border-brand-500 bg-white" placeholder="Ketik pertanyaan...">
                     </div>
-
-                    <!-- Pilihan Ganda 2x2 -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                         <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-lg border">
                             <span class="font-black text-slate-400">A.</span>
@@ -781,19 +814,15 @@
         }
 
         function renderToggleSwitchHTML(isTrue) {
-            if(isTrue) {
-                return `
-                    <div class="w-10 h-5 bg-green-500 rounded-full flex items-center justify-end p-0.5 relative shadow-inner cursor-pointer">
-                        <div class="w-4 h-4 bg-white rounded-full shadow-md"></div>
-                    </div>
-                `;
-            } else {
-                return `
-                    <div class="w-10 h-5 bg-slate-300 rounded-full flex items-center justify-start p-0.5 relative shadow-inner cursor-pointer">
-                        <div class="w-4 h-4 bg-white rounded-full shadow-md"></div>
-                    </div>
-                `;
-            }
+            return isTrue ? `
+                <div class="w-10 h-5 bg-green-500 rounded-full flex items-center justify-end p-0.5 relative shadow-inner cursor-pointer">
+                    <div class="w-4 h-4 bg-white rounded-full shadow-md"></div>
+                </div>
+            ` : `
+                <div class="w-10 h-5 bg-slate-300 rounded-full flex items-center justify-start p-0.5 relative shadow-inner cursor-pointer">
+                    <div class="w-4 h-4 bg-white rounded-full shadow-md"></div>
+                </div>
+            `;
         }
 
         function toggleKunciAutoSave(index, opsi) {
@@ -814,23 +843,19 @@
             renderLinearSoalStackHTML();
         }
 
-        // MEKANISME AUTOMATIC-SAVE LANGSUNG KE FIREBASE TANPA TOMBOL SIMPAN
         async function autoSaveSoalKeFirebase(index) {
             const targetItem = localAdminSoalList[index];
             if(!targetItem) return;
 
-            // Ambil data langsung dari elemen input HTML
             const txtSoal = document.getElementById(`auto-soal-${index}`).value.trim();
             const txtA = document.getElementById(`auto-a-${index}`).value.trim();
             const txtB = document.getElementById(`auto-b-${index}`).value.trim();
             const txtC = document.getElementById(`auto-c-${index}`).value.trim();
             const txtD = document.getElementById(`auto-d-${index}`).value.trim();
             
-            // Perbarui memori array lokal
             targetItem.soal = txtSoal;
             targetItem.a = txtA; targetItem.b = txtB; targetItem.c = txtC; targetItem.d = txtD;
 
-            // Jangan sinkron ke firebase jika field pertanyaan masih kosong total
             if(!txtSoal) return;
 
             const payload = {
@@ -841,22 +866,18 @@
 
             try {
                 if(targetItem.id) {
-                    // Update data yang sudah ada
                     await window.fsUpdateDoc(window.fsDoc(window.dbFirestore, "ular_tangga", targetItem.id), payload);
                 } else {
-                    // Masukkan baris baru otomatis
                     const docRef = await window.fsAddDoc(window.fsCollection(window.dbFirestore, "ular_tangga"), payload);
                     targetItem.id = docRef.id;
                 }
 
-                // Perbarui master state bankSoalGlobal secara real-time
                 const snapshot = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
                 bankSoalGlobal = [];
                 snapshot.forEach(doc => {
                     let obj = doc.data(); obj.id = doc.id;
                     bankSoalGlobal.push(obj);
                 });
-
             } catch (e) {
                 console.error("Auto-Save failed: ", e);
             }
@@ -875,7 +896,6 @@
                     alert("Gagal menghapus: " + err.message);
                 }
             }
-
             localAdminSoalList.splice(index, 1);
             renderLinearSoalStackHTML();
         }
@@ -1117,6 +1137,8 @@
             setTimeout(() => {
                 mc.classList.add('hidden'); document.getElementById('game-identity-bar').classList.add('hidden');
                 document.getElementById('startup-modal').classList.remove('hidden');
+                selectedKelasPlay = "";
+                selectedMapelPlay = "";
                 muatMasterDataFirebase();
             }, 300);
         }
