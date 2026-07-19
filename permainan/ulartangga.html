@@ -40,7 +40,7 @@
 
         .board-wrapper {
             width: 100%;
-            max-width: min(calc(100vw - 110px), calc(100vh - 100px)); 
+            max-width: min(calc(100vw - 120px), calc(100vh - 100px)); 
             position: relative;
             margin: auto;
         }
@@ -457,20 +457,17 @@
     <div class="w-full h-full flex justify-center items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
         <div class="board-wrapper">
             
-            <!-- CONTROLLER DADU -->
-            <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 w-[60px] sm:w-[80px]">
+            <!-- CONTROLLER DADU WIDGET (Lebar Kontainer & Ukuran Font Diperluas Dinamis) -->
+            <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 w-[72px] sm:w-[94px]">
                 <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black">🎲</div>
-                <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-xs tracking-widest uppercase border border-brand-600">
+                <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[9px] sm:text-xs tracking-wider uppercase border border-brand-600 truncate px-0.5">
                     LEMPAR!
                 </button>
             </div>
 
             <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
                 <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
-                    
                     <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-
-                    <!-- Ditambahkan border-t, border-l, dan border-slate-300/60 untuk melengkapi visual garis grid petak utuh -->
                     <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 p-0.5 w-full h-full border-t border-l border-slate-300/60"></div>
 
                     <div id="tokens-container">
@@ -1020,7 +1017,6 @@
                     let num = (row % 2 === 0) ? (row * 10) + col + 1 : (row * 10) + (9 - col) + 1; 
                     const cell = document.createElement('div');
                     cell.id = `cell-${num}`; 
-                    // Ditambahkan kelas border-b dan border-r untuk membuat visual garis grid antar petak
                     cell.className = `cell border-b border-r border-slate-300/60 ${cellColors[num % cellColors.length]}`;
                     cell.innerHTML = `<span class="cell-number">${num}</span>`;
                     grid.appendChild(cell);
@@ -1075,34 +1071,26 @@
                 const cx1 = hPos.x + dx*0.3 + px*curve; const cy1 = hPos.y + dy*0.3 + py*curve;
                 const cx2 = hPos.x + dx*0.7 - px*curve; const cy2 = hPos.y + dy*0.7 - py*curve;
 
-                // Modifikasi kurva tubuh ular agar mengecil dinamis menuju ekor lancip sempurna (Stroke-width mengecil menggunakan marker / mask / manual path taper tidak didukung line dasar, maka diefektifkan lewat visual)
                 const pathData = `M ${hPos.x} ${hPos.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tPos.x} ${tPos.y}`;
                 const col = snakeColors[sIdx % snakeColors.length]; sIdx++;
 
-                // Gambar Bayangan Ular
                 svgContent += `<path d="${pathData}" stroke="rgba(0,0,0,0.25)" stroke-width="3.5" fill="none" stroke-linecap="round" transform="translate(0.6, 0.9)"/>`;
-                // Gambar Tubuh Utama Ular
                 svgContent += `<path d="${pathData}" stroke="${col.body}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-                // Gambar Pola Perut Ular
                 svgContent += `<path d="${pathData}" stroke="${col.belly}" stroke-width="1.4" stroke-dasharray="1.2 2.5" fill="none" stroke-linecap="round"/>`;
 
-                // Kalkulasi sudut rotasi untuk memasang objek kepala ular secara presisi
                 const hdx = hPos.x - cx1; const hdy = hPos.y - cy1;
                 const hAngle = Math.atan2(hdy, hdx) * 180 / Math.PI;
                 
-                // Kalkulasi sudut rotasi untuk ekor lancip ular
                 const tdx = tPos.x - cx2; const tdy = tPos.y - cy2;
                 const tAngle = Math.atan2(tdy, tdx) * 180 / Math.PI;
 
                 svgContent += `
-                    <!-- Rendering Kepala Ular Realistis -->
                     <g transform="translate(${hPos.x}, ${hPos.y}) rotate(${hAngle})">
                         <ellipse cx="-1.2" cy="0" rx="3.2" ry="2.4" fill="${col.body}"/>
                         <circle cx="-0.4" cy="-1.1" r="0.7" fill="white"/><circle cx="-0.2" cy="-1.1" r="0.35" fill="black"/>
                         <circle cx="-0.4" cy="1.1" r="0.7" fill="white"/><circle cx="-0.2" cy="1.1" r="0.35" fill="black"/>
                         <path d="M 2 0 L 4 -0.6 M 2 0 L 4 0.6 M 2 0 L 3 0" stroke="#f43f5e" stroke-width="0.5" fill="none" stroke-linecap="round"/>
                     </g>
-                    <!-- Rendering Ekor Lancip Sempurna -->
                     <g transform="translate(${tPos.x}, ${tPos.y}) rotate(${tAngle})">
                         <path d="M -2.5 -1.2 L 1.2 0 L -2.5 1.2 Z" fill="${col.body}"/>
                     </g>
