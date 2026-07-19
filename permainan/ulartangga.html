@@ -26,7 +26,6 @@
     </script>
 
     <style>
-        /* Mengembalikan Animasi Latar Belakang Asli */
         .animated-bg {
             background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #f0fdfa 100%);
             background-size: 200% 200%;
@@ -39,7 +38,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Wrapper Papan Asli */
         .board-wrapper {
             width: 100%;
             max-width: min(calc(100vw - 110px), calc(100vh - 100px)); 
@@ -47,7 +45,6 @@
             margin: auto;
         }
 
-        /* Kotak Grid Ular Tangga Asli */
         .board-container {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -78,7 +75,6 @@
             .cell { border-radius: 12px; }
         }
 
-        /* Pion Karakter 3D Asli */
         .player-token {
             position: absolute;
             width: 6vmin;
@@ -159,7 +155,6 @@
             opacity: 0.6;
         }
 
-        /* Dadu 3D Asli */
         .perspective-1000 { perspective: 1000px; }
         .dice-cube {
             width: 100px; 
@@ -228,7 +223,7 @@
         }
     </style>
 
-    <!-- Firebase SDK Config -->
+    <!-- Firebase SDK Setup -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -324,42 +319,61 @@
         </div>
     </div>
 
-    <!-- MODAL 3: MANAGEMENT PANEL BANK SOAL LINEAR (UX SEPERTI GAMBAR LAMPIRAN) -->
+    <!-- MODAL 3: MANAGEMENT PANEL BANK SOAL PENGATURAN (ALUR SESUAI INSTRUKSI) -->
     <div id="admin-modal" class="fixed inset-0 z-[10002] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
-        <div class="bg-white p-6 rounded-[2rem] shadow-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto border-4 border-brand-100 flex flex-col">
+        <div class="bg-white p-6 rounded-[2rem] shadow-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto border-4 border-brand-100 flex flex-col relative">
             
-            <div class="flex justify-between items-center border-b pb-3 mb-4 sticky top-0 bg-white z-50">
-                <h2 class="text-2xl font-black text-brand-600 flex items-center gap-2">⚙️ Input & Kelola Bank Soal</h2>
+            <div class="flex justify-between items-center border-b pb-3 mb-4 bg-white z-[60]">
+                <h2 class="text-2xl font-black text-brand-600 flex items-center gap-2">⚙️ Panel Pengaturan Guru</h2>
                 <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
             </div>
 
-            <!-- BAGIAN IDENTITAS (KELAS & MAPEL) -->
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end mb-6">
-                <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1">IDENTITAS KELAS</label>
-                    <input type="text" id="admin-input-kelas" class="w-full p-2.5 border-2 border-slate-200 rounded-xl text-xs font-bold uppercase outline-none focus:border-brand-500" placeholder="MISAL: KELAS 5B">
+            <!-- VIEW 1: GRID KOLEKSI KELAS (GRID KE KANAN 3) -->
+            <div id="admin-kelas-view" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-base font-black text-slate-700 uppercase tracking-wide">Pilih Koleksi Kelas</h3>
+                    <button onclick="tambahKelasAdmin()" class="bg-blue-500 hover:bg-blue-600 text-white font-black px-3 py-1.5 rounded-xl text-xs shadow-sm">➕ Tambah Kelas Baru</button>
                 </div>
-                <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1">MATA PELAJARAN</label>
-                    <input type="text" id="admin-input-mapel" class="w-full p-2.5 border-2 border-slate-200 rounded-xl text-xs font-bold uppercase outline-none focus:border-brand-500" placeholder="MISAL: PANCASILA">
+                <!-- Grid Ke Kanan 3 Kolom -->
+                <div id="admin-kelas-grid" class="grid grid-cols-3 gap-4">
+                    <!-- Dinamis -->
                 </div>
-                <button onclick="muatDaftarSoalLinear()" class="w-full py-2.5 bg-slate-700 hover:bg-slate-800 text-white text-xs font-black rounded-xl transition-colors shadow-sm">
-                    🔍 Kunci & Muat Soal
-                </button>
             </div>
 
-            <!-- CONTAINER LIST SOAL MENERUS KE BAWAH (LINEAR STACK) -->
-            <div id="linear-soal-stack" class="space-y-6 flex-1 hidden">
-                <!-- Struktur kartu soal dinamis di-render di sini -->
+            <!-- VIEW 2: POPUP DINAMIS AREA UNTUK MEMILIH MATA PELAJARAN (GRID VIEW) -->
+            <div id="admin-mapel-popup" class="absolute inset-x-6 top-16 bottom-6 bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 z-[70] hidden flex flex-col animate-[fadeIn_0.2s_ease]">
+                <div class="flex justify-between items-center border-b pb-2 mb-4">
+                    <button onclick="tutupMapelPopup()" class="text-xs font-bold text-slate-500 hover:text-slate-700">⬅️ Kembali ke Kelas</button>
+                    <h3 class="text-sm font-black text-slate-700 uppercase">Mata Pelajaran: Kelas <span id="admin-span-kelas-aktif"></span></h3>
+                    <button onclick="tambahMapelAdmin()" class="bg-purple-500 hover:bg-purple-600 text-white font-black px-2.5 py-1 rounded-lg text-xs">➕ Tambah Mapel</button>
+                </div>
+                <div id="admin-mapel-grid" class="grid grid-cols-3 gap-4 overflow-y-auto flex-1 p-1">
+                    <!-- Dinamis -->
+                </div>
             </div>
 
-            <!-- ACTION BUTTON BAWAH (STICKY FOOTER) -->
-            <div id="admin-footer-actions" class="border-t pt-4 mt-6 flex justify-between items-center hidden sticky bottom-0 bg-white pb-2">
-                <button onclick="tambahFormSoalBaru()" class="py-2.5 px-5 bg-brand-500 hover:bg-brand-600 text-white font-black text-xs rounded-xl shadow flex items-center gap-1.5">
-                    ➕ Tambah Soal Baru Ke Bawah
-                </button>
-                <p class="text-[11px] text-slate-400 font-bold">Semua data tersinkronisasi langsung ke Firebase</p>
+            <!-- VIEW 3: BANK SOAL VERTIKAL STACK DENGAN FITUR LENGKAP PENYIMPANAN OTOMATIS -->
+            <div id="admin-soal-view" class="space-y-4 flex-1 flex flex-col hidden">
+                <div class="flex justify-between items-center border-b pb-2 bg-slate-50 p-3 rounded-xl border">
+                    <button onclick="kembaliKeMapelDariSoal()" class="text-xs font-black text-slate-600 hover:text-slate-800 flex items-center gap-1">⬅️ Kembali ke Mapel</button>
+                    <div class="text-[11px] font-black text-slate-500 uppercase tracking-wider">
+                        Ruang: <span id="admin-scope-kelas" class="text-blue-600"></span> - <span id="admin-scope-mapel" class="text-purple-600"></span>
+                    </div>
+                </div>
+
+                <!-- STACK VERTIKAL LINEAR SOAL KE BAWAH -->
+                <div id="admin-linear-soal-stack" class="space-y-6 flex-1 max-h-[50vh] overflow-y-auto pr-1">
+                    <!-- Struktur input form otomatis -->
+                </div>
+
+                <div class="border-t pt-4 bg-white flex justify-between items-center sticky bottom-0">
+                    <button onclick="tambahBarisSoalOtomatis()" class="py-2.5 px-4 bg-brand-500 hover:bg-brand-600 text-white font-black text-xs rounded-xl shadow">
+                        ➕ Tambah Soal Baru Ke Bawah
+                    </button>
+                    <span class="text-[10px] text-green-600 font-bold bg-green-50 px-2.5 py-1 rounded-lg">✨ Penyelarasan Otomatis Aktif (Auto-Save)</span>
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -510,7 +524,9 @@
         let filteredSoalGame = []; 
         let soalAktif = null;
 
-        // State Array untuk Penampung Perubahan Data Soal di Panel Admin
+        // Admin State Variables
+        let selectedKelasAdmin = "";
+        let selectedMapelAdmin = "";
         let localAdminSoalList = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -599,7 +615,7 @@
         }
 
         // ==========================================
-        // WORKFLOW GURU: MANAGEMENT PANEL BANK SOAL LINEAR (UX TIDAK SEMRAWUT)
+        // PANEL SETTINGS GURU: GRID KELAS, GRID MAPEL POPUP & AUTO-SAVE
         // ==========================================
         function openSettingsAuth() {
             document.getElementById('auth-modal').classList.remove('hidden');
@@ -611,13 +627,7 @@
             if(document.getElementById('admin-pass').value === 'admin') {
                 closeAuthModal();
                 document.getElementById('admin-modal').classList.remove('hidden');
-                
-                // Clear state admin panel
-                document.getElementById('admin-input-kelas').value = '';
-                document.getElementById('admin-input-mapel').value = '';
-                document.getElementById('linear-soal-stack').innerHTML = '';
-                document.getElementById('linear-soal-stack').classList.add('hidden');
-                document.getElementById('admin-footer-actions').classList.add('hidden');
+                showAdminKelasView();
             } else {
                 alert('Password admin salah!');
             }
@@ -628,34 +638,101 @@
             muatMasterDataFirebase();
         }
 
-        // Kunci Ruang Lingkup & Ambil / Buat Struktur Form Soal Kebawah (Linear Stack)
-        function muatDaftarSoalLinear() {
-            const kls = document.getElementById('admin-input-kelas').value.trim().toUpperCase();
-            const mpl = document.getElementById('admin-input-mapel').value.trim().toUpperCase();
+        // VIEW 1: RENDER GRID KOLEKSI KELAS (3 KOLOM KE KANAN)
+        function showAdminKelasView() {
+            document.getElementById('admin-kelas-view').classList.remove('hidden');
+            document.getElementById('admin-mapel-popup').classList.add('hidden');
+            document.getElementById('admin-soal-view').classList.add('hidden');
 
-            if(!kls || !mpl) {
-                alert('Tentukan Nama Kelas dan Mata Pelajaran terlebih dahulu untuk memuat data!');
-                return;
+            const grid = document.getElementById('admin-kelas-grid');
+            grid.innerHTML = '';
+
+            const listKelas = [...new Set(bankSoalGlobal.map(item => item.kelas.toUpperCase()))].sort();
+
+            listKelas.forEach(k => {
+                grid.innerHTML += `
+                    <div onclick="bukaMapelPopup('${k}')" class="p-4 bg-blue-50 border-2 border-blue-200 text-blue-700 font-black rounded-xl text-center cursor-pointer hover:bg-blue-100 transition-all shadow-sm">
+                        ${k}
+                    </div>
+                `;
+            });
+        }
+
+        function tambahKelasAdmin() {
+            const klsBaru = prompt("Masukkan Nama Koleksi Kelas Baru:");
+            if(klsBaru && klsBaru.trim() !== "") {
+                bukaMapelPopup(klsBaru.trim().toUpperCase());
             }
+        }
 
-            // Filter data yang ada di database lokal
-            localAdminSoalList = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === kls && i.mapel.toUpperCase() === mpl);
+        // VIEW 2: POPUP MEMILIH MATA PELAJARAN (GRID VIEW)
+        function bukaMapelPopup(kls) {
+            selectedKelasAdmin = kls;
+            document.getElementById('admin-span-kelas-aktif').innerText = selectedKelasAdmin;
+            document.getElementById('admin-mapel-popup').classList.remove('hidden');
 
-            document.getElementById('linear-soal-stack').classList.remove('hidden');
-            document.getElementById('admin-footer-actions').classList.remove('hidden');
+            renderAdminMapelGridHTML();
+        }
 
+        function renderAdminMapelGridHTML() {
+            const grid = document.getElementById('admin-mapel-grid');
+            grid.innerHTML = '';
+
+            const filtered = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasAdmin);
+            const listMapel = [...new Set(filtered.map(item => item.mapel.toUpperCase()))].sort();
+
+            listMapel.forEach(m => {
+                grid.innerHTML += `
+                    <div onclick="bukaBankSoalView('${m}')" class="p-4 bg-purple-50 border-2 border-purple-200 text-purple-700 font-black rounded-xl text-center cursor-pointer hover:bg-purple-100 transition-all shadow-sm">
+                        ${m}
+                    </div>
+                `;
+            });
+        }
+
+        function tambahMapelAdmin() {
+            const mplBaru = prompt("Masukkan Nama Mata Pelajaran Baru:");
+            if(mplBaru && mplBaru.trim() !== "") {
+                const checkedMpl = mplBaru.trim().toUpperCase();
+                // Langsung daftarkan baru ke grid memori lokal agar lsg tampil
+                bukaBankSoalView(checkedMpl);
+            }
+        }
+
+        function tutupMapelPopup() {
+            document.getElementById('admin-mapel-popup').classList.add('hidden');
+            showAdminKelasView();
+        }
+
+        // VIEW 3: BANK SOAL VIEW DENGAN STRUKTUR PENGISIAN OTOMATIS (AUTO-SAVE)
+        function bukaBankSoalView(mpl) {
+            selectedMapelAdmin = mpl;
+            document.getElementById('admin-mapel-popup').classList.add('hidden');
+            document.getElementById('admin-kelas-view').classList.add('hidden');
+            document.getElementById('admin-soal-view').classList.remove('hidden');
+
+            document.getElementById('admin-scope-kelas').innerText = selectedKelasAdmin;
+            document.getElementById('admin-scope-mapel').innerText = selectedMapelAdmin;
+
+            localAdminSoalList = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasAdmin && i.mapel.toUpperCase() === selectedMapelAdmin);
+            
             renderLinearSoalStackHTML();
         }
 
-        // Pembuatan Bentuk Tampilan Card Form Soal Linear Kebawah Sesuai Gambar Lampiran
+        function kembaliKeMapelDariSoal() {
+            document.getElementById('admin-soal-view').classList.add('hidden');
+            document.getElementById('admin-kelas-view').classList.remove('hidden');
+            bukaMapelPopup(selectedKelasAdmin);
+        }
+
         function renderLinearSoalStackHTML() {
-            const container = document.getElementById('linear-soal-stack');
+            const container = document.getElementById('admin-linear-soal-stack');
             container.innerHTML = '';
 
             if(localAdminSoalList.length === 0) {
                 container.innerHTML = `
-                    <div id="empty-state-card" class="text-center py-8 text-slate-400 font-bold text-xs bg-slate-50 border border-dashed border-slate-300 rounded-2xl">
-                        Belum ada data soal pada lingkup materi ini. Silakan klik tombol di bawah untuk menyusun soal baru!
+                    <div id="admin-empty-card" class="text-center py-6 text-slate-400 font-bold text-xs bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                        Belum ada data soal pada lingkup ini. Klik tombol di bawah untuk menambah soal baru!
                     </div>
                 `;
                 return;
@@ -663,59 +740,39 @@
 
             localAdminSoalList.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = "bg-slate-50 border border-slate-200 p-4 rounded-2xl relative shadow-sm space-y-4 border-l-4 border-l-brand-500 animate-[fadeIn_0.3s_ease]";
+                card.className = "bg-slate-50 border border-slate-200 p-4 rounded-xl relative shadow-sm space-y-3 border-l-4 border-l-brand-500";
                 card.innerHTML = `
-                    <!-- Judul Section -->
-                    <div class="flex justify-between items-center border-b pb-2 border-slate-200">
-                        <div class="text-xs font-black text-slate-700 uppercase flex items-center gap-1.5">
-                            <span class="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center font-black">${index + 1}.</span> 
-                            Question / Pertanyaan Kuis
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="simpanBarisSoalLinear(${index})" class="bg-brand-500 hover:bg-brand-600 text-white font-black px-3 py-1 text-[10px] rounded-lg shadow-sm transition-colors">Simpan</button>
-                            <button onclick="hapusBarisSoalLinear(${index})" class="bg-rose-500 hover:bg-rose-600 text-white font-black px-3 py-1 text-[10px] rounded-lg shadow-sm transition-colors">Hapus</button>
-                        </div>
+                    <div class="flex justify-between items-center border-b pb-1 border-slate-200">
+                        <span class="text-xs font-black text-slate-600 uppercase">Question #${index + 1}</span>
+                        <button onclick="hapusBarisSoal(${index})" class="text-rose-500 font-black text-[10px] hover:underline">Hapus Soal</button>
                     </div>
 
-                    <!-- Input Teks Soal -->
+                    <!-- Input Pertanyaan (Auto-Save on blur/input change) -->
                     <div>
-                        <input type="text" id="linear-text-${index}" value="${item.soal || ''}" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold focus:border-brand-500 outline-none bg-white text-slate-700 shadow-inner" placeholder="Ketik kalimat soal ujian disini...">
+                        <input type="text" id="auto-soal-${index}" onblur="autoSaveSoalKeFirebase(${index})" value="${item.soal || ''}" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-bold outline-none focus:border-brand-500 bg-white" placeholder="Ketik pertanyaan...">
                     </div>
 
-                    <!-- Grid Opsi Jawaban (UX Ringkas 2x2 Mirip Gambar Lampiran) -->
-                    <div class="text-xs font-black text-slate-400 uppercase tracking-wider">Answers / Pilihan Ganda & Sakelar Kunci</div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <!-- Pilihan A -->
-                        <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="font-black text-slate-500">A.</span>
-                            <div onclick="toggleKunciLinear(${index}, 'A')" id="toggle-${index}-A" class="cursor-pointer transition-all duration-200">
-                                ${renderToggleSwitchHTML(item.kunci === 'A')}
-                            </div>
-                            <input type="text" id="linear-op-a-${index}" value="${item.a || ''}" class="flex-1 p-1.5 border border-slate-200 rounded-lg font-semibold outline-none focus:border-brand-500 text-slate-700 text-xs" placeholder="Isi opsi A">
+                    <!-- Pilihan Ganda 2x2 -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-lg border">
+                            <span class="font-black text-slate-400">A.</span>
+                            <div onclick="toggleKunciAutoSave(${index}, 'A')">${renderToggleSwitchHTML(item.kunci === 'A')}</div>
+                            <input type="text" id="auto-a-${index}" onblur="autoSaveSoalKeFirebase(${index})" value="${item.a || ''}" class="flex-1 p-1 border rounded text-xs outline-none focus:border-brand-500">
                         </div>
-                        <!-- Pilihan B -->
-                        <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="font-black text-slate-500">B.</span>
-                            <div onclick="toggleKunciLinear(${index}, 'B')" id="toggle-${index}-B" class="cursor-pointer transition-all duration-200">
-                                ${renderToggleSwitchHTML(item.kunci === 'B')}
-                            </div>
-                            <input type="text" id="linear-op-b-${index}" value="${item.b || ''}" class="flex-1 p-1.5 border border-slate-200 rounded-lg font-semibold outline-none focus:border-brand-500 text-slate-700 text-xs" placeholder="Isi opsi B">
+                        <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-lg border">
+                            <span class="font-black text-slate-400">B.</span>
+                            <div onclick="toggleKunciAutoSave(${index}, 'B')">${renderToggleSwitchHTML(item.kunci === 'B')}</div>
+                            <input type="text" id="auto-b-${index}" onblur="autoSaveSoalKeFirebase(${index})" value="${item.b || ''}" class="flex-1 p-1 border rounded text-xs outline-none focus:border-brand-500">
                         </div>
-                        <!-- Pilihan C -->
-                        <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="font-black text-slate-500">C.</span>
-                            <div onclick="toggleKunciLinear(${index}, 'C')" id="toggle-${index}-C" class="cursor-pointer transition-all duration-200">
-                                ${renderToggleSwitchHTML(item.kunci === 'C')}
-                            </div>
-                            <input type="text" id="linear-op-c-${index}" value="${item.c || ''}" class="flex-1 p-1.5 border border-slate-200 rounded-lg font-semibold outline-none focus:border-brand-500 text-slate-700 text-xs" placeholder="Isi opsi C">
+                        <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-lg border">
+                            <span class="font-black text-slate-400">C.</span>
+                            <div onclick="toggleKunciAutoSave(${index}, 'C')">${renderToggleSwitchHTML(item.kunci === 'C')}</div>
+                            <input type="text" id="auto-c-${index}" onblur="autoSaveSoalKeFirebase(${index})" value="${item.c || ''}" class="flex-1 p-1 border rounded text-xs outline-none focus:border-brand-500">
                         </div>
-                        <!-- Pilihan D -->
-                        <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                            <span class="font-black text-slate-500">D.</span>
-                            <div onclick="toggleKunciLinear(${index}, 'D')" id="toggle-${index}-D" class="cursor-pointer transition-all duration-200">
-                                ${renderToggleSwitchHTML(item.kunci === 'D')}
-                            </div>
-                            <input type="text" id="linear-op-d-${index}" value="${item.d || ''}" class="flex-1 p-1.5 border border-slate-200 rounded-lg font-semibold outline-none focus:border-brand-500 text-slate-700 text-xs" placeholder="Isi opsi D">
+                        <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-lg border">
+                            <span class="font-black text-slate-400">D.</span>
+                            <div onclick="toggleKunciAutoSave(${index}, 'D')">${renderToggleSwitchHTML(item.kunci === 'D')}</div>
+                            <input type="text" id="auto-d-${index}" onblur="autoSaveSoalKeFirebase(${index})" value="${item.d || ''}" class="flex-1 p-1 border rounded text-xs outline-none focus:border-brand-500">
                         </div>
                     </div>
                 `;
@@ -723,91 +780,76 @@
             });
         }
 
-        // Render Tombol Sakelar Kunci Jawaban (Switch Toggle)
         function renderToggleSwitchHTML(isTrue) {
             if(isTrue) {
                 return `
-                    <div class="w-12 h-6 bg-green-500 rounded-full flex items-center justify-end p-0.5 relative shadow-inner">
-                        <span class="text-[8px] text-white font-black absolute left-2 select-none">✓</span>
-                        <div class="w-5 h-5 bg-white rounded-full shadow-md transform border border-green-600"></div>
+                    <div class="w-10 h-5 bg-green-500 rounded-full flex items-center justify-end p-0.5 relative shadow-inner cursor-pointer">
+                        <div class="w-4 h-4 bg-white rounded-full shadow-md"></div>
                     </div>
                 `;
             } else {
                 return `
-                    <div class="w-12 h-6 bg-red-500 rounded-full flex items-center justify-start p-0.5 relative shadow-inner">
-                        <span class="text-[8px] text-white font-black absolute right-2 select-none">✕</span>
-                        <div class="w-5 h-5 bg-white rounded-full shadow-md transform border border-red-600"></div>
+                    <div class="w-10 h-5 bg-slate-300 rounded-full flex items-center justify-start p-0.5 relative shadow-inner cursor-pointer">
+                        <div class="w-4 h-4 bg-white rounded-full shadow-md"></div>
                     </div>
                 `;
             }
         }
 
-        // Fungsi Klik Box Toggle Merubah Warna Kunci Jawaban Terpilih Sekaligus
-        function toggleKunciLinear(index, opsi) {
+        function toggleKunciAutoSave(index, opsi) {
             localAdminSoalList[index].kunci = opsi;
-            // Update Tampilan khusus row grid sakelar yang diklik
-            ['A','B','C','D'].forEach(ch => {
-                const el = document.getElementById(`toggle-${index}-${ch}`);
-                if(el) el.innerHTML = renderToggleSwitchHTML(opsi === ch);
-            });
+            autoSaveSoalKeFirebase(index);
+            renderLinearSoalStackHTML();
         }
 
-        // Aksi Tombol Tambah Soal Baru Langsung ke Bagian Paling Bawah
-        function tambahFormSoalBaru() {
-            const emptyState = document.getElementById('empty-state-card');
-            if(emptyState) emptyState.remove();
+        function tambahBarisSoalOtomatis() {
+            const emptyCard = document.getElementById('admin-empty-card');
+            if(emptyCard) emptyCard.remove();
 
-            // Push object baru ke list lokal
             localAdminSoalList.push({
-                soal: '', a: '', b: '', c: '', d: '', kunci: 'A', id: '' 
+                kelas: selectedKelasAdmin, mapel: selectedMapelAdmin,
+                soal: '', a: '', b: '', c: '', d: '', kunci: 'A', id: ''
             });
 
             renderLinearSoalStackHTML();
-
-            // Scroll otomatis mengarah ke form baris paling baru di paling bawah
-            setTimeout(() => {
-                const modal = document.getElementById('admin-modal');
-                modal.scrollTo({ top: modal.scrollHeight, behavior: 'smooth' });
-            }, 100);
         }
 
-        // Aksi Simpan Baris Soal (Bisa Jalur CREATE baru / UPDATE data lama)
-        async function simpanBarisSoalLinear(index) {
-            const kls = document.getElementById('admin-input-kelas').value.trim().toUpperCase();
-            const mpl = document.getElementById('admin-input-mapel').value.trim().toUpperCase();
+        // MEKANISME AUTOMATIC-SAVE LANGSUNG KE FIREBASE TANPA TOMBOL SIMPAN
+        async function autoSaveSoalKeFirebase(index) {
+            const targetItem = localAdminSoalList[index];
+            if(!targetItem) return;
 
-            const text = document.getElementById(`linear-text-${index}`).value.trim();
-            const opA = document.getElementById(`linear-op-a-${index}`).value.trim();
-            const opB = document.getElementById(`linear-op-b-${index}`).value.trim();
-            const opC = document.getElementById(`linear-op-c-${index}`).value.trim();
-            const opD = document.getElementById(`linear-op-d-${index}`).value.trim();
-            const kunci = localAdminSoalList[index].kunci;
-            const docId = localAdminSoalList[index].id;
+            // Ambil data langsung dari elemen input HTML
+            const txtSoal = document.getElementById(`auto-soal-${index}`).value.trim();
+            const txtA = document.getElementById(`auto-a-${index}`).value.trim();
+            const txtB = document.getElementById(`auto-b-${index}`).value.trim();
+            const txtC = document.getElementById(`auto-c-${index}`).value.trim();
+            const txtD = document.getElementById(`auto-d-${index}`).value.trim();
+            
+            // Perbarui memori array lokal
+            targetItem.soal = txtSoal;
+            targetItem.a = txtA; targetItem.b = txtB; targetItem.c = txtC; targetItem.d = txtD;
 
-            if(!text || !opA || !opB || !opC || !opD) {
-                alert('Teks soal pertanyaan dan seluruh butir pilihan A-D wajib diisi!');
-                return;
-            }
+            // Jangan sinkron ke firebase jika field pertanyaan masih kosong total
+            if(!txtSoal) return;
 
             const payload = {
-                kelas: kls, mapel: mpl, soal: text,
-                a: opA, b: opB, c: opC, d: opD, kunci: kunci,
+                kelas: selectedKelasAdmin, mapel: selectedMapelAdmin,
+                soal: txtSoal, a: txtA, b: txtB, c: txtC, d: txtD, kunci: targetItem.kunci,
                 timestamp: new Date().getTime()
             };
 
             try {
-                if(docId) {
-                    // Update data lama
-                    await window.fsUpdateDoc(window.fsDoc(window.dbFirestore, "ular_tangga", docId), payload);
-                    alert(`Butir Soal #${index+1} sukses diperbarui di Cloud database!`);
+                if(targetItem.id) {
+                    // Update data yang sudah ada
+                    await window.fsUpdateDoc(window.fsDoc(window.dbFirestore, "ular_tangga", targetItem.id), payload);
                 } else {
-                    // Simpan data soal baru (Create)
+                    // Masukkan baris baru otomatis
                     const docRef = await window.fsAddDoc(window.fsCollection(window.dbFirestore, "ular_tangga"), payload);
-                    localAdminSoalList[index].id = docRef.id; 
-                    alert(`Butir Soal #${index+1} sukses ditambahkan baru ke Cloud database!`);
+                    targetItem.id = docRef.id;
                 }
-                
-                // Ambil ulang snapshot master agar sinkron ke bankSoal permainan
+
+                // Perbarui master state bankSoalGlobal secara real-time
                 const snapshot = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
                 bankSoalGlobal = [];
                 snapshot.forEach(doc => {
@@ -815,34 +857,27 @@
                     bankSoalGlobal.push(obj);
                 });
 
-            } catch(err) {
-                alert('Gagal melakukan sinkronisasi ke Firebase: ' + err.message);
+            } catch (e) {
+                console.error("Auto-Save failed: ", e);
             }
         }
 
-        // Aksi Hapus Butir Soal Linear (Delete)
-        async function hapusBarisSoalLinear(index) {
-            const docId = localAdminSoalList[index].id;
+        async function hapusBarisSoal(index) {
+            const targetItem = localAdminSoalList[index];
+            if(!targetItem) return;
 
-            if(!docId) {
-                // Jika data belum tersimpan di Firebase, cukup buang dari memori lokal array
-                localAdminSoalList.splice(index, 1);
-                renderLinearSoalStackHTML();
-                return;
+            if(targetItem.id) {
+                if(!confirm("Hapus soal ini secara permanen dari Cloud database?")) return;
+                try {
+                    await window.fsDeleteDoc(window.fsDoc(window.dbFirestore, "ular_tangga", targetItem.id));
+                    bankSoalGlobal = bankSoalGlobal.filter(i => i.id !== targetItem.id);
+                } catch(err) {
+                    alert("Gagal menghapus: " + err.message);
+                }
             }
 
-            if(!confirm(`Apakah Anda yakin ingin menghapus Soal #${index+1} dari Cloud Firebase secara permanen?`)) return;
-
-            try {
-                await window.fsDeleteDoc(window.fsDoc(window.dbFirestore, "ular_tangga", docId));
-                bankSoalGlobal = bankSoalGlobal.filter(i => i.id !== docId);
-                localAdminSoalList.splice(index, 1);
-                
-                renderLinearSoalStackHTML();
-                alert('Butir soal kuis sukses terhapus.');
-            } catch(err) {
-                alert('Gagal menghapus data: ' + err.message);
-            }
+            localAdminSoalList.splice(index, 1);
+            renderLinearSoalStackHTML();
         }
 
         // ==========================================
