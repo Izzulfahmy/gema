@@ -233,6 +233,15 @@
             bottom: -30px;
             filter: blur(8px);
         }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
     </style>
 
     <!-- Firebase SDK Setup -->
@@ -264,15 +273,20 @@
 </head>
 <body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-center items-center">
 
-    <!-- INFOBAR IDENTITAS PERMAINAN AKTIF (DIUBAH TANPA SIMBOL DAN TANPA TANDA BACA) -->
+    <!-- INFOBAR IDENTITAS PERMAINAN AKTIF -->
     <div id="game-identity-bar" class="absolute top-3 z-[90] bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-5 py-1.5 rounded-full shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-1.5">
         <span>Kelas</span> <span id="bar-kelas"></span> <span class="ml-2">Mapel</span> <span id="bar-mapel"></span>
     </div>
 
     <!-- MODAL 1: STARTUP FORM SELEKSI KELAS & MAPEL -->
     <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-lg w-[92%] max-h-[90vh] overflow-y-auto border-4 border-emerald-100 relative space-y-5">
+        <div id="startup-card" class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-lg w-[92%] max-h-[90vh] overflow-y-auto border-4 border-emerald-100 relative space-y-5 transition-transform duration-200">
             
+            <!-- UI BANNER WARNING ELEGAN -->
+            <div id="ui-startup-warning" class="hidden bg-rose-50 border-2 border-rose-200 text-rose-700 text-xs font-bold px-4 py-2.5 rounded-xl text-center flex items-center justify-center gap-2">
+                <span>⚠️</span> <span id="ui-warning-text">Harap lengkapi semua data pilihan sebelum memulai!</span>
+            </div>
+
             <button onclick="openSettingsAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors" title="Pengaturan Guru">
                 <svg xmlns="http://www.w3.org/2000/xl" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -289,10 +303,10 @@
             <div class="space-y-1.5">
                 <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wide">1. Jumlah Pemain</label>
                 <div class="grid grid-cols-4 gap-2">
-                    <button type="button" onclick="setPlayerCount(1)" id="btn-pcount-1" class="py-2 bg-emerald-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-xs text-center shadow-sm">1 🐰</button>
-                    <button type="button" onclick="setPlayerCount(2)" id="btn-pcount-2" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-xs text-center">2 🐐</button>
-                    <button type="button" onclick="setPlayerCount(3)" id="btn-pcount-3" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-xs text-center">3 🐸</button>
-                    <button type="button" onclick="setPlayerCount(4)" id="btn-pcount-4" class="py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-xs text-center">4 🐱</button>
+                    <button type="button" onclick="setPlayerCount(1)" id="btn-pcount-1" class="py-2.5 bg-emerald-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-sm text-center shadow-sm">1</button>
+                    <button type="button" onclick="setPlayerCount(2)" id="btn-pcount-2" class="py-2.5 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-sm text-center">2</button>
+                    <button type="button" onclick="setPlayerCount(3)" id="btn-pcount-3" class="py-2.5 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-sm text-center">3</button>
+                    <button type="button" onclick="setPlayerCount(4)" id="btn-pcount-4" class="py-2.5 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-sm text-center">4</button>
                 </div>
             </div>
 
@@ -519,6 +533,7 @@
         let numPlayers = 1;
         let currentPlayer = 0;
         let playerPositions = [1, 1, 1, 1];
+        let previousPositions = [1, 1, 1, 1]; 
         let isMoving = false;
 
         let selectedKelasPlay = "";
@@ -588,6 +603,7 @@
             selectedKelasPlay = kls; selectedMapelPlay = "";
             renderPlayKelasGridHTML();
             renderPlayMapelGridHTML();
+            sembunyikanWarningUI();
         }
 
         function renderPlayMapelGridHTML() {
@@ -617,22 +633,50 @@
         function selectPlayMapelCard(mpl) {
             selectedMapelPlay = mpl;
             renderPlayMapelGridHTML();
+            sembunyikanWarningUI();
         }
 
         function setPlayerCount(count) {
             tempPlayerCount = count;
             for(let i=1; i<=4; i++) {
                 document.getElementById(`btn-pcount-${i}`).className = (i === count)
-                    ? "py-2 bg-emerald-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-xs text-center shadow-sm"
-                    : "py-2 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-xs text-center";
+                    ? "py-2.5 bg-emerald-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-sm text-center shadow-sm"
+                    : "py-2.5 bg-slate-50 border-2 border-slate-200 text-slate-600 font-black rounded-xl text-sm text-center";
             }
+            sembunyikanWarningUI();
+        }
+
+        function tampilkanWarningUI(pesan) {
+            const warningBanner = document.getElementById('ui-startup-warning');
+            const warningText = document.getElementById('ui-warning-text');
+            const startupCard = document.getElementById('startup-card');
+
+            warningText.innerText = pesan;
+            warningBanner.classList.remove('hidden');
+            
+            startupCard.classList.remove('animate-shake');
+            void startupCard.offsetWidth; 
+            startupCard.classList.add('animate-shake');
+        }
+
+        function sembunyikanWarningUI() {
+            document.getElementById('ui-startup-warning').classList.add('hidden');
         }
 
         function validateAndStartGame() {
-            if(!selectedKelasPlay || !selectedMapelPlay) {
-                alert('Silakan pilih opsi kartu kelas dan pelajaran terlebih dahulu!');
+            if(!selectedKelasPlay && !selectedMapelPlay) {
+                tampilkanWarningUI("Harap pilih Kelas dan Mata Pelajaran terlebih dahulu!");
                 return;
             }
+            if(!selectedKelasPlay) {
+                tampilkanWarningUI("Data Kelas belum dipilih. Silakan klik salah satu kelas!");
+                return;
+            }
+            if(!selectedMapelPlay) {
+                tampilkanWarningUI("Data Mata Pelajaran belum dipilih. Silakan klik salah satu mapel!");
+                return;
+            }
+
             numPlayers = tempPlayerCount;
             document.getElementById('bar-kelas').innerText = selectedKelasPlay;
             document.getElementById('bar-mapel').innerText = selectedMapelPlay;
@@ -680,7 +724,10 @@
         }
 
         function executeStartGame() {
-            currentPlayer = 0; playerPositions = [1, 1, 1, 1]; isMoving = false;
+            currentPlayer = 0; 
+            playerPositions = [1, 1, 1, 1]; 
+            previousPositions = [1, 1, 1, 1];
+            isMoving = false;
             document.getElementById('startup-modal').classList.add('hidden');
             for(let i=0; i<4; i++) {
                 const token = document.getElementById(`player-token-${i}`);
@@ -713,9 +760,6 @@
             activePromptCallback = null;
         }
 
-        // ==========================================
-        // WORKFLOW GURU: WORKSPACE DROPDOWNS CLEAN BAR
-        // ==========================================
         function openSettingsAuth() {
             document.getElementById('auth-modal').classList.remove('hidden');
             document.getElementById('admin-pass').value = '';
@@ -1006,9 +1050,6 @@
             renderLinearSoalStackHTML();
         }
 
-        // ==========================================
-        // RENDER TAMPILAN GRIDS MAP BOARD ORIGINAL
-        // ==========================================
         function buildBoard() {
             const grid = document.getElementById('board-grid');
             grid.innerHTML = '';
@@ -1049,7 +1090,7 @@
                 svgContent += `<line x1="${r1x1+0.4}" y1="${r1y1+0.4}" x2="${r1x2+0.4}" y2="${r1y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>`;
                 svgContent += `<line x1="${r2x1+0.4}" y1="${r2y1+0.4}" x2="${r2x2+0.4}" y2="${r2y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>`;
                 svgContent += `<line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>`;
-                svgContent += `<line x1="${r2x1} opacity-70" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>`;
+                svgContent += `<line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>`;
 
                 const rungCount = Math.floor(length / 3); 
                 for(let i=1; i<=rungCount; i++) {
@@ -1125,8 +1166,9 @@
         }
 
         function moveTokenStepByStep(pIndex, startPos, endPos, stepDelay, onComplete) {
-            if (startPos >= endPos) { if (onComplete) onComplete(); return; }
-            let nextPos = startPos + 1; playerPositions[pIndex] = nextPos;
+            if (startPos === endPos) { if (onComplete) onComplete(); return; }
+            let nextPos = (startPos < endPos) ? startPos + 1 : startPos - 1;
+            playerPositions[pIndex] = nextPos;
             updatePlayerPosition(pIndex, nextPos);
             setTimeout(() => { moveTokenStepByStep(pIndex, nextPos, endPos, stepDelay, onComplete); }, stepDelay);
         }
@@ -1177,7 +1219,10 @@
                         overlay.classList.remove('opacity-100'); overlay.classList.add('opacity-0');
                         setTimeout(() => overlay.classList.add('hidden'), 300);
 
-                        let cPos = playerPositions[currentPlayer]; let tPos = cPos + result;
+                        let cPos = playerPositions[currentPlayer]; 
+                        previousPositions[currentPlayer] = cPos; 
+
+                        let tPos = cPos + result;
                         if (tPos > 100) { setTimeout(nextTurn, 1000); return; }
                         
                         moveTokenStepByStep(currentPlayer, cPos, tPos, 400, () => pemicuEvaluasiPetakLangkah(tPos));
@@ -1222,16 +1267,21 @@
             } else {
                 btnT.className = "w-full py-3 px-4 bg-rose-100 text-left rounded-2xl border-2 border-rose-400 font-bold text-rose-700 flex gap-3 text-sm sm:text-base";
                 document.getElementById(`btn-ans-${kunci.toLowerCase()}`).className = "w-full py-3 px-4 bg-emerald-50 text-left rounded-2xl border-2 border-emerald-300 font-bold text-emerald-600 flex gap-3 text-sm sm:text-base";
-                feedback.innerHTML = "❌ KURANG TEPAT! Hukum mundur 2 langkah."; feedback.className = "mt-4 text-center font-black text-sm text-rose-600 block";
+                
+                let petakAsal = previousPositions[currentPlayer];
+                feedback.innerHTML = `❌ KURANG TEPAT! Kamu harus kembali ke petak ${petakAsal}.`; 
+                feedback.className = "mt-4 text-center font-black text-sm text-rose-600 block";
+
                 setTimeout(() => {
                     document.getElementById('quiz-modal').classList.add('hidden');
-                    let pMundur = Math.max(1, soalAktif.targetPos - 2); playerPositions[currentPlayer] = pMundur;
-                    updatePlayerPosition(currentPlayer, pMundur);
-                    setTimeout(() => checkSnakesLadders(currentPlayer, pMundur), 800);
-                }, 2000);
+                    moveTokenStepByStep(currentPlayer, soalAktif.targetPos, petakAsal, 300, () => {
+                        checkSnakesLadders(currentPlayer, petakAsal);
+                    });
+                }, 2200);
             }
         }
 
+        // PERBAIKAN LOGIKA: DIJAWAB BENAR ATAU KEMBALI KE PETAK ASAL MAKA CHECKSNAKESLADDERS BARU BISA BERJALAN AMAN
         function checkSnakesLadders(pIndex, pos) {
             if (pos === 100) { triggerWin(pIndex); return; }
             if (ladders[pos]) {
@@ -1266,6 +1316,7 @@
                 document.getElementById('startup-modal').classList.remove('hidden');
                 selectedKelasPlay = ""; selectedMapelPlay = "";
                 petakKuisMap = {};
+                sembunyikanWarningUI();
                 muatMasterDataFirebase();
             }, 300);
         }
