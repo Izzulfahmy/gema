@@ -70,7 +70,6 @@
             opacity: 0.7;
         }
 
-        /* Penanda Titik Kuis di Pojok Kanan Atas Petak */
         .quiz-dot {
             position: absolute;
             top: 4px;
@@ -263,7 +262,7 @@
         window.fsUpdateDoc = updateDoc;
     </script>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-center items-center">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col justify-center items-center">
 
     <!-- INFOBAR IDENTITAS PERMAINAN AKTIF -->
     <div id="game-identity-bar" class="absolute top-3 z-[90] bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-4 py-1.5 rounded-full shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2">
@@ -344,11 +343,13 @@
     <div id="admin-modal" class="fixed inset-0 bg-slate-100 overflow-y-auto hidden flex flex-col p-4 sm:p-6 z-[20000]">
         <div class="max-w-4xl w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-4 sm:p-5 flex flex-col h-[90vh] relative">
             
+            <!-- TOP STICKY HEADER -->
             <div class="flex justify-between items-center border-b pb-3 mb-4 sticky top-0 bg-white z-[60]">
                 <h2 class="text-xl font-black text-brand-600 flex items-center gap-1.5">⚙️ Pengaturan Bank Soal</h2>
                 <button onclick="closeAdminModal()" class="text-slate-500 hover:text-slate-700 text-xs font-black bg-slate-100 px-3 py-1.5 rounded-xl transition-colors">✕ Tutup</button>
             </div>
 
+            <!-- MENU BAR DROPDOWN RINGKAS -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-200 mb-4 text-xs">
                 <div class="flex items-center gap-2">
                     <span class="font-black text-slate-500 whitespace-nowrap">KELAS:</span>
@@ -367,20 +368,21 @@
                 </div>
             </div>
 
+            <!-- LOWER SECTION: BANK FORM LINEAR -->
             <div id="admin-soal-view" class="space-y-4 flex-1 flex flex-col overflow-hidden hidden">
                 <div class="flex justify-between items-center bg-emerald-50/40 p-2.5 rounded-xl border border-emerald-100 shrink-0">
-                    <!-- Judul Diubah Menjadi Daftar pertanyaan -->
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-wide">📋 Daftar pertanyaan</h3>
-                    <!-- Scope Kunci Diganti Badge Kelas & Mapel Ber-Border Minimalis Rapi -->
                     <div class="flex items-center gap-1.5">
                         <span id="admin-scope-kelas" class="text-[10px] font-black px-2.5 py-0.5 bg-white border border-blue-400 text-blue-600 rounded-md uppercase tracking-wider">Kelas</span>
                         <span id="admin-scope-mapel" class="text-[10px] font-black px-2.5 py-0.5 bg-white border border-purple-400 text-purple-600 rounded-md uppercase tracking-wider">Mapel</span>
                     </div>
                 </div>
 
+                <!-- SCROLLABLE STACK FORM SOAL -->
                 <div id="admin-linear-soal-stack" class="space-y-5 flex-1 overflow-y-auto pr-1 pb-4">
                 </div>
 
+                <!-- FOOTER -->
                 <div class="border-t pt-3 bg-white flex justify-between items-center shrink-0">
                     <button onclick="tambahBarisSoalOtomatis()" class="py-2 px-4 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow transition-colors">
                         ➕ Tambah Soal Baru Ke Bawah
@@ -392,7 +394,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: TAMPILAN KUIS SISWA (HEADER UJI KOMPETENSI DIHAPUS UTUH) -->
+    <!-- MODAL 4: TAMPILAN KUIS SISWA -->
     <div id="quiz-modal" class="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm hidden">
         <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-lg w-[90%] border-4 border-blue-400 relative">
             
@@ -531,8 +533,6 @@
         let bankSoalGlobal = []; 
         let filteredSoalGame = []; 
         let soalAktif = null;
-
-        // Map Lokasi Soal Ter-sebar Secara Acak di Papan (Key: Nomor Petak, Value: Objek Soal)
         let petakKuisMap = {};
 
         // Admin Scope Variables
@@ -640,43 +640,35 @@
 
             filteredSoalGame = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasPlay && i.mapel.toUpperCase() === selectedMapelPlay && i.soal !== '');
             
-            // Sebarkan kuis secara acak ke petak-petak papan permainan
             distribusikanKuisAcakPapan();
             executeStartGame();
         }
 
-        // SEBAR SOAL SECARA RANDOM DI ANGKA 2 - 98
         function distribusikanKuisAcakPapan() {
             petakKuisMap = {};
-            buildBoard(); // Re-build board untuk menghapus penanda lama
+            buildBoard(); 
 
             if (filteredSoalGame.length === 0) return;
 
-            // Generate list angka petak yang tersedia secara acak
             let petakTersedia = [];
             for(let i = 2; i <= 98; i++) {
-                // Hindari petak awal/akhir tangga atau ular jika memungkinkan agar tidak bentrok visual berat
                 if(!ladders[i] && !snakes[i]) {
                     petakTersedia.push(i);
                 }
             }
-            // Fallback jika kuota penuh
             if(petakTersedia.length < filteredSoalGame.length) {
                 for(let i = 2; i <= 98; i++) {
                     if(!petakTersedia.includes(i)) petakTersedia.push(i);
                 }
             }
 
-            // Shuffle array angka petak tersedia
             petakTersedia.sort(() => Math.random() - 0.5);
 
-            // Pasangkan butir kuis dengan nomor petak hasil acak
             filteredSoalGame.forEach((soal, index) => {
                 if (index < petakTersedia.length) {
                     let nomorPetakTerpilih = petakTersedia[index];
                     petakKuisMap[nomorPetakTerpilih] = soal;
 
-                    // Berikan Tanda Titik Merah Pada Cell HTML Papan
                     const cellEl = document.getElementById(`cell-${nomorPetakTerpilih}`);
                     if(cellEl) {
                         const dot = document.createElement('div');
@@ -703,9 +695,6 @@
             updateTurnUI();
         }
 
-        // ==========================================
-        // DIALOG MODERN PROMPT POPUP DIALOGS
-        // ==========================================
         function openPromptDialog(title, placeholder, callback) {
             document.getElementById('prompt-title').innerText = title;
             const input = document.getElementById('prompt-input-text');
@@ -725,7 +714,7 @@
         }
 
         // ==========================================
-        // WORKFLOW PANEL SETTINGS GURU
+        // WORKFLOW GURU: WORKSPACE DROPDOWNS CLEAN BAR
         // ==========================================
         function openSettingsAuth() {
             document.getElementById('auth-modal').classList.remove('hidden');
@@ -760,6 +749,7 @@
                 const selectedAttr = (k === selectedKelasAdmin) ? 'selected' : '';
                 select.innerHTML += `<option value="${k}" ${selectedAttr}>${k}</option>`;
             });
+
             renderAdminMapelDropdownOptions();
         }
 
@@ -779,7 +769,7 @@
         function pemicuHapusKelas() {
             const kls = document.getElementById('admin-select-kelas').value;
             if(!kls) { alert('Silakan pilih kelas terlebih dahulu!'); return; }
-            if(!confirm(`Hapus seluruh koleksi data ${kls} secara permanen dari Cloud database?`)) return;
+            if(!confirm(`Hapus seluruh koleksi data ${kls} secara permanen?`)) return;
             pemicuEksekusiHapusKelas(kls);
         }
 
@@ -823,8 +813,8 @@
             const listMapel = [...new Set(filtered.map(item => item.mapel.toUpperCase()))].sort();
 
             listMapel.forEach(m => {
-                const textAttr = (m === selectedMapelAdmin) ? 'selected' : '';
-                select.innerHTML += `<option value="${m}" ${textAttr}>${m}</option>`;
+                const selectedAttr = (m === selectedMapelAdmin) ? 'selected' : '';
+                select.innerHTML += `<option value="${m}" ${selectedAttr}>${m}</option>`;
             });
         }
 
@@ -1026,7 +1016,7 @@
                 for (let col = 0; col < 10; col++) {
                     let num = (row % 2 === 0) ? (row * 10) + col + 1 : (row * 10) + (9 - col) + 1; 
                     const cell = document.createElement('div');
-                    cell.id = `cell-${num}`; // Berikan id spesifik per nomor petak untuk injeksi dot kuis
+                    cell.id = `cell-${num}`; 
                     cell.className = `cell ${cellColors[num % cellColors.length]}`;
                     cell.innerHTML = `<span class="cell-number">${num}</span>`;
                     grid.appendChild(cell);
@@ -1106,7 +1096,7 @@
             }
         }
 
-        UX: function updatePlayerPosition(pIndex, num) {
+        function updatePlayerPosition(pIndex, num) {
             const pos = getCoordinates(num);
             const token = document.getElementById(`player-token-${pIndex}`);
             token.classList.remove('jumping'); void token.offsetWidth; token.classList.add('jumping');
@@ -1178,9 +1168,7 @@
             }, 50);
         }
 
-        // KONTROLLER EVALUASI LANGKAH BARU BERDASARKAN DISTRIBUSI PETAK KUIS MAP
         function pemicuEvaluasiPetakLangkah(targetPos) {
-            // Cek apakah di nomor petak tujuan pemain mendarat ada tantangan kuis yang tersemat
             if(petakKuisMap[targetPos]) {
                 soalAktif = petakKuisMap[targetPos];
                 soalAktif.targetPos = targetPos;
@@ -1200,7 +1188,6 @@
                 });
                 document.getElementById('quiz-modal').classList.remove('hidden');
             } else {
-                // Jika petak kosong polosan biasa, langsung jalankan evaluasi ular/tangga regular
                 checkSnakesLadders(currentPlayer, targetPos);
             }
         }
