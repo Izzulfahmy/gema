@@ -70,9 +70,22 @@
             opacity: 0.7;
         }
 
+        /* Penanda Titik Kuis di Pojok Kanan Atas Petak */
+        .quiz-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #ef4444;
+        }
+
         @media (min-width: 640px) {
             .cell-number { font-size: 0.8rem; top: 4px; left: 6px; }
             .cell { border-radius: 12px; }
+            .quiz-dot { width: 10px; height: 10px; top: 6px; right: 6px; }
         }
 
         .player-token {
@@ -250,9 +263,9 @@
         window.fsUpdateDoc = updateDoc;
     </script>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col justify-center items-center">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-center items-center">
 
-    <!-- INFOBAR IDENTITAS PERMAINAN AKTIF (REPOSISI KE TENGAH ATAS RINGKAS) -->
+    <!-- INFOBAR IDENTITAS PERMAINAN AKTIF -->
     <div id="game-identity-bar" class="absolute top-3 z-[90] bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-4 py-1.5 rounded-full shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2">
         <span>🏫</span> <span id="bar-kelas">Kelas</span> | <span>📖</span> <span id="bar-mapel">Mapel</span>
     </div>
@@ -269,7 +282,7 @@
             </button>
 
             <div class="text-center">
-                <div class="text-4xl mb-1 drop-shadow-sm">🐍🪜</div>
+                <div class="text-4xl mb-1 drop-shadow-sm">🎲🐍</div>
                 <h2 class="text-2xl font-black text-emerald-600">Mulai Permainan</h2>
                 <p class="text-slate-400 font-bold text-[11px]">Tentukan konfigurasi ruang petualangan kuis</p>
             </div>
@@ -315,7 +328,7 @@
         </div>
     </div>
 
-    <!-- MODAL INPUT DIALOG MODERN (ANTI POLOSAN) -->
+    <!-- MODAL INPUT DIALOG MODERN -->
     <div id="input-prompt-modal" class="fixed inset-0 z-[30000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
         <div class="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-[90%] border-t-4 border-emerald-500 space-y-4">
             <h3 id="prompt-title" class="text-base font-black text-slate-700">Tambah Data Baru</h3>
@@ -331,50 +344,43 @@
     <div id="admin-modal" class="fixed inset-0 bg-slate-100 overflow-y-auto hidden flex flex-col p-4 sm:p-6 z-[20000]">
         <div class="max-w-4xl w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-4 sm:p-5 flex flex-col h-[90vh] relative">
             
-            <!-- STICKY TOP HEADER -->
             <div class="flex justify-between items-center border-b pb-3 mb-4 sticky top-0 bg-white z-[60]">
                 <h2 class="text-xl font-black text-brand-600 flex items-center gap-1.5">⚙️ Pengaturan Bank Soal</h2>
                 <button onclick="closeAdminModal()" class="text-slate-500 hover:text-slate-700 text-xs font-black bg-slate-100 px-3 py-1.5 rounded-xl transition-colors">✕ Tutup</button>
             </div>
 
-            <!-- MENU BAR DROPDOWN RINGKAS -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-200 mb-4 text-xs">
-                <!-- DROPDOWN KELAS DENGAN UI TOMBOL HAPUS PROPER -->
                 <div class="flex items-center gap-2">
                     <span class="font-black text-slate-500 whitespace-nowrap">KELAS:</span>
                     <select id="admin-select-kelas" onchange="gantiKelasAdminDropdown()" class="flex-1 p-2 border-2 border-slate-200 rounded-xl font-bold bg-white outline-none focus:border-blue-500 text-slate-700">
                     </select>
                     <button onclick="pemicuTambahKelas()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded-xl transition-all duration-150 active:scale-95" title="Tambah Kelas">➕</button>
-                    <!-- UI Tombol Hapus Kelas Proper -->
                     <button onclick="pemicuHapusKelas()" class="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-xl transition-all duration-150 active:scale-95 shadow-sm" title="Hapus Kelas">✕</button>
                 </div>
 
-                <!-- DROPDOWN MAPEL DENGAN UI TOMBOL HAPUS PROPER -->
                 <div class="flex items-center gap-2">
                     <span class="font-black text-slate-500 whitespace-nowrap">MAPEL:</span>
                     <select id="admin-select-mapel" onchange="gantiMapelAdminDropdown()" class="flex-1 p-2 border-2 border-slate-200 rounded-xl font-bold bg-white outline-none focus:border-purple-500 text-slate-700">
                     </select>
                     <button id="admin-btn-add-mapel" onclick="pemicuTambahMapel()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold p-2 rounded-xl transition-all duration-150 active:scale-95" title="Tambah Mapel">➕</button>
-                    <!-- UI Tombol Hapus Pelajaran Proper -->
                     <button id="admin-btn-del-mapel" onclick="pemicuHapusMapel()" class="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-xl transition-all duration-150 active:scale-95 shadow-sm" title="Hapus Mapel">✕</button>
                 </div>
             </div>
 
-            <!-- LOWER SECTION: BANK FORM LINEAR (SCROLL INDEPENDEN) -->
             <div id="admin-soal-view" class="space-y-4 flex-1 flex flex-col overflow-hidden hidden">
                 <div class="flex justify-between items-center bg-emerald-50/40 p-2.5 rounded-xl border border-emerald-100 shrink-0">
+                    <!-- Judul Diubah Menjadi Daftar pertanyaan -->
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-wide">📋 Daftar pertanyaan</h3>
-                    <div class="flex items-center gap-1">
-                        <span id="admin-scope-kelas" class="text-[10px] font-black px-2 py-0.5 bg-white border border-blue-300 text-blue-600 rounded-md uppercase">Kelas</span>
-                        <span id="admin-scope-mapel" class="text-[10px] font-black px-2 py-0.5 bg-white border border-purple-300 text-purple-600 rounded-md uppercase">Mapel</span>
+                    <!-- Scope Kunci Diganti Badge Kelas & Mapel Ber-Border Minimalis Rapi -->
+                    <div class="flex items-center gap-1.5">
+                        <span id="admin-scope-kelas" class="text-[10px] font-black px-2.5 py-0.5 bg-white border border-blue-400 text-blue-600 rounded-md uppercase tracking-wider">Kelas</span>
+                        <span id="admin-scope-mapel" class="text-[10px] font-black px-2.5 py-0.5 bg-white border border-purple-400 text-purple-600 rounded-md uppercase tracking-wider">Mapel</span>
                     </div>
                 </div>
 
-                <!-- SCROLLABLE STACK FORM SOAL -->
                 <div id="admin-linear-soal-stack" class="space-y-5 flex-1 overflow-y-auto pr-1 pb-4">
                 </div>
 
-                <!-- FOOTER -->
                 <div class="border-t pt-3 bg-white flex justify-between items-center shrink-0">
                     <button onclick="tambahBarisSoalOtomatis()" class="py-2 px-4 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow transition-colors">
                         ➕ Tambah Soal Baru Ke Bawah
@@ -386,12 +392,9 @@
         </div>
     </div>
 
-    <!-- MODAL 4: TAMPILAN KUIS SISWA -->
-    <div id="quiz-modal" class="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/70 backdrop-blur-md hidden">
-        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-lg w-[90%] border-4 border-blue-400 relative animate-[bounce_0.5s_ease-in-out_1]">
-            <div class="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-blue-400 text-white font-black px-6 py-1.5 rounded-full shadow-md text-xs tracking-widest uppercase">
-                Uji Kompetensi (<span id="quiz-identity">Kelas - Mapel</span>)
-            </div>
+    <!-- MODAL 4: TAMPILAN KUIS SISWA (HEADER UJI KOMPETENSI DIHAPUS UTUH) -->
+    <div id="quiz-modal" class="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm hidden">
+        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-lg w-[90%] border-4 border-blue-400 relative">
             
             <div class="text-center mt-2 mb-6">
                 <span id="quiz-player-tag" class="text-sm font-black px-3 py-1 bg-slate-100 rounded-lg text-slate-600">Giliran Pemain</span>
@@ -451,10 +454,10 @@
     <!-- MAIN BOARD VIEW PORT -->
     <div class="w-full h-full flex justify-center items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
         <div class="board-wrapper">
-            <!-- ENGINE DICE CONTROLLER -->
+            
+            <!-- CONTROLLER DADU -->
             <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 w-[60px] sm:w-[80px]">
                 <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black">🎲</div>
-                <!-- Mengubah tulisan teks tombol kocok dadu menjadi Lempar! -->
                 <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-xs tracking-widest uppercase border border-brand-600">
                     LEMPAR!
                 </button>
@@ -476,7 +479,7 @@
         </div>
     </div>
 
-    <!-- DICE OVERLAY LAYER -->
+    <!-- DICE VIEWPORT OVERLAY -->
     <div id="dice-3d-overlay" class="fixed inset-0 z-[1000] perspective-1000 pointer-events-none flex items-center justify-center opacity-0 hidden transition-opacity duration-300">
         <div id="dice-wrapper" class="flex flex-col items-center">
             <div id="dice-cube" class="dice-cube shadow-xl rounded-2xl">
@@ -503,7 +506,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT APP GRAPHICS LOGIC ENGINE -->
+    <!-- MASTER SCRIPT LOGIC PERMAINAN -->
     <script>
         const ladders = { 4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91 };
         const snakes = { 17: 7, 54: 34, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 99: 78 };
@@ -529,7 +532,10 @@
         let filteredSoalGame = []; 
         let soalAktif = null;
 
-        // Workspace States
+        // Map Lokasi Soal Ter-sebar Secara Acak di Papan (Key: Nomor Petak, Value: Objek Soal)
+        let petakKuisMap = {};
+
+        // Admin Scope Variables
         let selectedKelasAdmin = "";
         let selectedMapelAdmin = "";
         let localAdminSoalList = [];
@@ -632,8 +638,53 @@
             document.getElementById('bar-mapel').innerText = selectedMapelPlay;
             document.getElementById('game-identity-bar').classList.remove('hidden');
 
-            filteredSoalGame = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasPlay && i.mapel.toUpperCase() === selectedMapelPlay);
+            filteredSoalGame = bankSoalGlobal.filter(i => i.kelas.toUpperCase() === selectedKelasPlay && i.mapel.toUpperCase() === selectedMapelPlay && i.soal !== '');
+            
+            // Sebarkan kuis secara acak ke petak-petak papan permainan
+            distribusikanKuisAcakPapan();
             executeStartGame();
+        }
+
+        // SEBAR SOAL SECARA RANDOM DI ANGKA 2 - 98
+        function distribusikanKuisAcakPapan() {
+            petakKuisMap = {};
+            buildBoard(); // Re-build board untuk menghapus penanda lama
+
+            if (filteredSoalGame.length === 0) return;
+
+            // Generate list angka petak yang tersedia secara acak
+            let petakTersedia = [];
+            for(let i = 2; i <= 98; i++) {
+                // Hindari petak awal/akhir tangga atau ular jika memungkinkan agar tidak bentrok visual berat
+                if(!ladders[i] && !snakes[i]) {
+                    petakTersedia.push(i);
+                }
+            }
+            // Fallback jika kuota penuh
+            if(petakTersedia.length < filteredSoalGame.length) {
+                for(let i = 2; i <= 98; i++) {
+                    if(!petakTersedia.includes(i)) petakTersedia.push(i);
+                }
+            }
+
+            // Shuffle array angka petak tersedia
+            petakTersedia.sort(() => Math.random() - 0.5);
+
+            // Pasangkan butir kuis dengan nomor petak hasil acak
+            filteredSoalGame.forEach((soal, index) => {
+                if (index < petakTersedia.length) {
+                    let nomorPetakTerpilih = petakTersedia[index];
+                    petakKuisMap[nomorPetakTerpilih] = soal;
+
+                    // Berikan Tanda Titik Merah Pada Cell HTML Papan
+                    const cellEl = document.getElementById(`cell-${nomorPetakTerpilih}`);
+                    if(cellEl) {
+                        const dot = document.createElement('div');
+                        dot.className = "quiz-dot";
+                        cellEl.appendChild(dot);
+                    }
+                }
+            });
         }
 
         function executeStartGame() {
@@ -653,7 +704,7 @@
         }
 
         // ==========================================
-        // DIALOG PROMPT POPUP MODERN SETUP
+        // DIALOG MODERN PROMPT POPUP DIALOGS
         // ==========================================
         function openPromptDialog(title, placeholder, callback) {
             document.getElementById('prompt-title').innerText = title;
@@ -674,7 +725,7 @@
         }
 
         // ==========================================
-        // WORKFLOW GURU: PANEL CORE UTAMA CONTROLLER
+        // WORKFLOW PANEL SETTINGS GURU
         // ==========================================
         function openSettingsAuth() {
             document.getElementById('auth-modal').classList.remove('hidden');
@@ -709,7 +760,6 @@
                 const selectedAttr = (k === selectedKelasAdmin) ? 'selected' : '';
                 select.innerHTML += `<option value="${k}" ${selectedAttr}>${k}</option>`;
             });
-
             renderAdminMapelDropdownOptions();
         }
 
@@ -773,8 +823,8 @@
             const listMapel = [...new Set(filtered.map(item => item.mapel.toUpperCase()))].sort();
 
             listMapel.forEach(m => {
-                const selectedAttr = (m === selectedMapelAdmin) ? 'selected' : '';
-                select.innerHTML += `<option value="${m}" ${selectedAttr}>${m}</option>`;
+                const textAttr = (m === selectedMapelAdmin) ? 'selected' : '';
+                select.innerHTML += `<option value="${m}" ${textAttr}>${m}</option>`;
             });
         }
 
@@ -843,7 +893,6 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center border-b pb-1 border-slate-200">
                         <span class="text-xs font-black text-slate-600 uppercase">Pertanyaan #${index + 1}</span>
-                        <!-- Tombol Hapus Butir Soal UI Soft -->
                         <button onclick="hapusBarisSoal(${index})" class="text-red-500 font-black text-[10px] bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-md transition-colors shadow-sm">✕ Hapus</button>
                     </div>
                     <div>
@@ -977,6 +1026,7 @@
                 for (let col = 0; col < 10; col++) {
                     let num = (row % 2 === 0) ? (row * 10) + col + 1 : (row * 10) + (9 - col) + 1; 
                     const cell = document.createElement('div');
+                    cell.id = `cell-${num}`; // Berikan id spesifik per nomor petak untuk injeksi dot kuis
                     cell.className = `cell ${cellColors[num % cellColors.length]}`;
                     cell.innerHTML = `<span class="cell-number">${num}</span>`;
                     grid.appendChild(cell);
@@ -1056,7 +1106,7 @@
             }
         }
 
-        function updatePlayerPosition(pIndex, num) {
+        UX: function updatePlayerPosition(pIndex, num) {
             const pos = getCoordinates(num);
             const token = document.getElementById(`player-token-${pIndex}`);
             token.classList.remove('jumping'); void token.offsetWidth; token.classList.add('jumping');
@@ -1122,32 +1172,37 @@
                         let cPos = playerPositions[currentPlayer]; let tPos = cPos + result;
                         if (tPos > 100) { setTimeout(nextTurn, 1000); return; }
                         
-                        moveTokenStepByStep(currentPlayer, cPos, tPos, 400, () => bukaKuisSiswa(tPos));
+                        moveTokenStepByStep(currentPlayer, cPos, tPos, 400, () => pemicuEvaluasiPetakLangkah(tPos));
                     }, 800);
                 }, 1200);
             }, 50);
         }
 
-        function bukaKuisSiswa(targetPos) {
-            if(filteredSoalGame.length === 0) { checkSnakesLadders(currentPlayer, targetPos); return; }
-            const idx = Math.floor(Math.random() * filteredSoalGame.length);
-            soalAktif = filteredSoalGame[idx]; soalAktif.targetPos = targetPos;
+        // KONTROLLER EVALUASI LANGKAH BARU BERDASARKAN DISTRIBUSI PETAK KUIS MAP
+        function pemicuEvaluasiPetakLangkah(targetPos) {
+            // Cek apakah di nomor petak tujuan pemain mendarat ada tantangan kuis yang tersemat
+            if(petakKuisMap[targetPos]) {
+                soalAktif = petakKuisMap[targetPos];
+                soalAktif.targetPos = targetPos;
 
-            document.getElementById('quiz-identity').innerText = `${soalAktif.kelas} - ${soalAktif.mapel}`;
-            document.getElementById('quiz-player-tag').innerText = `Tantangan untuk ${playerNames[currentPlayer]}`;
-            document.getElementById('quiz-text').innerText = soalAktif.soal;
-            document.getElementById('text-ans-a').innerText = soalAktif.a;
-            document.getElementById('text-ans-b').innerText = soalAktif.b;
-            document.getElementById('text-ans-c').innerText = soalAktif.c;
-            document.getElementById('text-ans-d').innerText = soalAktif.d;
+                document.getElementById('quiz-player-tag').innerText = `Tantangan untuk ${playerNames[currentPlayer]}`;
+                document.getElementById('quiz-text').innerText = soalAktif.soal;
+                document.getElementById('text-ans-a').innerText = soalAktif.a;
+                document.getElementById('text-ans-b').innerText = soalAktif.b;
+                document.getElementById('text-ans-c').innerText = soalAktif.c;
+                document.getElementById('text-ans-d').innerText = soalAktif.d;
 
-            document.getElementById('quiz-feedback').classList.add('hidden');
-            ['a','b','c','d'].forEach(ch => {
-                const b = document.getElementById(`btn-ans-${ch}`);
-                b.className = "w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-left rounded-2xl border-2 border-slate-200 font-bold transition-all flex gap-3 text-sm sm:text-base";
-                b.disabled = false;
-            });
-            document.getElementById('quiz-modal').classList.remove('hidden');
+                document.getElementById('quiz-feedback').classList.add('hidden');
+                ['a','b','c','d'].forEach(ch => {
+                    const b = document.getElementById(`btn-ans-${ch}`);
+                    b.className = "w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-left rounded-2xl border-2 border-slate-200 font-bold transition-all flex gap-3 text-sm sm:text-base";
+                    b.disabled = false;
+                });
+                document.getElementById('quiz-modal').classList.remove('hidden');
+            } else {
+                // Jika petak kosong polosan biasa, langsung jalankan evaluasi ular/tangga regular
+                checkSnakesLadders(currentPlayer, targetPos);
+            }
         }
 
         function checkJawabanSiswa(jawaban) {
@@ -1205,6 +1260,7 @@
                 mc.classList.add('hidden'); document.getElementById('game-identity-bar').classList.add('hidden');
                 document.getElementById('startup-modal').classList.remove('hidden');
                 selectedKelasPlay = ""; selectedMapelPlay = "";
+                petakKuisMap = {};
                 muatMasterDataFirebase();
             }, 300);
         }
