@@ -6,10 +6,9 @@
     <title>Ular Tangga Edukasi! 🐍🪜</title>
     
     <link rel="icon" href="../aset/Logo.png" type="image/png">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,7 +17,7 @@
                 extend: {
                     fontFamily: { sans: ['Nunito', 'sans-serif'] },
                     colors: {
-                        brand: { 50: '#ecfdf5', 500: '#10b981', 600: '#059669', 900: '#064e3b' }
+                        brand: { 50: '#f0fdf4', 500: '#22c55e', 600: '#16a34a', 900: '#14532d' }
                     }
                 }
             }
@@ -26,16 +25,9 @@
     </script>
 
     <style>
-        .animated-bg {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #f0fdfa 100%);
-            background-size: 200% 200%;
-            animation: gradientMove 15s ease infinite;
-        }
-
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Menggunakan warna statis ringan agar performa UI/UX lancar */
+        .light-bg {
+            background-color: #f0fdf4;
         }
 
         .board-wrapper {
@@ -59,7 +51,6 @@
             justify-content: center;
             font-weight: 900;
             border-radius: 6px;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
         }
 
         .cell-number {
@@ -67,22 +58,22 @@
             top: 2px;
             left: 4px;
             font-size: 0.6rem;
-            opacity: 0.7;
+            opacity: 0.6;
         }
 
         @media (min-width: 640px) {
-            .cell-number { font-size: 0.8rem; top: 4px; left: 6px; }
-            .cell { border-radius: 12px; }
+            .cell-number { font-size: 0.75rem; top: 4px; left: 6px; }
+            .cell { border-radius: 10px; }
         }
 
         .player-token {
             position: absolute;
-            width: 6vmin;
-            height: 6vmin;
-            max-width: 40px;
-            max-height: 40px;
+            width: 5.5vmin;
+            height: 5.5vmin;
+            max-width: 36px;
+            max-height: 36px;
             transform: translate(-50%, -80%); 
-            transition: top 0.4s ease-in-out, left 0.4s ease-in-out;
+            transition: top 0.3s ease-in-out, left 0.3s ease-in-out;
             z-index: 50;
             display: flex;
             flex-direction: column;
@@ -91,74 +82,47 @@
         }
 
         .token-emoji {
-            font-size: 4vmin;
+            font-size: 3.8vmin;
             line-height: 1;
             position: relative;
             z-index: 2;
-            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.4)); 
-            margin-bottom: -10%; 
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+            margin-bottom: -10%;
         }
 
         @media (min-width: 640px) {
-            .token-emoji { font-size: 28px; }
+            .token-emoji { font-size: 26px; }
         }
 
         .token-base {
             width: 80%;
-            height: 30%;
+            height: 25%;
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.8);
-            box-shadow: 0 4px 5px rgba(0,0,0,0.5), inset 0 -2px 5px rgba(0,0,0,0.3);
+            border: 1.5px solid rgba(255,255,255,0.8);
             position: absolute;
             bottom: 0;
             z-index: 1;
         }
 
-        .base-0 { background: radial-gradient(ellipse at top, #60a5fa, #1e3a8a); } 
-        .base-1 { background: radial-gradient(ellipse at top, #f87171, #7f1d1d); } 
-        .base-2 { background: radial-gradient(ellipse at top, #34d399, #064e3b); } 
-        .base-3 { background: radial-gradient(ellipse at top, #fbbf24, #78350f); } 
+        .base-0 { background: #3b82f6; } 
+        .base-1 { background: #ef4444; } 
+        .base-2 { background: #10b981; } 
+        .base-3 { background: #f59e0b; } 
 
         @keyframes jump-arc {
-            0% { transform: translate(-50%, -80%) scale(1); z-index: 60; }
-            50% { transform: translate(-50%, -180%) scale(1.3); z-index: 60; }
-            100% { transform: translate(-50%, -80%) scale(1); z-index: 60; }
+            0% { transform: translate(-50%, -80%) scale(1); }
+            50% { transform: translate(-50%, -140%) scale(1.2); }
+            100% { transform: translate(-50%, -80%) scale(1); }
         }
         .jumping {
-            animation: jump-arc 0.4s ease-in-out;
+            animation: jump-arc 0.3s ease-in-out;
             z-index: 60 !important;
-        }
-
-        .toy-btn {
-            transition: all 0.1s;
-        }
-        .toy-btn:active {
-            transform: translateY(4px);
-            border-bottom-width: 0px !important;
-            margin-top: 4px;
-        }
-        .toy-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: translateY(4px);
-            border-bottom-width: 0px !important;
-            margin-top: 4px;
-        }
-
-        .card-active {
-            transform: scale(1.05);
-            opacity: 1 !important;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        }
-        .card-inactive {
-            transform: scale(0.95);
-            opacity: 0.6;
         }
 
         .perspective-1000 { perspective: 1000px; }
         .dice-cube {
-            width: 100px; 
-            height: 100px;
+            width: 80px; 
+            height: 80px;
             position: relative;
             transform-style: preserve-3d;
         }
@@ -167,66 +131,55 @@
             width: 100%; 
             height: 100%;
             background: #ffffff;
-            border: 3px solid #cbd5e1;
-            border-radius: 16px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            padding: 12px;
+            padding: 10px;
             backface-visibility: hidden;
             justify-items: center;
             align-items: center;
         }
         .pip {
-            width: 18px; 
-            height: 18px;
+            width: 14px; 
+            height: 14px;
             background: #334155;
             border-radius: 50%;
-            box-shadow: inset 0 3px 5px rgba(0,0,0,0.3);
         }
-        .face-1 { transform: translateZ(50px); }
-        .face-1 .pip { grid-area: 2 / 2 / 3 / 3; background: #ef4444; width: 24px; height: 24px;}
-        .face-2 { transform: rotateY(90deg) translateZ(50px); }
+        .face-1 { transform: translateZ(40px); }
+        .face-1 .pip { grid-area: 2 / 2 / 3 / 3; background: #ef4444; width: 18px; height: 18px;}
+        .face-2 { transform: rotateY(90deg) translateZ(40px); }
         .face-2 .pip:nth-child(1) { grid-area: 1 / 3 / 2 / 4; }
         .face-2 .pip:nth-child(2) { grid-area: 3 / 1 / 4 / 2; }
-        .face-3 { transform: rotateX(90deg) translateZ(50px); }
+        .face-3 { transform: rotateX(90deg) translateZ(40px); }
         .face-3 .pip:nth-child(1) { grid-area: 1 / 3 / 2 / 4; }
         .face-3 .pip:nth-child(2) { grid-area: 2 / 2 / 3 / 3; }
         .face-3 .pip:nth-child(3) { grid-area: 3 / 1 / 4 / 2; }
-        .face-4 { transform: rotateX(-90deg) translateZ(50px); }
+        .face-4 { transform: rotateX(-90deg) translateZ(40px); }
         .face-4 .pip:nth-child(1) { grid-area: 1 / 1 / 2 / 2; }
         .face-4 .pip:nth-child(2) { grid-area: 1 / 3 / 2 / 4; }
         .face-4 .pip:nth-child(3) { grid-area: 3 / 1 / 4 / 2; }
         .face-4 .pip:nth-child(4) { grid-area: 3 / 3 / 4 / 4; }
-        .face-5 { transform: rotateY(-90deg) translateZ(50px); }
+        .face-5 { transform: rotateY(-90deg) translateZ(40px); }
         .face-5 .pip:nth-child(1) { grid-area: 1 / 1 / 2 / 2; }
         .face-5 .pip:nth-child(2) { grid-area: 1 / 3 / 2 / 4; }
         .face-5 .pip:nth-child(3) { grid-area: 2 / 2 / 3 / 3; }
         .face-5 .pip:nth-child(4) { grid-area: 3 / 1 / 4 / 2; }
         .face-5 .pip:nth-child(5) { grid-area: 3 / 3 / 4 / 4; }
-        .face-6 { transform: rotateY(180deg) translateZ(50px); }
+        .face-6 { transform: rotateY(180deg) translateZ(40px); }
         .face-6 .pip:nth-child(1) { grid-area: 1 / 1 / 2 / 2; }
         .face-6 .pip:nth-child(2) { grid-area: 2 / 1 / 3 / 2; }
         .face-6 .pip:nth-child(3) { grid-area: 3 / 1 / 4 / 2; }
         .face-6 .pip:nth-child(4) { grid-area: 1 / 3 / 2 / 4; }
         .face-6 .pip:nth-child(5) { grid-area: 2 / 3 / 3 / 4; }
         .face-6 .pip:nth-child(6) { grid-area: 3 / 3 / 4 / 4; }
-
-        #dice-shadow {
-            width: 80px; height: 30px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 50%;
-            position: absolute;
-            bottom: -30px;
-            filter: blur(8px);
-        }
     </style>
 
-    <!-- Firebase SDK Setup -->
+    <!-- Firebase SDK Config -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBQpXLMAYgAfqNzlc_mXpcz86sglGYpHxY",
@@ -245,236 +198,253 @@
         window.fsCollection = collection;
         window.fsAddDoc = addDoc;
         window.fsGetDocs = getDocs;
+        window.fsDoc = doc;
+        window.fsUpdateDoc = updateDoc;
+        window.fsDeleteDoc = deleteDoc;
     </script>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased selection:bg-brand-200 relative flex flex-col justify-center items-center">
+<body class="light-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-center items-center">
 
-    <!-- INFOBAR IDENTITAS PERMAINAN AKTIF (ATAS TENGAH) -->
-    <div id="game-identity-bar" class="absolute top-4 left-4 z-[90] bg-white/80 backdrop-blur-md border border-white px-4 py-2 rounded-2xl shadow-sm font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2">
+    <!-- BAR INFORMASI IDENTITAS PERMAINAN AKTIF -->
+    <div id="game-identity-bar" class="absolute top-4 left-4 z-[90] bg-white border border-slate-200 px-3 py-1.5 rounded-xl shadow-sm font-bold text-xs sm:text-sm text-green-700 uppercase hidden flex items-center gap-2">
         <span>🏫</span> <span id="bar-kelas">Kelas</span> | <span id="bar-mapel">Mapel</span>
     </div>
 
-    <!-- MODAL 1: STARTUP FORMULIR PERMAINAN -->
-    <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-md w-[90%] transform transition-all border-4 border-emerald-100 relative">
+    <!-- MODAL 1: STARTUP PERMAINAN -->
+    <div id="startup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-xl max-w-md w-[90%] border border-slate-100 relative">
             
-            <button onclick="openSettingsAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors" title="Pengaturan Guru">
+            <button onclick="openSettingsAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600" title="Pengaturan Guru">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             </button>
 
-            <div class="text-center">
-                <div class="text-5xl mb-2 drop-shadow-md">🐍🪜</div>
-                <h2 class="text-3xl font-black text-emerald-600 mb-1">Ular Tangga Edukasi</h2>
-                <p class="text-slate-400 font-bold text-xs mb-6">Lengkapi identitas ruang bermain Anda</p>
+            <div class="text-center mb-5">
+                <div class="text-4xl mb-1">🐍🪜</div>
+                <h2 class="text-2xl font-black text-green-600">Ruang Bermain</h2>
             </div>
             
             <div class="space-y-4 mb-6">
-                <!-- Pilihan Jumlah Pemain -->
                 <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1.5 uppercase tracking-wide">1. Tentukan Jumlah Pemain</label>
-                    <div class="grid grid-cols-4 gap-2" id="player-select-group">
-                        <button type="button" onclick="setPlayerCount(1)" id="btn-pcount-1" class="py-2.5 bg-brand-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-center shadow-sm">1 🐰</button>
-                        <button type="button" onclick="setPlayerCount(2)" id="btn-pcount-2" class="py-2.5 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-black rounded-xl text-center">2 🐐</button>
-                        <button type="button" onclick="setPlayerCount(3)" id="btn-pcount-3" class="py-2.5 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-black rounded-xl text-center">3 🐸</button>
-                        <button type="button" onclick="setPlayerCount(4)" id="btn-pcount-4" class="py-2.5 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-black rounded-xl text-center">4 🐱</button>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">1. Jumlah Pemain</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="setPlayerCount(1)" id="btn-pcount-1" class="py-2 bg-green-50 border border-green-500 text-green-600 font-bold rounded-xl text-center">1 🐰</button>
+                        <button type="button" onclick="setPlayerCount(2)" id="btn-pcount-2" class="py-2 bg-slate-50 border border-slate-200 text-slate-600 font-bold rounded-xl text-center">2 🐐</button>
+                        <button type="button" onclick="setPlayerCount(3)" id="btn-pcount-3" class="py-2 bg-slate-50 border border-slate-200 text-slate-600 font-bold rounded-xl text-center">3 🐸</button>
+                        <button type="button" onclick="setPlayerCount(4)" id="btn-pcount-4" class="py-2 bg-slate-50 border border-slate-200 text-slate-600 font-bold rounded-xl text-center">4 🐱</button>
                     </div>
                 </div>
 
-                <!-- Input Identifikasi Kelas -->
                 <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wide">2. Nama Kelas</label>
-                    <input type="text" id="play-kelas" class="w-full p-3 border-2 border-slate-200 rounded-xl font-bold focus:border-brand-500 outline-none placeholder:text-slate-300" placeholder="Contoh: Kelas 5B">
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">2. Pilih Kelas Yang Tersedia</label>
+                    <select id="play-kelas" onchange="filterMapelDropdown()" class="w-full p-2.5 border border-slate-200 rounded-xl font-bold bg-white outline-none">
+                        <option value="">-- Memuat / Pilih Kelas --</option>
+                    </select>
                 </div>
 
-                <!-- Input Mata Pelajaran -->
                 <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wide">3. Mata Pelajaran</label>
-                    <input type="text" id="play-mapel" class="w-full p-3 border-2 border-slate-200 rounded-xl font-bold focus:border-brand-500 outline-none placeholder:text-slate-300" placeholder="Contoh: Matematika">
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">3. Pilih Mata Pelajaran</label>
+                    <select id="play-mapel" class="w-full p-2.5 border border-slate-200 rounded-xl font-bold bg-white outline-none">
+                        <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
+                    </select>
                 </div>
             </div>
 
-            <button onclick="validateAndStartGame()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl text-lg transition-all shadow-[0_4px_0_#059669] active:translate-y-1 active:shadow-none flex items-center justify-center gap-2">
-                Mulai Petualangan! 🚀
+            <button onclick="validateAndStartGame()" class="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all shadow-md">
+                Mulai Bermain! 🚀
             </button>
         </div>
     </div>
 
     <!-- MODAL 2: AUTH PASSWORD -->
-    <div id="auth-modal" class="fixed inset-0 z-[10001] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
-        <div class="bg-white p-6 rounded-3xl shadow-2xl max-w-sm w-[90%] text-center border-4 border-slate-100">
-            <h3 class="text-2xl font-black text-slate-700 mb-2">Keamanan Guru</h3>
-            <p class="text-xs text-slate-400 font-bold mb-4">Masukkan password admin untuk mengelola database bank soal.</p>
-            <input type="password" id="admin-pass" class="w-full p-3 border-2 border-slate-200 rounded-xl mb-4 text-center font-bold tracking-widest focus:border-brand-500 outline-none" placeholder="••••••••">
+    <div id="auth-modal" class="fixed inset-0 z-[10001] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
+        <div class="bg-white p-5 rounded-2xl shadow-xl max-w-sm w-[90%] text-center border border-slate-100">
+            <h3 class="text-xl font-bold text-slate-700 mb-1">Keamanan Guru</h3>
+            <p class="text-xs text-slate-400 font-bold mb-3">Masukkan password admin untuk mengelola bank soal.</p>
+            <input type="password" id="admin-pass" class="w-full p-2.5 border border-slate-200 rounded-xl mb-3 text-center font-bold tracking-widest outline-none" placeholder="••••••••">
             <div class="flex gap-2">
-                <button onclick="closeAuthModal()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl text-sm transition-all">Batal</button>
-                <button onclick="verifyAdminPass()" class="w-1/2 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl text-sm transition-all shadow-md">Masuk</button>
+                <button onclick="closeAuthModal()" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 font-bold rounded-xl text-xs">Batal</button>
+                <button onclick="verifyAdminPass()" class="w-1/2 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs shadow-sm">Masuk</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 3: INPUT SOAL GURU (PANEL ADMIN) -->
-    <div id="admin-modal" class="fixed inset-0 z-[10002] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
-        <div class="bg-white p-6 rounded-[2rem] shadow-2xl max-w-lg w-[90%] max-h-[90vh] overflow-y-auto border-4 border-brand-100">
-            <h2 class="text-2xl font-black text-brand-600 mb-1 flex items-center gap-2 justify-center">⚙️ Input Bank Soal</h2>
-            <p class="text-center text-xs text-slate-400 font-bold mb-6">Data disimpan langsung ke Cloud Firebase Firestore (Koleksi: ular_tangga)</p>
+    <!-- MODAL 3: MANAGEMENT PANEL CRUD GURU (DENGAN SOAL FILTERED & LIST EDIT/DELETE) -->
+    <div id="admin-modal" class="fixed inset-0 z-[10002] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
+        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-xl max-w-4xl w-[95%] max-h-[92vh] overflow-y-auto border border-green-100 flex flex-col md:flex-row gap-5">
             
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-3">
+            <!-- SEKSI KIRI: FORM CRUD (TAMBAH / EDIT) -->
+            <div class="w-full md:w-5/12 space-y-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100">
+                <h3 id="form-crud-title" class="text-base font-black text-green-700 uppercase tracking-wide border-b pb-1">➕ Tambah Soal Baru</h3>
+                <input type="hidden" id="crud-id-soal"> 
+
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wider">Identifikasi Kelas</label>
-                        <input type="text" id="input-kelas" class="w-full p-2.5 border-2 border-slate-200 rounded-xl font-bold focus:border-brand-500 outline-none" placeholder="Contoh: Kelas 5B">
+                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">KELAS</label>
+                        <input type="text" id="input-kelas" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-bold uppercase outline-none" placeholder="MISAL: KELAS 5">
                     </div>
                     <div>
-                        <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wider">Mata Pelajaran</label>
-                        <input type="text" id="input-mapel" class="w-full p-2.5 border-2 border-slate-200 rounded-xl font-bold focus:border-brand-500 outline-none" placeholder="Contoh: Matematika">
+                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">MAPEL</label>
+                        <input type="text" id="input-mapel" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-bold uppercase outline-none" placeholder="MISAL: IPA">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wider">Pertanyaan / Soal</label>
-                    <textarea id="input-soal" rows="3" class="w-full p-2.5 border-2 border-slate-200 rounded-xl font-medium focus:border-brand-500 outline-none" placeholder="Tuliskan butir soal di sini..."></textarea>
+                    <label class="block text-[10px] font-bold text-slate-500 mb-0.5">BUTIR PERTANYAAN</label>
+                    <textarea id="input-soal" rows="2" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-medium outline-none" placeholder="Isi soal..."></textarea>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                        <label class="block text-xs font-black text-slate-500 mb-1">Pilihan A</label>
-                        <input type="text" id="input-a" class="w-full p-2 border-2 border-slate-200 rounded-xl focus:border-brand-500 outline-none">
+                        <label class="block text-[10px] font-bold text-slate-400">Pilihan A</label>
+                        <input type="text" id="input-a" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-black text-slate-500 mb-1">Pilihan B</label>
-                        <input type="text" id="input-b" class="w-full p-2 border-2 border-slate-200 rounded-xl focus:border-brand-500 outline-none">
+                        <label class="block text-[10px] font-bold text-slate-400">Pilihan B</label>
+                        <input type="text" id="input-b" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-black text-slate-500 mb-1">Pilihan C</label>
-                        <input type="text" id="input-c" class="w-full p-2 border-2 border-slate-200 rounded-xl focus:border-brand-500 outline-none">
+                        <label class="block text-[10px] font-bold text-slate-400">Pilihan C</label>
+                        <input type="text" id="input-c" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-black text-slate-500 mb-1">Pilihan D</label>
-                        <input type="text" id="input-d" class="w-full p-2 border-2 border-slate-200 rounded-xl focus:border-brand-500 outline-none">
+                        <label class="block text-[10px] font-bold text-slate-400">Pilihan D</label>
+                        <input type="text" id="input-d" class="w-full p-1.5 border border-slate-200 rounded-lg outline-none">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-black text-slate-500 mb-1 uppercase tracking-wider">Kunci Jawaban Benar</label>
-                    <select id="input-kunci" class="w-full p-2.5 border-2 border-slate-200 rounded-xl font-bold text-brand-600 focus:border-brand-500 outline-none bg-brand-50/50">
-                        <option value="A">Pilihan A</option>
-                        <option value="B">Pilihan B</option>
-                        <option value="C">Pilihan C</option>
-                        <option value="D">Pilihan D</option>
+                    <label class="block text-[10px] font-bold text-slate-500 mb-0.5">KUNCI JAWABAN</label>
+                    <select id="input-kunci" class="w-full p-2 border border-slate-200 rounded-lg text-xs font-bold outline-none bg-white">
+                        <option value="A">Opsi A</option>
+                        <option value="B">Opsi B</option>
+                        <option value="C">Opsi C</option>
+                        <option value="D">Opsi D</option>
                     </select>
                 </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="resetCrudForm()" class="w-1/3 py-2 bg-slate-200 hover:bg-slate-300 font-bold rounded-lg text-xs transition-colors">Reset</button>
+                    <button type="button" onclick="prosesSimpanCRUD()" class="w-2/3 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg text-xs shadow-sm transition-colors">Simpan Data</button>
+                </div>
+                <button type="button" onclick="closeAdminModal()" class="w-full py-1.5 border border-slate-300 text-slate-500 font-bold rounded-lg text-xs mt-1 hover:bg-slate-100 transition-colors">Keluar Panel Admin</button>
             </div>
 
-            <div class="flex gap-3 mt-6">
-                <button onclick="closeAdminModal()" class="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl transition-all">Keluar</button>
-                <button onclick="simpanSoalFirebase()" class="w-2/3 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl shadow-md transition-all">Simpan Soal Ke Cloud</button>
+            <!-- SEKSI KANAN: TABEL READ & DELETE (READ DATA) -->
+            <div class="w-full md:w-7/12 flex flex-col">
+                <div class="flex justify-between items-center border-b pb-2 mb-2">
+                    <h3 class="text-base font-black text-slate-700">📋 Daftar Bank Soal</h3>
+                    <div class="flex gap-1">
+                        <input type="text" id="filter-tabel-kelas" oninput="renderTabelAdmin()" placeholder="Filter Kelas" class="p-1 border text-xs rounded-lg w-24 outline-none">
+                        <input type="text" id="filter-tabel-mapel" oninput="renderTabelAdmin()" placeholder="Filter Mapel" class="p-1 border text-xs rounded-lg w-24 outline-none">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto flex-1 max-h-[50vh] md:max-h-[60vh] border border-slate-200 rounded-xl">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 sticky top-0 font-bold border-b border-slate-200">
+                                <th class="p-2">Identitas</th>
+                                <th class="p-2">Pertanyaan</th>
+                                <th class="p-2 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-admin-crud" class="divide-y divide-slate-100 bg-white">
+                            <!-- Diisi via Engine Javascript -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 4: KUIS SOAL UNTUK SISWA SAAT BERMAIN -->
-    <div id="quiz-modal" class="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/70 backdrop-blur-md hidden">
-        <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl max-w-lg w-[90%] border-4 border-blue-400 relative animate-[bounce_0.5s_ease-in-out_1]">
-            <div class="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-blue-400 text-white font-black px-6 py-1.5 rounded-full shadow-md text-xs tracking-widest uppercase">
-                Uji Kompetensi (<span id="quiz-identity">Kelas - Mapel</span>)
+    <!-- MODAL 4: TAMPILAN KUIS EVALUASI SISWA -->
+    <div id="quiz-modal" class="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden">
+        <div class="bg-white p-6 rounded-3xl shadow-xl max-w-md w-[90%] border border-slate-100 text-center">
+            <div class="bg-green-50 border border-green-200 text-green-700 text-[10px] font-black px-3 py-1 rounded-full inline-block mx-auto uppercase mb-3" id="quiz-identity">
+                Kelas - Mapel
             </div>
             
-            <div class="text-center mt-2 mb-6">
-                <span id="quiz-player-tag" class="text-sm font-black px-3 py-1 bg-slate-100 rounded-lg text-slate-600">Giliran Pemain</span>
-                <p id="quiz-text" class="text-lg font-bold text-slate-800 mt-4 leading-relaxed">Pertanyaan kuis sedang dimuat...</p>
+            <div class="mb-4">
+                <span id="quiz-player-tag" class="text-xs font-bold px-2.5 py-1 bg-slate-100 rounded-md text-slate-500">Giliran Pemain</span>
+                <p id="quiz-text" class="text-base font-bold text-slate-800 mt-3 leading-relaxed">Pertanyaan kuis...</p>
             </div>
 
-            <div class="flex flex-col gap-3">
-                <button onclick="checkJawabanSiswa('A')" id="btn-ans-a" class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-left rounded-2xl border-2 border-slate-200 font-bold transition-all flex gap-3 text-sm sm:text-base"><span class="text-blue-500 font-black">A.</span> <span id="text-ans-a">Pilihan A</span></button>
-                <button onclick="checkJawabanSiswa('B')" id="btn-ans-b" class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-left rounded-2xl border-2 border-slate-200 font-bold transition-all flex gap-3 text-sm sm:text-base"><span class="text-blue-500 font-black">B.</span> <span id="text-ans-b">Pilihan B</span></button>
-                <button onclick="checkJawabanSiswa('C')" id="btn-ans-c" class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-left rounded-2xl border-2 border-slate-200 font-bold transition-all flex gap-3 text-sm sm:text-base"><span class="text-blue-500 font-black">C.</span> <span id="text-ans-c">Pilihan C</span></button>
-                <button onclick="checkJawabanSiswa('D')" id="btn-ans-d" class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-left rounded-2xl border-2 border-slate-200 font-bold transition-all flex gap-3 text-sm sm:text-base"><span class="text-blue-500 font-black">D.</span> <span id="text-ans-d">Pilihan D</span></button>
+            <div class="flex flex-col gap-2 text-sm">
+                <button onclick="checkJawabanSiswa('A')" id="btn-ans-a" class="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 text-left rounded-xl border border-slate-200 font-bold flex gap-2"><span class="text-green-600 font-black">A.</span> <span id="text-ans-a">Pilihan A</span></button>
+                <button onclick="checkJawabanSiswa('B')" id="btn-ans-b" class="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 text-left rounded-xl border border-slate-200 font-bold flex gap-2"><span class="text-green-600 font-black">B.</span> <span id="text-ans-b">Pilihan B</span></button>
+                <button onclick="checkJawabanSiswa('C')" id="btn-ans-c" class="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 text-left rounded-xl border border-slate-200 font-bold flex gap-2"><span class="text-green-600 font-black">C.</span> <span id="text-ans-c">Pilihan C</span></button>
+                <button onclick="checkJawabanSiswa('D')" id="btn-ans-d" class="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 text-left rounded-xl border border-slate-200 font-bold flex gap-2"><span class="text-green-600 font-black">D.</span> <span id="text-ans-d">Pilihan D</span></button>
             </div>
-            
-            <div id="quiz-feedback" class="mt-4 text-center font-black text-sm hidden"></div>
+            <div id="quiz-feedback" class="mt-3 font-bold text-xs hidden"></div>
         </div>
     </div>
 
-    <!-- HUD MENU UTAMA PERMAINAN -->
-    <div class="absolute top-4 right-4 z-[100] flex gap-2">
-        <button onclick="resetGame()" class="bg-white/80 backdrop-blur-md border border-white/60 text-rose-500 p-2 sm:p-2.5 rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all focus:outline-none flex justify-center items-center" title="Ulang Permainan">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+    <!-- HUD RE-START PERMAINAN -->
+    <div class="absolute top-4 right-4 z-[100]">
+        <button onclick="resetGame()" class="bg-white border border-slate-200 text-red-500 p-2 rounded-xl shadow-sm hover:bg-slate-50" title="Ulang Permainan">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
         </button>
     </div>
 
-    <!-- KARTU POSISI SUDUT -->
-    <div id="card-p0" class="absolute top-20 left-4 sm:top-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 transition-all duration-300 hidden origin-top-left">
-        <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-xl shadow-inner">🐰</div>
-        <div class="pr-2">
-            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p0">1</div>
+    <!-- HUD CARD POSISI PION SISWA -->
+    <div id="card-p0" class="absolute top-20 left-4 z-[90] bg-white border border-slate-200 p-2 rounded-xl shadow-sm flex items-center gap-2 hidden origin-top-left">
+        <div class="w-8 h-8 rounded-full bg-blue-50 border border-blue-400 flex items-center justify-center font-bold text-base shadow-inner">🐰</div>
+        <div>
+            <div class="text-[8px] font-bold text-slate-400 uppercase leading-none mb-0.5">Posisi</div>
+            <div class="text-base font-black text-slate-700 leading-none" id="pos-p0">1</div>
         </div>
     </div>
     
-    <div id="card-p1" class="absolute top-20 right-4 sm:top-24 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-red-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-top-right">
-        <div class="w-10 h-10 rounded-full bg-red-100 border border-red-400 flex items-center justify-center font-black text-xl shadow-inner">🐐</div>
-        <div class="pl-2 text-right">
-            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p1">1</div>
+    <div id="card-p1" class="absolute top-20 right-4 z-[90] bg-white border border-slate-200 p-2 rounded-xl shadow-sm flex flex-row-reverse items-center gap-2 hidden origin-top-right">
+        <div class="w-8 h-8 rounded-full bg-red-50 border border-red-400 flex items-center justify-center font-bold text-base shadow-inner">🐐</div>
+        <div class="text-right">
+            <div class="text-[8px] font-bold text-slate-400 uppercase leading-none mb-0.5">Posisi</div>
+            <div class="text-base font-black text-slate-700 leading-none" id="pos-p1">1</div>
         </div>
     </div>
 
-    <div id="card-p2" class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
-        <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-xl shadow-inner">🐸</div>
-        <div class="pr-2">
-            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p2">1</div>
+    <div id="card-p2" class="absolute bottom-4 left-4 z-[90] bg-white border border-slate-200 p-2 rounded-xl shadow-sm flex items-center gap-2 hidden origin-bottom-left">
+        <div class="w-8 h-8 rounded-full bg-green-50 border border-green-400 flex items-center justify-center font-bold text-base shadow-inner">🐸</div>
+        <div>
+            <div class="text-[8px] font-bold text-slate-400 uppercase leading-none mb-0.5">Posisi</div>
+            <div class="text-base font-black text-slate-700 leading-none" id="pos-p2">1</div>
         </div>
     </div>
 
-    <div id="card-p3" class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 transition-all duration-300 hidden origin-bottom-right">
-        <div class="w-10 h-10 rounded-full bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-xl shadow-inner">🐱</div>
-        <div class="pl-2 text-right">
-            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p3">1</div>
+    <div id="card-p3" class="absolute bottom-4 right-4 z-[90] bg-white border border-slate-200 p-2 rounded-xl shadow-sm flex flex-row-reverse items-center gap-2 hidden origin-bottom-right">
+        <div class="w-8 h-8 rounded-full bg-yellow-50 border border-yellow-400 flex items-center justify-center font-bold text-base shadow-inner">🐱</div>
+        <div class="text-right">
+            <div class="text-[8px] font-bold text-slate-400 uppercase leading-none mb-0.5">Posisi</div>
+            <div class="text-base font-black text-slate-700 leading-none" id="pos-p3">1</div>
         </div>
     </div>
 
-    <!-- WRAPPER PAPAN & DADU -->
-    <div class="w-full h-full flex justify-center items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
+    <!-- MAIN BOARD CONTAINER -->
+    <div class="w-full h-full flex justify-center items-center p-2 pt-16">
         <div class="board-wrapper">
             
-            <!-- KOCOK DADU WIDGET -->
-            <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 transition-transform w-[60px] sm:w-[80px]">
-                <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black transition-all">🎲</div>
-                <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[10px] sm:text-xs tracking-widest uppercase border border-brand-600">
+            <!-- CONTROLLER DADU -->
+            <div class="absolute bottom-0 right-[100%] mr-2 z-[100] flex flex-col items-center gap-2 bg-white border border-slate-200 p-1.5 rounded-xl shadow-sm w-[64px] sm:w-[76px]">
+                <div id="mini-dice-visual" class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-50 rounded-lg shadow-inner flex items-center justify-center text-2xl sm:text-3xl font-bold">🎲</div>
+                <button id="btn-roll" onclick="rollDice3D()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg py-1.5 text-[10px] tracking-wide uppercase shadow-sm active:translate-y-0.5 transition-all">
                     KOCOK
                 </button>
             </div>
 
-            <!-- KONTAINER PAPAN KOTAK GRID -->
-            <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
-                <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
-                    
+            <!-- RENDER GRID MAP -->
+            <div class="board-container bg-white p-1 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="w-full h-full bg-slate-100 rounded-xl overflow-hidden relative border border-slate-200">
                     <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-
                     <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 gap-px p-0.5 w-full h-full"></div>
-
+                    
                     <div id="tokens-container">
-                        <div id="player-token-0" class="player-token hidden">
-                            <div class="token-emoji">🐰</div>
-                            <div class="token-base base-0"></div>
-                        </div>
-                        <div id="player-token-1" class="player-token hidden">
-                            <div class="token-emoji">🐐</div>
-                            <div class="token-base base-1"></div>
-                        </div>
-                        <div id="player-token-2" class="player-token hidden">
-                            <div class="token-emoji">🐸</div>
-                            <div class="token-base base-2"></div>
-                        </div>
-                        <div id="player-token-3" class="player-token hidden">
-                            <div class="token-emoji">🐱</div>
-                            <div class="token-base base-3"></div>
-                        </div>
+                        <div id="player-token-0" class="player-token hidden"><div class="token-emoji">🐰</div><div class="token-base base-0"></div></div>
+                        <div id="player-token-1" class="player-token hidden"><div class="token-emoji">🐐</div><div class="token-base base-1"></div></div>
+                        <div id="player-token-2" class="player-token hidden"><div class="token-emoji">🐸</div><div class="token-base base-2"></div></div>
+                        <div id="player-token-3" class="player-token hidden"><div class="token-emoji">🐱</div><div class="token-base base-3"></div></div>
                     </div>
                 </div>
             </div>
@@ -482,10 +452,10 @@
         </div>
     </div>
 
-    <!-- OVERLAY ANIMASI DADU 3D -->
-    <div id="dice-3d-overlay" class="fixed inset-0 z-[1000] perspective-1000 pointer-events-none flex items-center justify-center opacity-0 hidden transition-opacity duration-300">
+    <!-- DICE 3D ENGINE VIEWPORT -->
+    <div id="dice-3d-overlay" class="fixed inset-0 z-[1000] perspective-1000 pointer-events-none flex items-center justify-center opacity-0 hidden transition-opacity duration-200">
         <div id="dice-wrapper" class="flex flex-col items-center">
-            <div id="dice-cube" class="dice-cube shadow-xl rounded-2xl">
+            <div id="dice-cube" class="dice-cube shadow-md rounded-xl">
                 <div class="dice-face face-1"><div class="pip"></div></div>
                 <div class="dice-face face-2"><div class="pip"></div><div class="pip"></div></div>
                 <div class="dice-face face-3"><div class="pip"></div><div class="pip"></div><div class="pip"></div></div>
@@ -493,34 +463,28 @@
                 <div class="dice-face face-5"><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div></div>
                 <div class="dice-face face-6"><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div></div>
             </div>
-            <div id="dice-shadow"></div>
         </div>
     </div>
 
-    <!-- MODAL PEMENANG -->
-    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex justify-center items-center">
-        <div class="bg-white/90 backdrop-blur-md p-8 rounded-[3rem] border-4 border-yellow-300 shadow-2xl text-center transform scale-0 transition-transform duration-500" id="win-modal">
-            <div class="text-7xl mb-4">🏆</div>
-            <h2 id="win-title" class="text-3xl sm:text-4xl font-black mb-2">SELAMAT!</h2>
-            <p id="win-desc" class="text-base sm:text-lg font-bold text-slate-600 mb-6">Kamu berhasil mencapai garis akhir (100).</p>
-            <button onclick="resetGame()" class="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-black rounded-xl border-2 border-yellow-600 shadow-md transition-all pointer-events-auto">
+    <!-- WIN MODAL -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[9999] hidden flex items-center justify-center bg-slate-900/40">
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl text-center transform scale-0 transition-transform duration-300 max-w-sm w-[90%]" id="win-modal">
+            <div class="text-6xl mb-3">🏆</div>
+            <h2 id="win-title" class="text-2xl font-black mb-1">SELAMAT!</h2>
+            <p id="win-desc" class="text-sm font-bold text-slate-500 mb-5">Kamu berhasil mencapai garis akhir (100).</p>
+            <button onclick="resetGame()" class="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-md pointer-events-auto">
                 Main Lagi!
             </button>
         </div>
     </div>
 
-    <!-- ENGINE JAVASCRIPT GAMEPLAY + SYSTEM INTEGRASI -->
+    <!-- APPLICATION SYSTEM ENGINE SCRIPT -->
     <script>
         const ladders = { 4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91 };
         const snakes = { 17: 7, 54: 34, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 99: 78 };
 
-        const cellColors = [
-            'bg-red-50 text-red-500', 'bg-blue-50 text-blue-500', 
-            'bg-emerald-50 text-emerald-500', 'bg-yellow-50 text-yellow-600', 
-            'bg-purple-50 text-purple-500', 'bg-pink-50 text-pink-500'
-        ];
+        const cellColors = ['bg-red-50 text-red-400', 'bg-blue-50 text-blue-400', 'bg-emerald-50 text-emerald-400', 'bg-yellow-50 text-yellow-500', 'bg-purple-50 text-purple-400', 'bg-pink-50 text-pink-400'];
 
-        // State Inisialisasi Default
         let tempPlayerCount = 1; 
         let numPlayers = 1;
         let currentPlayer = 0;
@@ -531,95 +495,118 @@
         let activeMapel = "";
 
         const playerNames = ['🐰 Kelinci', '🐐 Kambing', '🐸 Katak', '🐱 Kucing'];
-        const playerColorClasses = ['text-blue-600', 'text-red-600', 'text-emerald-600', 'text-yellow-600'];
-        const playerRingClasses = ['ring-blue-400', 'ring-red-400', 'ring-emerald-400', 'ring-yellow-400'];
+        const playerColorClasses = ['text-blue-500', 'text-red-500', 'text-emerald-500', 'text-yellow-500'];
+        const playerRingClasses = ['ring-blue-300', 'ring-red-300', 'ring-emerald-300', 'ring-yellow-300'];
 
-        const posOffsets = [
-            { dx: -2, dy: -2 }, { dx: 2, dy: -2 },  
-            { dx: -2, dy: 2 }, { dx: 2, dy: 2 }    
-        ];
+        const posOffsets = [{ dx: -2, dy: -2 }, { dx: 2, dy: -2 }, { dx: -2, dy: 2 }, { dx: 2, dy: 2 }];
 
-        let bankSoal = [];
-        let filteredSoal = [];
+        let bankSoalGlobal = []; // Menyimpan master seluruh data dari Firebase
+        let filteredSoalGame = []; // Soal khusus yang dimainkan
         let soalAktif = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             buildBoard();
             drawSnakesAndLadders();
+            inisialisasiDataAwalApp();
         });
 
         // ==========================================
-        // SISTEM SELEKSI INTERFACES PADA LAYAR UTAMA
+        // DYNAMIC DROPDOWN & CLOUD SYNC INITIALIZER
         // ==========================================
-        function setPlayerCount(count) {
-            tempPlayerCount = count;
-            // Ubah visual aktif button group
-            for (let i = 1; i <= 4; i++) {
-                const btn = document.getElementById(`btn-pcount-${i}`);
-                if (i === count) {
-                    btn.className = "py-2.5 bg-brand-50 border-2 border-brand-500 text-brand-600 font-black rounded-xl text-center shadow-sm";
-                } else {
-                    btn.className = "py-2.5 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-black rounded-xl text-center";
-                }
+        async function inisialisasiDataAwalApp() {
+            try {
+                // Tarik koleksi awal ular_tangga
+                const querySnapshot = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
+                bankSoalGlobal = [];
+                querySnapshot.forEach((doc) => {
+                    let data = doc.data();
+                    data.id = doc.id; // Inject ID dokumen untuk CRUD update/delete
+                    bankSoalGlobal.push(data);
+                });
+
+                // Ekstrak Opsi Unik untuk Kelas
+                const listKelasUnik = [...new Set(bankSoalGlobal.map(item => item.kelas.toUpperCase()))].sort();
+                
+                const selectKelas = document.getElementById('play-kelas');
+                selectKelas.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+                
+                listKelasUnik.forEach(kls => {
+                    const opt = document.createElement('option');
+                    opt.value = kls;
+                    opt.innerText = kls;
+                    selectKelas.appendChild(opt);
+                });
+
+            } catch (error) {
+                console.error("Firebase init failed: ", error);
             }
         }
 
-        async function validateAndStartGame() {
-            const kelasInput = document.getElementById('play-kelas').value.trim();
-            const mapelInput = document.getElementById('play-mapel').value.trim();
-
-            if (!kelasInput || !mapelInput) {
-                alert('Silakan masukkan nama Kelas dan Mata Pelajaran terlebih dahulu!');
+        function filterMapelDropdown() {
+            const klsTerpilih = document.getElementById('play-kelas').value;
+            const selectMapel = document.getElementById('play-mapel');
+            
+            if(!klsTerpilih) {
+                selectMapel.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
                 return;
             }
 
-            activeKelas = kelasInput;
-            activeMapel = mapelInput;
+            // Ekstrak Opsi Unik Mapel berdasarkan kelas yang dipilih
+            const mapelFiltered = bankSoalGlobal.filter(item => item.kelas.toUpperCase() === klsTerpilih);
+            const listMapelUnik = [...new Set(mapelFiltered.map(item => item.mapel.toUpperCase()))].sort();
+
+            selectMapel.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
+            listMapelUnik.forEach(mpl => {
+                const opt = document.createElement('option');
+                opt.value = mpl;
+                opt.innerText = mpl;
+                selectMapel.appendChild(opt);
+            });
+        }
+
+        function setPlayerCount(count) {
+            tempPlayerCount = count;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`btn-pcount-${i}`).className = (i === count) 
+                    ? "py-2 bg-green-50 border border-green-500 text-green-600 font-bold rounded-xl text-center"
+                    : "py-2 bg-slate-50 border border-slate-200 text-slate-600 font-bold rounded-xl text-center";
+            }
+        }
+
+        function validateAndStartGame() {
+            const klsVal = document.getElementById('play-kelas').value;
+            const mplVal = document.getElementById('play-mapel').value;
+
+            if (!klsVal || !mplVal) {
+                alert('Silakan tentukan pilihan opsi Kelas dan Mata Pelajaran yang tersedia!');
+                return;
+            }
+
+            activeKelas = klsVal;
+            activeMapel = mplVal;
             numPlayers = tempPlayerCount;
 
-            // Update Teks Identitas atas layar
             document.getElementById('bar-kelas').innerText = activeKelas;
             document.getElementById('bar-mapel').innerText = activeMapel;
             document.getElementById('game-identity-bar').classList.remove('hidden');
 
-            // Ambil data terbaru dari cloud database dan lakukan filter spesifik
-            await sinkronisasiDanFilterSoal();
+            // Saring soal khusus untuk sesi permainan berjalan
+            filteredSoalGame = bankSoalGlobal.filter(item => 
+                item.kelas.toUpperCase() === activeKelas && item.mapel.toUpperCase() === activeMapel
+            );
 
-            // Jalankan inisialisasi awal papan
             executeStartGame();
-        }
-
-        async function sinkronisasiDanFilterSoal() {
-            try {
-                const querySnapshot = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
-                bankSoal = [];
-                querySnapshot.forEach((doc) => {
-                    bankSoal.push(doc.data());
-                });
-
-                // Proses penyaringan (case-insensitive filter)
-                filteredSoal = bankSoal.filter(item => 
-                    item.kelas.toLowerCase() === activeKelas.toLowerCase() &&
-                    item.mapel.toLowerCase() === activeMapel.toLowerCase()
-                );
-
-                console.log(`Sinkronisasi Selesai. Ditemukan ${filteredSoal.length} soal untuk ${activeKelas} - ${activeMapel}`);
-            } catch (error) {
-                console.error("Gagal memuat bank soal dari cloud: ", error);
-            }
         }
 
         function executeStartGame() {
             currentPlayer = 0;
             playerPositions = [1, 1, 1, 1];
             isMoving = false;
-            
             document.getElementById('startup-modal').classList.add('hidden');
             
             for (let i = 0; i < 4; i++) {
                 const token = document.getElementById(`player-token-${i}`);
                 const card = document.getElementById(`card-p${i}`);
-                
                 if (i < numPlayers) {
                     token.classList.remove('hidden');
                     card.classList.remove('hidden');
@@ -628,7 +615,6 @@
                 } else {
                     token.classList.add('hidden');
                     card.classList.add('hidden');
-                    card.classList.remove('flex');
                 }
             }
             updateTurnUI();
@@ -637,7 +623,7 @@
         }
 
         // ==========================================
-        // SYSTEM AUTH & PANEL SETTINGS GURU
+        // PANEL SISTEM CRUD LENGKAP GURU (ADMIN)
         // ==========================================
         function openSettingsAuth() {
             document.getElementById('auth-modal').classList.remove('hidden');
@@ -650,20 +636,73 @@
         }
 
         function verifyAdminPass() {
-            const pass = document.getElementById('admin-pass').value;
-            if(pass === 'admin') {
+            if(document.getElementById('admin-pass').value === 'admin') {
                 closeAuthModal();
                 document.getElementById('admin-modal').classList.remove('hidden');
+                resetCrudForm();
+                renderTabelAdmin();
             } else {
-                alert('Password salah! Akses khusus guru ditolak.');
+                alert('Kata sandi admin tidak tepat!');
             }
         }
 
         function closeAdminModal() {
             document.getElementById('admin-modal').classList.add('hidden');
+            // Reload inisialisasi dropdown awal barangkali ada data baru berubah
+            inisialisasiDataAwalApp();
         }
 
-        async function simpanSoalFirebase() {
+        function resetCrudForm() {
+            document.getElementById('crud-id-soal').value = '';
+            document.getElementById('input-kelas').value = '';
+            document.getElementById('input-mapel').value = '';
+            document.getElementById('input-soal').value = '';
+            document.getElementById('input-a').value = '';
+            document.getElementById('input-b').value = '';
+            document.getElementById('input-c').value = '';
+            document.getElementById('input-d').value = '';
+            document.getElementById('input-kunci').value = 'A';
+            document.getElementById('form-crud-title').innerText = "➕ Tambah Soal Baru";
+        }
+
+        // ENGINE RE-RENDER TABEL DAFTAR DATA CRUD (READ)
+        function renderTabelAdmin() {
+            const tbody = document.getElementById('tbody-admin-crud');
+            const fKelas = document.getElementById('filter-tabel-kelas').value.toUpperCase();
+            const fMapel = document.getElementById('filter-tabel-mapel').value.toUpperCase();
+
+            tbody.innerHTML = '';
+
+            let dataTampil = bankSoalGlobal;
+            if(fKelas) dataTampil = dataTampil.filter(item => item.kelas.toUpperCase().includes(fKelas));
+            if(fMapel) dataTampil = dataTampil.filter(item => item.mapel.toUpperCase().includes(fMapel));
+
+            if(dataTampil.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 font-bold">Tidak ada data soal ditemukan.</td></tr>`;
+                return;
+            }
+
+            dataTampil.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-2 align-top whitespace-nowrap">
+                        <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">${item.kelas}</span><br>
+                        <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase inline-block mt-1">${item.mapel}</span>
+                    </td>
+                    <td class="p-2 align-top font-medium max-w-xs truncate">${item.soal} <br><span class="text-[10px] text-emerald-600 font-bold">Kunci: ${item.kunci}</span></td>
+                    <td class="p-2 align-top text-center space-x-1 whitespace-nowrap">
+                        <button onclick="siapkanEditSoal('${item.id}')" class="bg-amber-100 text-amber-700 font-bold px-2 py-1 rounded hover:bg-amber-200 transition-colors">Edit</button>
+                        <button onclick="hapusSoal('${item.id}')" class="bg-red-100 text-red-700 font-bold px-2 py-1 rounded hover:bg-red-200 transition-colors">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // PROCESS CONTROLLER CREATE & UPDATE (CREATE/UPDATE)
+        async function prosesSimpanCRUD() {
+            const idSoal = document.getElementById('crud-id-soal').value;
             const kelas = document.getElementById('input-kelas').value.trim();
             const mapel = document.getElementById('input-mapel').value.trim();
             const soal = document.getElementById('input-soal').value.trim();
@@ -674,38 +713,79 @@
             const kunci = document.getElementById('input-kunci').value;
 
             if(!kelas || !mapel || !soal || !pilA || !pilB || !pilC || !pilD) {
-                alert('Mohon lengkapi seluruh formulir data identifikasi dan butir pilihan ganda!');
+                alert('Harap isi lengkap seluruh form input data soal pilihan ganda!');
                 return;
             }
 
+            const payload = {
+                kelas: kelas, mapel: mapel, soal: soal,
+                a: pilA, b: pilB, c: pilC, d: pilD, kunci: kunci,
+                timestamp: new Date().getTime()
+            };
+
             try {
-                await window.fsAddDoc(window.fsCollection(window.dbFirestore, "ular_tangga"), {
-                    kelas: kelas,
-                    mapel: mapel,
-                    soal: soal,
-                    a: pilA,
-                    b: pilB,
-                    c: pilC,
-                    d: pilD,
-                    kunci: kunci,
-                    timestamp: new Date().getTime()
+                if(idSoal) {
+                    // JALUR UPDATE DATA
+                    const docRef = window.fsDoc(window.dbFirestore, "ular_tangga", idSoal);
+                    await window.fsUpdateDoc(docRef, payload);
+                    alert('Data soal berhasil diperbarui di cloud database!');
+                } else {
+                    // JALUR TAMBAH DATA (CREATE)
+                    await window.fsAddDoc(window.fsCollection(window.dbFirestore, "ular_tangga"), payload);
+                    alert('Data soal baru berhasil ditambahkan ke cloud database!');
+                }
+
+                resetCrudForm();
+                // Tarik ulang data mentah dari database untuk memperbarui tampilan tabel list internal
+                const snap = await window.fsGetDocs(window.fsCollection(window.dbFirestore, "ular_tangga"));
+                bankSoalGlobal = [];
+                snap.forEach(d => {
+                    let obj = d.data(); obj.id = d.id;
+                    bankSoalGlobal.push(obj);
                 });
+                renderTabelAdmin();
 
-                alert('Berhasil! Soal baru terunggah ke Database Firebase.');
+            } catch (err) {
+                alert('Aksi CRUD gagal: ' + err.message);
+            }
+        }
+
+        function siapkanEditSoal(id) {
+            const item = bankSoalGlobal.find(s => s.id === id);
+            if(!item) return;
+
+            document.getElementById('crud-id-soal').value = item.id;
+            document.getElementById('input-kelas').value = item.kelas;
+            document.getElementById('input-mapel').value = item.mapel;
+            document.getElementById('input-soal').value = item.soal;
+            document.getElementById('input-a').value = item.a;
+            document.getElementById('input-b').value = item.b;
+            document.getElementById('input-c').value = item.c;
+            document.getElementById('input-d').value = item.d;
+            document.getElementById('input-kunci').value = item.kunci;
+
+            document.getElementById('form-crud-title').innerText = "✏️ Edit Soal Aktif";
+        }
+
+        // AKSI HAPUS SOAL (DELETE)
+        async function hapusSoal(id) {
+            if(!confirm('Apakah Anda yakin ingin menghapus butir soal kuis ini secara permanen dari Cloud database?')) return;
+
+            try {
+                const docRef = window.fsDoc(window.dbFirestore, "ular_tangga", id);
+                await window.fsDeleteDoc(docRef);
                 
-                document.getElementById('input-soal').value = '';
-                document.getElementById('input-a').value = '';
-                document.getElementById('input-b').value = '';
-                document.getElementById('input-c').value = '';
-                document.getElementById('input-d').value = '';
-
-            } catch (error) {
-                alert("Gagal menyimpan data: " + error.message);
+                // Sinkronisasi local state array
+                bankSoalGlobal = bankSoalGlobal.filter(item => item.id !== id);
+                renderTabelAdmin();
+                alert('Soal sukses dihapus dari database.');
+            } catch (err) {
+                alert('Gagal menghapus data: ' + err.message);
             }
         }
 
         // ==========================================
-        // LOGIKA CORE PERMAINAN & KUIS EVALUASI
+        // SISTEM CORE PERMAINAN ULAR TANGGA & KUIS
         // ==========================================
         function buildBoard() {
             const grid = document.getElementById('board-grid');
@@ -739,34 +819,22 @@
                 const pos2 = getCoordinates(end);
                 const dx = pos2.x - pos1.x; const dy = pos2.y - pos1.y;
                 const length = Math.sqrt(dx*dx + dy*dy);
-                const ux = dx/length; const uy = dy/length;
-                const px = -uy; const py = ux; const w = 1.8;
+                const px = -(dy/length); const py = dx/length; const w = 1.2;
 
-                const r1x1 = pos1.x + px*w; const r1y1 = pos1.y + py*w;
-                const r1x2 = pos2.x + px*w; const r1y2 = pos2.y + py*w;
-                const r2x1 = pos1.x - px*w; const r2y1 = pos1.y - py*w;
-                const r2x2 = pos2.x - px*w; const r2y2 = pos2.y - py*w;
+                svgContent += `<line x1="${pos1.x + px*w}" y1="${pos1.y + py*w}" x2="${pos2.x + px*w}" y2="${pos2.y + py*w}" stroke="#b45309" stroke-width="1.2" stroke-linecap="round"/>`;
+                svgContent += `<line x1="${pos1.x - px*w}" y1="${pos1.y - py*w}" x2="${pos2.x - px*w}" y2="${pos2.y - py*w}" stroke="#b45309" stroke-width="1.2" stroke-linecap="round"/>`;
 
-                svgContent += `<line x1="${r1x1+0.4}" y1="${r1y1+0.4}" x2="${r1x2+0.4}" y2="${r1y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>`;
-                svgContent += `<line x1="${r2x1+0.4}" y1="${r2y1+0.4}" x2="${r2x2+0.4}" y2="${r2y2+0.4}" stroke="rgba(0,0,0,0.3)" stroke-width="1.2" stroke-linecap="round"/>`;
-                svgContent += `<line x1="${r1x1}" y1="${r1y1}" x2="${r1x2}" y2="${r1y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>`;
-                svgContent += `<line x1="${r2x1}" y1="${r2y1}" x2="${r2x2}" y2="${r2y2}" stroke="#78350f" stroke-width="1.4" stroke-linecap="round"/>`;
-
-                const rungCount = Math.floor(length / 3); 
+                const rungCount = Math.floor(length / 4); 
                 for(let i=1; i<=rungCount; i++) {
                     const t = i / (rungCount + 1);
-                    const rx1 = r1x1 + (r1x2 - r1x1)*t; const ry1 = r1y1 + (r1y2 - r1y1)*t;
-                    const rx2 = r2x1 + (r2x2 - r2x1)*t; const ry2 = r2y1 + (r2y2 - r2y1)*t;
-                    svgContent += `<line x1="${rx1}" y1="${ry1}" x2="${rx2}" y2="${ry2}" stroke="#92400e" stroke-width="1" stroke-linecap="round"/>`;
+                    const rx1 = (pos1.x + px*w) + (pos2.x - pos1.x)*t; const ry1 = (pos1.y + py*w) + (pos2.y - pos1.y)*t;
+                    const rx2 = (pos1.x - px*w) + (pos2.x - pos1.x)*t; const ry2 = (pos1.y - py*w) + (pos2.y - pos1.y)*t;
+                    svgContent += `<line x1="${rx1}" y1="${ry1}" x2="${rx2}" y2="${ry2}" stroke="#b45309" stroke-width="0.8"/>`;
                 }
             }
 
-            const snakeColors = [
-                { body: '#ef4444', belly: '#fca5a5' }, { body: '#10b981', belly: '#6ee7b7' },
-                { body: '#3b82f6', belly: '#93c5fd' }, { body: '#8b5cf6', belly: '#c4b5fd' }
-            ];
-            let colorIdx = 0;
-
+            const snakeColors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b'];
+            let cIdx = 0;
             for (const [head, tail] of Object.entries(snakes)) {
                 const hPos = getCoordinates(parseInt(head));
                 const tPos = getCoordinates(tail);
@@ -774,27 +842,13 @@
                 const length = Math.sqrt(dx*dx + dy*dy);
                 const px = -dy/length; const py = dx/length;
 
-                const curveOffset = length > 30 ? 15 : 8; 
-                const cx1 = hPos.x + dx*0.3 + px*curveOffset; const cy1 = hPos.y + dy*0.3 + py*curveOffset;
-                const cx2 = hPos.x + dx*0.7 - px*curveOffset; const cy2 = hPos.y + dy*0.7 - py*curveOffset;
+                const cx1 = hPos.x + dx*0.3 + px*(length > 30 ? 10 : 6);
+                const cy1 = hPos.y + dy*0.3 + py*(length > 30 ? 10 : 6);
+                const cx2 = hPos.x + dx*0.7 - px*(length > 30 ? 10 : 6);
+                const cy2 = hPos.y + dy*0.7 - py*(length > 30 ? 10 : 6);
 
-                const pathData = `M ${hPos.x} ${hPos.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tPos.x} ${tPos.y}`;
-                const color = snakeColors[colorIdx % snakeColors.length];
-                colorIdx++;
-
-                svgContent += `<path d="${pathData}" stroke="rgba(0,0,0,0.3)" stroke-width="3.5" fill="none" stroke-linecap="round" transform="translate(0.5, 0.8)"/>`;
-                svgContent += `<path d="${pathData}" stroke="${color.body}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-                svgContent += `<path d="${pathData}" stroke="${color.belly}" stroke-width="1.5" stroke-dasharray="1.5 2.5" fill="none" stroke-linecap="round"/>`;
-
-                const hdx = hPos.x - cx1; const hdy = hPos.y - cy1;
-                const hAngle = Math.atan2(hdy, hdx) * 180 / Math.PI;
-                svgContent += `
-                    <g transform="translate(${hPos.x}, ${hPos.y}) rotate(${hAngle})">
-                        <ellipse cx="-1.5" cy="0" rx="3" ry="2.2" fill="${color.body}"/>
-                        <circle cx="-0.5" cy="-1.2" r="0.8" fill="white"/><circle cx="-0.2" cy="-1.2" r="0.4" fill="black"/>
-                        <circle cx="-0.5" cy="1.2" r="0.8" fill="white"/><circle cx="-0.2" cy="1.2" r="0.4" fill="black"/>
-                    </g>
-                `;
+                svgContent += `<path d="M ${hPos.x} ${hPos.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tPos.x} ${tPos.y}" stroke="${snakeColors[cIdx % 4]}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+                cIdx++;
             }
             svg.innerHTML = svgContent;
         }
@@ -804,11 +858,11 @@
                 const card = document.getElementById(`card-p${i}`);
                 if (card && !card.classList.contains('hidden')) {
                     if (i === currentPlayer) {
-                        card.classList.add('card-active', 'ring-4', playerRingClasses[i]);
-                        card.classList.remove('card-inactive');
+                        card.classList.add('bg-white', 'ring-2', playerRingClasses[i], 'scale-105');
+                        card.style.opacity = '1';
                     } else {
-                        card.classList.add('card-inactive');
-                        card.classList.remove('card-active', 'ring-4', playerRingClasses[i]);
+                        card.classList.remove('ring-2', playerRingClasses[i], 'scale-105');
+                        card.style.opacity = '0.5';
                     }
                 }
             }
@@ -816,14 +870,14 @@
 
         function updatePlayerPosition(pIndex, num) {
             const pos = getCoordinates(num);
-            const playerToken = document.getElementById(`player-token-${pIndex}`);
-            playerToken.classList.remove('jumping');
-            void playerToken.offsetWidth; 
-            playerToken.classList.add('jumping');
+            const token = document.getElementById(`player-token-${pIndex}`);
+            token.classList.remove('jumping');
+            void token.offsetWidth; 
+            token.classList.add('jumping');
 
             const offset = posOffsets[pIndex];
-            playerToken.style.left = `calc(${pos.x}% + ${offset.dx}%)`;
-            playerToken.style.top = `calc(${pos.y}% + ${offset.dy}%)`;
+            token.style.left = `calc(${pos.x}% + ${offset.dx}%)`;
+            token.style.top = `calc(${pos.y}% + ${offset.dy}%)`;
             document.getElementById(`pos-p${pIndex}`).innerText = num;
         }
 
@@ -843,98 +897,66 @@
         function rollDice3D() {
             if (isMoving) return;
             isMoving = true;
-            
             document.getElementById('btn-roll').disabled = true;
 
             const overlay = document.getElementById('dice-3d-overlay');
             const wrapper = document.getElementById('dice-wrapper');
             const cube = document.getElementById('dice-cube');
-            const shadow = document.getElementById('dice-shadow');
             const miniVisual = document.getElementById('mini-dice-visual');
 
             overlay.classList.remove('hidden');
-            void overlay.offsetWidth; 
+            void overlay.offsetWidth;
             overlay.classList.remove('opacity-0');
             overlay.classList.add('opacity-100');
 
             wrapper.style.transition = 'none';
             cube.style.transition = 'none';
-            shadow.style.transition = 'none';
-            
-            wrapper.style.transform = 'translate(-45vmin, 45vmin) scale(0.2)';
+            wrapper.style.transform = 'translate(-20vmin, 20vmin) scale(0.4)';
             cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
-            shadow.style.transform = 'scale(0.2)';
-            shadow.style.opacity = '0';
 
             const result = Math.floor(Math.random() * 6) + 1;
-            
-            let targetRotX = 0, targetRotY = 0;
+            let rotX = 0, rotY = 0;
             switch(result) {
-                case 1: targetRotX = 0; targetRotY = 0; break;
-                case 2: targetRotX = 0; targetRotY = -90; break;
-                case 3: targetRotX = -90; targetRotY = 0; break;
-                case 4: targetRotX = 90; targetRotY = 0; break;
-                case 5: targetRotX = 0; targetRotY = 90; break;
-                case 6: targetRotX = 180; targetRotY = 0; break;
+                case 1: rotX = 0; rotY = 0; break;
+                case 2: rotX = 0; rotY = -90; break;
+                case 3: rotX = -90; rotY = 0; break;
+                case 4: rotX = 90; rotY = 0; break;
+                case 5: rotX = 0; rotY = 90; break;
+                case 6: rotX = 180; rotY = 0; break;
             }
 
-            let extraSpinsX = (Math.floor(Math.random() * 3) + 3) * 360; 
-            let extraSpinsY = (Math.floor(Math.random() * 3) + 3) * 360; 
-            let extraSpinsZ = (Math.floor(Math.random() * 2) + 1) * 360; 
-
             setTimeout(() => {
-                wrapper.style.transition = 'transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                wrapper.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
                 wrapper.style.transform = 'translate(0, 0) scale(1)';
-                
-                cube.style.transition = 'transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                cube.style.transform = `rotateX(${targetRotX + extraSpinsX}deg) rotateY(${targetRotY + extraSpinsY}deg) rotateZ(${extraSpinsZ}deg)`;
-                
-                shadow.style.transition = 'transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease-in';
-                shadow.style.transform = 'scale(1)';
-                shadow.style.opacity = '1';
-                
-                let blinkInterval = setInterval(() => {
-                    const rnd = Math.floor(Math.random() * 6) + 1;
-                    miniVisual.innerHTML = `<span class="text-slate-400 opacity-50">${rnd}</span>`;
-                }, 100);
+                cube.style.transition = 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                cube.style.transform = `rotateX(${rotX + 720}deg) rotateY(${rotY + 720}deg)`;
 
                 setTimeout(() => {
-                    clearInterval(blinkInterval);
-                    miniVisual.innerHTML = `<span class="text-brand-600">${result}</span>`;
+                    miniVisual.innerHTML = `<span class="text-green-600">${result}</span>`;
+                    overlay.classList.remove('opacity-100');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => overlay.classList.add('hidden'), 200);
 
-                    setTimeout(() => {
-                        overlay.classList.remove('opacity-100');
-                        overlay.classList.add('opacity-0');
-                        setTimeout(() => overlay.classList.add('hidden'), 300);
-
-                        let currentPosTemp = playerPositions[currentPlayer];
-                        let targetPos = currentPosTemp + result;
-                        
-                        if (targetPos > 100) {
-                            setTimeout(nextTurn, 1000);
-                            return;
-                        }
-                        
-                        moveTokenStepByStep(currentPlayer, currentPosTemp, targetPos, 400, () => {
-                            bukaKuisSiswa(targetPos);
-                        });
-
-                    }, 800); 
-                }, 1200); 
-            }, 50); 
+                    let cPos = playerPositions[currentPlayer];
+                    let tPos = cPos + result;
+                    if (tPos > 100) {
+                        setTimeout(nextTurn, 800);
+                        return;
+                    }
+                    moveTokenStepByStep(currentPlayer, cPos, tPos, 300, () => bukaKuisSiswa(tPos));
+                }, 900);
+            }, 50);
         }
 
         function bukaKuisSiswa(targetPos) {
-            // Cek ketersediaan bank soal yang telah difilter berdasarkan kelas & mapel
-            if(filteredSoal.length === 0) {
-                // Jika tidak ada soal yang cocok, jalankan pengecekan ular/tangga langsung
+            if(filteredSoalGame.length === 0) {
                 checkSnakesLadders(currentPlayer, targetPos);
                 return;
             }
 
-            const indexAcak = Math.floor(Math.random() * filteredSoal.length);
-            soalAktif = filteredSoal[indexAcak];
-            soalAktif.targetPos = targetPos; 
+            const rIdx = Math.floor(Math.random() * filteredSoalGame.length);
+            soalAktif = filteredSoalGame[rIdx];
+            soalAktif.targetPos = targetPos;
 
             document.getElementById('quiz-identity').innerText = `${soalAktif.kelas} - ${soalAktif.mapel}`;
             document.getElementById('quiz-player-tag').innerText = `Tantangan untuk ${playerNames[currentPlayer]}`;
@@ -944,60 +966,45 @@
             document.getElementById('text-ans-c').innerText = soalAktif.c;
             document.getElementById('text-ans-d').innerText = soalAktif.d;
 
-            const feedback = document.getElementById('quiz-feedback');
-            feedback.classList.add('hidden');
-            resetButtonStyles();
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            ['a','b','c','d'].forEach(ch => {
+                const b = document.getElementById(`btn-ans-${ch}`);
+                b.className = "w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 text-left rounded-xl border border-slate-200 font-bold flex gap-2";
+                b.disabled = false;
+            });
 
             document.getElementById('quiz-modal').classList.remove('hidden');
         }
 
-        function resetButtonStyles() {
-            ['a','b','c','d'].forEach(ch => {
-                const btn = document.getElementById(`btn-ans-${ch}`);
-                btn.className = "w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-left rounded-2xl border-2 border-slate-200 font-bold transition-all flex gap-3 text-sm sm:text-base";
-                btn.disabled = false;
-            });
-        }
-
-        function checkJawabanSiswa(jawabanDipilih) {
+        function checkJawabanSiswa(jawaban) {
+            const kunci = soalAktif.kunci;
             const feedback = document.getElementById('quiz-feedback');
-            const kunciBenar = soalAktif.kunci; 
-
             ['a','b','c','d'].forEach(ch => document.getElementById(`btn-ans-${ch}`).disabled = true);
 
-            const btnTerpilih = document.getElementById(`btn-ans-${jawabanDipilih.toLowerCase()}`);
+            const btnT = document.getElementById(`btn-ans-${jawaban.toLowerCase()}`);
 
-            if(jawabanDipilih === kunciBenar) {
-                btnTerpilih.className = "w-full py-3 px-4 bg-emerald-100 text-left rounded-2xl border-2 border-emerald-400 font-bold transition-all flex gap-3 text-sm sm:text-base text-emerald-700";
-                feedback.innerHTML = "🎉 HEBAT! Jawabanmu Benar. Kamu aman di petak ini.";
-                feedback.className = "mt-4 text-center font-black text-sm text-emerald-600 block";
+            if(jawaban === kunci) {
+                btnT.className = "w-full py-2.5 px-3 bg-green-100 text-left rounded-xl border border-green-400 font-bold flex gap-2 text-green-700";
+                feedback.innerHTML = "🎉 Jawaban Benar! Posisi aman.";
+                feedback.className = "mt-3 text-center font-bold text-xs text-green-600 block";
 
                 setTimeout(() => {
                     document.getElementById('quiz-modal').classList.add('hidden');
                     checkSnakesLadders(currentPlayer, soalAktif.targetPos);
-                }, 2000);
-
+                }, 1500);
             } else {
-                btnTerpilih.className = "w-full py-3 px-4 bg-rose-100 text-left rounded-2xl border-2 border-rose-400 font-bold transition-all flex gap-3 text-sm sm:text-base text-rose-700";
-                
-                const btnBenar = document.getElementById(`btn-ans-${kunciBenar.toLowerCase()}`);
-                btnBenar.className = "w-full py-3 px-4 bg-emerald-50 text-left rounded-2xl border-2 border-emerald-300 font-bold transition-all flex gap-3 text-sm sm:text-base text-emerald-600";
-
-                feedback.innerHTML = "❌ Kurang Tepat! Kamu dihukum mundur 2 langkah.";
-                feedback.className = "mt-4 text-center font-black text-sm text-rose-600 block";
+                btnT.className = "w-full py-2.5 px-3 bg-red-100 text-left rounded-xl border border-red-400 font-bold flex gap-2 text-red-700";
+                document.getElementById(`btn-ans-${kunci.toLowerCase()}`).className = "w-full py-2.5 px-3 bg-green-50 text-left rounded-xl border border-green-300 font-bold flex gap-2 text-green-600";
+                feedback.innerHTML = "❌ Kurang Tepat! Mundur 2 langkah.";
+                feedback.className = "mt-3 text-center font-bold text-xs text-red-600 block";
 
                 setTimeout(() => {
                     document.getElementById('quiz-modal').classList.add('hidden');
-                    
-                    let posisiMundur = Math.max(1, soalAktif.targetPos - 2);
-                    playerPositions[currentPlayer] = posisiMundur;
-                    updatePlayerPosition(currentPlayer, posisiMundur);
-
-                    setTimeout(() => {
-                        checkSnakesLadders(currentPlayer, posisiMundur);
-                    }, 800);
-
-                }, 2500);
+                    let pMundur = Math.max(1, soalAktif.targetPos - 2);
+                    playerPositions[currentPlayer] = pMundur;
+                    updatePlayerPosition(currentPlayer, pMundur);
+                    setTimeout(() => checkSnakesLadders(currentPlayer, pMundur), 600);
+                }, 2000);
             }
         }
 
@@ -1006,22 +1013,21 @@
                 triggerWin(pIndex);
                 return;
             }
-
             if (ladders[pos]) {
                 playerPositions[pIndex] = ladders[pos];
                 updatePlayerPosition(pIndex, ladders[pos]);
-                setTimeout(nextTurn, 1200);
+                setTimeout(nextTurn, 1000);
             } else if (snakes[pos]) {
                 playerPositions[pIndex] = snakes[pos];
                 updatePlayerPosition(pIndex, snakes[pos]);
-                setTimeout(nextTurn, 1200);
+                setTimeout(nextTurn, 1000);
             } else {
-                setTimeout(nextTurn, 500);
+                setTimeout(nextTurn, 400);
             }
         }
 
         function nextTurn() {
-            if(playerPositions.includes(100)) return; 
+            if(playerPositions.includes(100)) return;
             currentPlayer = (currentPlayer + 1) % numPlayers;
             updateTurnUI();
             isMoving = false;
@@ -1029,34 +1035,26 @@
         }
 
         function triggerWin(pIndex) {
-            const modalContainer = document.getElementById('confetti-container');
-            const winModal = document.getElementById('win-modal');
-            const titleEl = document.getElementById('win-title');
-            
-            titleEl.innerHTML = `${playerNames[pIndex]} MENANG!`;
-            titleEl.className = `text-3xl sm:text-4xl font-black mb-2 ${playerColorClasses[pIndex]}`;
-            
-            document.getElementById('win-desc').innerHTML = `Luar biasa! Karakter <b>${playerNames[pIndex]}</b> berhasil mencapai garis akhir (100).`;
-
-            modalContainer.classList.remove('hidden');
-            setTimeout(() => {
-                winModal.classList.remove('scale-0');
-                winModal.classList.add('scale-100');
-            }, 50);
+            const mc = document.getElementById('confetti-container');
+            const wm = document.getElementById('win-modal');
+            document.getElementById('win-title').innerHTML = `${playerNames[pIndex]} MENANG!`;
+            document.getElementById('win-title').className = `text-2xl font-black mb-1 ${playerColorClasses[pIndex]}`;
+            document.getElementById('win-desc').innerHTML = `Luar biasa! Karakter <b>${playerNames[pIndex]}</b> sukses mencapai petak akhir (100).`;
+            mc.classList.remove('hidden');
+            setTimeout(() => { wm.classList.remove('scale-0'); wm.classList.add('scale-100'); }, 50);
         }
 
         function resetGame() {
-            const modalContainer = document.getElementById('confetti-container');
-            const winModal = document.getElementById('win-modal');
-            
-            winModal.classList.remove('scale-100');
-            winModal.classList.add('scale-0');
-            
+            const mc = document.getElementById('confetti-container');
+            const wm = document.getElementById('win-modal');
+            wm.classList.remove('scale-100'); wm.classList.add('scale-0');
             setTimeout(() => {
-                modalContainer.classList.add('hidden');
+                mc.classList.add('hidden');
                 document.getElementById('game-identity-bar').classList.add('hidden');
                 document.getElementById('startup-modal').classList.remove('hidden');
-            }, 300);
+                // Refresh data bank soal awal aplikasi
+                inisialisasiDataAwalApp();
+            }, 200);
         }
     </script>
 </body>
