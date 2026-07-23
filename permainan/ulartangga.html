@@ -298,21 +298,20 @@
 </head>
 <body class="animated-bg min-h-screen w-screen overflow-x-hidden text-slate-800 antialiased relative flex flex-col justify-start items-center p-2 sm:p-4">
 
-    <!-- RE-START GAME CONTROLLER BUTTON (TOP LEFT) -->
-    <div class="absolute top-3 left-3 z-[90]">
-        <button onclick="resetGame()" class="bg-white/90 backdrop-blur-md border border-white/80 text-rose-500 px-3 py-1.5 rounded-xl shadow-md hover:bg-white transition-all flex items-center gap-1 font-black text-xs" title="Ulang Permainan">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-            <span>Reset</span>
-        </button>
-    </div>
-
     <!-- MAIN WRAPPER TERSTRUKTUR (MOBILE & DESKTOP) -->
-    <div class="w-full max-w-lg flex flex-col items-center gap-3 my-auto pt-10 sm:pt-2 pb-6">
+    <div class="w-full max-w-lg flex flex-col items-center gap-3 my-auto pt-4 sm:pt-2 pb-6">
 
-        <!-- 1. JUDUL / INFOBAR KELAS & MAPEL (DI ATAS PAPAN) -->
-        <div id="game-identity-bar" class="bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-4 py-1.5 rounded-2xl shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center justify-center gap-2 z-[80] w-auto">
-            <span>Kelas</span> <span id="bar-kelas" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-lg"></span> 
-            <span class="ml-1">Mapel</span> <span id="bar-mapel" class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-lg"></span>
+        <!-- 1. JUDUL / INFOBAR KELAS & MAPEL DENGAN TOMBOL RESET LOGO DI SEBELAH KANAN -->
+        <div id="game-identity-bar" class="bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-3.5 py-1.5 rounded-2xl shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center justify-between gap-2 z-[80] w-auto">
+            <div class="flex items-center gap-1.5">
+                <span>Kelas</span> <span id="bar-kelas" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-lg"></span> 
+                <span class="ml-1">Mapel</span> <span id="bar-mapel" class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-lg"></span>
+            </div>
+            
+            <!-- TOMBOL RESET LOGO SAJA DI SEBELAH KANAN JUDUL -->
+            <button onclick="resetGame()" class="ml-1 text-rose-500 hover:text-rose-600 bg-rose-50 hover:bg-rose-100 p-1.5 rounded-xl border border-rose-200 shadow-sm transition-all flex items-center justify-center" title="Ulang Permainan">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            </button>
         </div>
 
         <!-- 2. PAPAN PERMAINAN (MEMENUHI LEBAR LAYAR MOBILE) -->
