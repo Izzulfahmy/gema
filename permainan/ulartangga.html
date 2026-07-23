@@ -40,7 +40,7 @@
 
         .board-wrapper {
             width: 100%;
-            max-width: min(100%, calc(100vh - 120px)); 
+            max-width: min(100vw - 16px, 600px); 
             position: relative;
             margin: auto;
         }
@@ -158,12 +158,12 @@
         }
 
         .card-active {
-            transform: scale(1.03);
+            transform: scale(1.02);
             opacity: 1 !important;
             box-shadow: 0 8px 15px -3px rgba(16, 185, 129, 0.3);
         }
         .card-inactive {
-            transform: scale(0.97);
+            transform: scale(0.98);
             opacity: 0.55;
         }
 
@@ -232,20 +232,20 @@
             grid-template-rows: repeat(3, 1fr);
             width: 100%;
             height: 100%;
-            padding: 6px;
+            padding: 3px;
             justify-items: center;
             align-items: center;
         }
         .mini-pip {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background-color: #334155;
             border-radius: 50%;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
         }
         .mini-pip-red {
-            width: 12px;
-            height: 12px;
+            width: 9px;
+            height: 9px;
             background-color: #ef4444;
             border-radius: 50%;
         }
@@ -296,99 +296,29 @@
         window.fsUpdateDoc = updateDoc;
     </script>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-between items-center p-3">
+<body class="animated-bg min-h-screen w-screen overflow-x-hidden text-slate-800 antialiased relative flex flex-col justify-start items-center p-2 sm:p-4">
 
-    <!-- RE-START GAME CONTROLLER BUTTON (POJOK KIRI ATAS) -->
-    <div class="absolute top-4 left-4 z-[90]">
-        <button onclick="resetGame()" class="bg-white/90 backdrop-blur-md border border-white/80 text-rose-500 px-3.5 py-2 rounded-2xl shadow-md hover:bg-white hover:scale-105 transition-all flex items-center gap-1.5 font-black text-xs" title="Ulang Permainan">
+    <!-- RE-START GAME CONTROLLER BUTTON (TOP LEFT) -->
+    <div class="absolute top-3 left-3 z-[90]">
+        <button onclick="resetGame()" class="bg-white/90 backdrop-blur-md border border-white/80 text-rose-500 px-3 py-1.5 rounded-xl shadow-md hover:bg-white transition-all flex items-center gap-1 font-black text-xs" title="Ulang Permainan">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             <span>Reset</span>
         </button>
     </div>
 
-    <!-- DAFTAR PEMAIN - MEPET POJOK KANAN ATAS -->
-    <div class="absolute top-4 right-4 z-[90] w-48 sm:w-56">
-        <div class="bg-white/85 backdrop-blur-md p-3 rounded-2xl shadow-lg border-2 border-emerald-100 flex flex-col gap-2">
-            <div class="flex items-center justify-between border-b pb-1.5">
-                <h3 class="font-black text-slate-700 text-xs tracking-wide uppercase flex items-center gap-1.5">
-                    <span>👥</span> Pemain
-                </h3>
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Petak</span>
-            </div>
+    <!-- MAIN WRAPPER TERSTRUKTUR (MOBILE & DESKTOP) -->
+    <div class="w-full max-w-lg flex flex-col items-center gap-3 my-auto pt-10 sm:pt-2 pb-6">
 
-            <div class="flex flex-col gap-1.5">
-                <!-- PEMAIN 1 -->
-                <div id="card-p0" class="bg-white p-2 rounded-xl shadow-sm border border-blue-200 flex items-center justify-between transition-all duration-300 hidden">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-xl bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-base shadow-inner">🐰</div>
-                        <div>
-                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 1</div>
-                            <div class="text-[9px] font-bold text-blue-500 uppercase leading-none">Kelinci</div>
-                        </div>
-                    </div>
-                    <div class="bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-lg text-center min-w-[32px]">
-                        <div class="text-sm font-black text-blue-600 leading-none" id="pos-p0">1</div>
-                    </div>
-                </div>
-
-                <!-- PEMAIN 2 -->
-                <div id="card-p1" class="bg-white p-2 rounded-xl shadow-sm border border-red-200 flex items-center justify-between transition-all duration-300 hidden">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-xl bg-red-100 border border-red-400 flex items-center justify-center font-black text-base shadow-inner">🐐</div>
-                        <div>
-                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 2</div>
-                            <div class="text-[9px] font-bold text-red-500 uppercase leading-none">Kambing</div>
-                        </div>
-                    </div>
-                    <div class="bg-red-50 border border-red-200 px-2 py-0.5 rounded-lg text-center min-w-[32px]">
-                        <div class="text-sm font-black text-red-600 leading-none" id="pos-p1">1</div>
-                    </div>
-                </div>
-
-                <!-- PEMAIN 3 -->
-                <div id="card-p2" class="bg-white p-2 rounded-xl shadow-sm border border-emerald-200 flex items-center justify-between transition-all duration-300 hidden">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-base shadow-inner">🐸</div>
-                        <div>
-                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 3</div>
-                            <div class="text-[9px] font-bold text-emerald-500 uppercase leading-none">Katak</div>
-                        </div>
-                    </div>
-                    <div class="bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg text-center min-w-[32px]">
-                        <div class="text-sm font-black text-emerald-600 leading-none" id="pos-p2">1</div>
-                    </div>
-                </div>
-
-                <!-- PEMAIN 4 -->
-                <div id="card-p3" class="bg-white p-2 rounded-xl shadow-sm border border-yellow-200 flex items-center justify-between transition-all duration-300 hidden">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-xl bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-base shadow-inner">🐱</div>
-                        <div>
-                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 4</div>
-                            <div class="text-[9px] font-bold text-yellow-600 uppercase leading-none">Kucing</div>
-                        </div>
-                    </div>
-                    <div class="bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded-lg text-center min-w-[32px]">
-                        <div class="text-sm font-black text-yellow-600 leading-none" id="pos-p3">1</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN AREA (DITENGAHKAN PRESISI KELAS, MAPEL, DAN PAPAN) -->
-    <div class="w-full flex-1 flex flex-col justify-center items-center overflow-hidden my-auto">
-        
-        <!-- INFOBAR KELAS DAN MAPEL - TEPAT LURUS DITENGAH PAPAN -->
-        <div id="game-identity-bar" class="mb-2 bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-5 py-1.5 rounded-2xl shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2 z-[80]">
+        <!-- 1. JUDUL / INFOBAR KELAS & MAPEL (DI ATAS PAPAN) -->
+        <div id="game-identity-bar" class="bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-4 py-1.5 rounded-2xl shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center justify-center gap-2 z-[80] w-auto">
             <span>Kelas</span> <span id="bar-kelas" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-lg"></span> 
             <span class="ml-1">Mapel</span> <span id="bar-mapel" class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-lg"></span>
         </div>
 
-        <!-- BOARD VIEW PORT -->
+        <!-- 2. PAPAN PERMAINAN (MEMENUHI LEBAR LAYAR MOBILE) -->
         <div class="board-wrapper flex justify-center items-center">
-            <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2.5 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
-                <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
+            <div class="board-container bg-white/80 backdrop-blur-sm p-1 sm:p-2 rounded-2xl sm:rounded-[2rem] shadow-xl border-2 sm:border-4 border-white">
+                <div class="w-full h-full bg-slate-50 rounded-xl overflow-hidden shadow-inner border border-slate-200 relative">
                     <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                     <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 p-0.5 w-full h-full border-t border-l border-slate-300/60"></div>
 
@@ -401,19 +331,88 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- CONTROLLER DADU WIDGET DI POJOK KANAN BAWAH -->
-    <div class="fixed bottom-4 right-4 z-[100] flex flex-col items-center gap-2 bg-white/95 backdrop-blur-md p-2 rounded-3xl shadow-2xl border-2 border-emerald-200 w-[90px] sm:w-[100px]">
-        <!-- VISUAL DADU MINI DENGAN TITIK -->
-        <div id="mini-dice-visual" class="w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-slate-200 rounded-2xl shadow-inner flex items-center justify-center p-1">
-            <div class="mini-dice-grid">
-                <div class="col-start-2 row-start-2 mini-pip-red"></div>
+        <!-- 3. TOMBOL LEMPAR DADU (PANJANG DI BAWAH PAPAN) -->
+        <div class="w-full flex items-center justify-center gap-2">
+            <button id="btn-roll" onclick="rollDice3D()" class="toy-btn flex-1 bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl py-3 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-sm tracking-wider uppercase border border-brand-600 flex items-center justify-center gap-3">
+                <!-- VISUAL DADU MINI DENGAN TITIK -->
+                <div id="mini-dice-visual" class="w-8 h-8 bg-white border border-slate-200 rounded-xl shadow-inner flex items-center justify-center p-0.5 shrink-0">
+                    <div class="mini-dice-grid">
+                        <div class="col-start-2 row-start-2 mini-pip-red"></div>
+                    </div>
+                </div>
+                <span>LEMPAR DADU!</span>
+            </button>
+        </div>
+
+        <!-- 4. DAFTAR PEMAIN (BISA DI-SCROLL KE BAWAH) -->
+        <div class="w-full bg-white/85 backdrop-blur-md p-3 rounded-2xl shadow-md border-2 border-emerald-100 flex flex-col gap-2 max-h-48 overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-1 sticky top-0 bg-white/90 backdrop-blur-sm z-10">
+                <h3 class="font-black text-slate-700 text-xs tracking-wide uppercase flex items-center gap-1.5">
+                    <span>👥</span> Daftar Pemain
+                </h3>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Posisi Petak</span>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <!-- PEMAIN 1 -->
+                <div id="card-p0" class="bg-white p-2 rounded-xl shadow-sm border border-blue-200 flex items-center justify-between transition-all duration-300 hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-sm shadow-inner">🐰</div>
+                        <div>
+                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 1</div>
+                            <div class="text-[9px] font-bold text-blue-500 uppercase leading-none">Kelinci</div>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-lg text-center min-w-[32px]">
+                        <div class="text-xs font-black text-blue-600 leading-none" id="pos-p0">1</div>
+                    </div>
+                </div>
+
+                <!-- PEMAIN 2 -->
+                <div id="card-p1" class="bg-white p-2 rounded-xl shadow-sm border border-red-200 flex items-center justify-between transition-all duration-300 hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-red-100 border border-red-400 flex items-center justify-center font-black text-sm shadow-inner">🐐</div>
+                        <div>
+                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 2</div>
+                            <div class="text-[9px] font-bold text-red-500 uppercase leading-none">Kambing</div>
+                        </div>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-lg text-center min-w-[32px]">
+                        <div class="text-xs font-black text-red-600 leading-none" id="pos-p1">1</div>
+                    </div>
+                </div>
+
+                <!-- PEMAIN 3 -->
+                <div id="card-p2" class="bg-white p-2 rounded-xl shadow-sm border border-emerald-200 flex items-center justify-between transition-all duration-300 hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-sm shadow-inner">🐸</div>
+                        <div>
+                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 3</div>
+                            <div class="text-[9px] font-bold text-emerald-500 uppercase leading-none">Katak</div>
+                        </div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-lg text-center min-w-[32px]">
+                        <div class="text-xs font-black text-emerald-600 leading-none" id="pos-p2">1</div>
+                    </div>
+                </div>
+
+                <!-- PEMAIN 4 -->
+                <div id="card-p3" class="bg-white p-2 rounded-xl shadow-sm border border-yellow-200 flex items-center justify-between transition-all duration-300 hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-sm shadow-inner">🐱</div>
+                        <div>
+                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 4</div>
+                            <div class="text-[9px] font-bold text-yellow-600 uppercase leading-none">Kucing</div>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-50 border border-yellow-200 px-2.5 py-0.5 rounded-lg text-center min-w-[32px]">
+                        <div class="text-xs font-black text-yellow-600 leading-none" id="pos-p3">1</div>
+                    </div>
+                </div>
             </div>
         </div>
-        <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[11px] tracking-wider uppercase border border-brand-600 truncate">
-            LEMPAR!
-        </button>
+
     </div>
 
     <!-- MODAL 1: STARTUP FORM SELEKSI KELAS & MAPEL -->
