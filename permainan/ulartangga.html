@@ -158,13 +158,13 @@
         }
 
         .card-active {
-            transform: scale(1.02);
+            transform: scale(1.03);
             opacity: 1 !important;
-            box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.2);
+            box-shadow: 0 8px 15px -3px rgba(16, 185, 129, 0.3);
         }
         .card-inactive {
-            transform: scale(0.98);
-            opacity: 0.6;
+            transform: scale(0.97);
+            opacity: 0.55;
         }
 
         .perspective-1000 { perspective: 1000px; }
@@ -225,6 +225,31 @@
         .face-6 .pip:nth-child(5) { grid-area: 2 / 3 / 3 / 4; }
         .face-6 .pip:nth-child(6) { grid-area: 3 / 3 / 4 / 4; }
 
+        /* MINI DICE PIP STYLE */
+        .mini-dice-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 100%;
+            height: 100%;
+            padding: 6px;
+            justify-items: center;
+            align-items: center;
+        }
+        .mini-pip {
+            width: 8px;
+            height: 8px;
+            background-color: #334155;
+            border-radius: 50%;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+        }
+        .mini-pip-red {
+            width: 12px;
+            height: 12px;
+            background-color: #ef4444;
+            border-radius: 50%;
+        }
+
         #dice-shadow {
             width: 80px; height: 30px;
             background: rgba(0,0,0,0.3);
@@ -271,111 +296,107 @@
         window.fsUpdateDoc = updateDoc;
     </script>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-between items-center p-3 sm:p-5">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-between items-center p-3">
 
-    <!-- TOP HEADER / INFOBAR BARU -->
-    <div class="w-full flex justify-between items-center z-[90]">
-        <!-- INFOBAR IDENTITAS PERMAINAN AKTIF -->
-        <div id="game-identity-bar" class="bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-5 py-2 rounded-2xl shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2">
-            <span>Kelas</span> <span id="bar-kelas" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-lg"></span> 
-            <span class="ml-1">Mapel</span> <span id="bar-mapel" class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-lg"></span>
-        </div>
-
-        <!-- RE-START GAME CONTROLLER BUTTON -->
-        <button onclick="resetGame()" class="bg-white/90 backdrop-blur-md border border-white/80 text-rose-500 px-3.5 py-2 rounded-2xl shadow-md hover:bg-white hover:scale-105 transition-all flex items-center gap-1.5 font-black text-xs ml-auto" title="Ulang Permainan">
+    <!-- RE-START GAME CONTROLLER BUTTON (POJOK KIRI ATAS) -->
+    <div class="absolute top-4 left-4 z-[90]">
+        <button onclick="resetGame()" class="bg-white/90 backdrop-blur-md border border-white/80 text-rose-500 px-3.5 py-2 rounded-2xl shadow-md hover:bg-white hover:scale-105 transition-all flex items-center gap-1.5 font-black text-xs" title="Ulang Permainan">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             <span>Reset</span>
         </button>
     </div>
 
-    <!-- MAIN CONTAINER (LAYOUT DUA KOLOM: KIRI PAPAN, KANAN DAFTAR PEMAIN) -->
-    <div class="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center overflow-hidden my-2 max-w-7xl">
-        
-        <!-- KOLOM KIRI: MAIN BOARD VIEW PORT (8 KOLOM) -->
-        <div class="lg:col-span-8 flex justify-center items-center h-full overflow-hidden">
-            <div class="board-wrapper">
-                <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2.5 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
-                    <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
-                        <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-                        <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 p-0.5 w-full h-full border-t border-l border-slate-300/60"></div>
+    <!-- DAFTAR PEMAIN - MEPET POJOK KANAN ATAS -->
+    <div class="absolute top-4 right-4 z-[90] w-48 sm:w-56">
+        <div class="bg-white/85 backdrop-blur-md p-3 rounded-2xl shadow-lg border-2 border-emerald-100 flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b pb-1.5">
+                <h3 class="font-black text-slate-700 text-xs tracking-wide uppercase flex items-center gap-1.5">
+                    <span>👥</span> Pemain
+                </h3>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Petak</span>
+            </div>
 
-                        <div id="tokens-container">
-                            <div id="player-token-0" class="player-token hidden"><div class="token-emoji">🐰</div><div class="token-base base-0"></div></div>
-                            <div id="player-token-1" class="player-token hidden"><div class="token-emoji">🐐</div><div class="token-base base-1"></div></div>
-                            <div id="player-token-2" class="player-token hidden"><div class="token-emoji">🐸</div><div class="token-base base-2"></div></div>
-                            <div id="player-token-3" class="player-token hidden"><div class="token-emoji">🐱</div><div class="token-base base-3"></div></div>
+            <div class="flex flex-col gap-1.5">
+                <!-- PEMAIN 1 -->
+                <div id="card-p0" class="bg-white p-2 rounded-xl shadow-sm border border-blue-200 flex items-center justify-between transition-all duration-300 hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-base shadow-inner">🐰</div>
+                        <div>
+                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 1</div>
+                            <div class="text-[9px] font-bold text-blue-500 uppercase leading-none">Kelinci</div>
                         </div>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-lg text-center min-w-[32px]">
+                        <div class="text-sm font-black text-blue-600 leading-none" id="pos-p0">1</div>
+                    </div>
+                </div>
+
+                <!-- PEMAIN 2 -->
+                <div id="card-p1" class="bg-white p-2 rounded-xl shadow-sm border border-red-200 flex items-center justify-between transition-all duration-300 hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-red-100 border border-red-400 flex items-center justify-center font-black text-base shadow-inner">🐐</div>
+                        <div>
+                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 2</div>
+                            <div class="text-[9px] font-bold text-red-500 uppercase leading-none">Kambing</div>
+                        </div>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 px-2 py-0.5 rounded-lg text-center min-w-[32px]">
+                        <div class="text-sm font-black text-red-600 leading-none" id="pos-p1">1</div>
+                    </div>
+                </div>
+
+                <!-- PEMAIN 3 -->
+                <div id="card-p2" class="bg-white p-2 rounded-xl shadow-sm border border-emerald-200 flex items-center justify-between transition-all duration-300 hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-base shadow-inner">🐸</div>
+                        <div>
+                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 3</div>
+                            <div class="text-[9px] font-bold text-emerald-500 uppercase leading-none">Katak</div>
+                        </div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg text-center min-w-[32px]">
+                        <div class="text-sm font-black text-emerald-600 leading-none" id="pos-p2">1</div>
+                    </div>
+                </div>
+
+                <!-- PEMAIN 4 -->
+                <div id="card-p3" class="bg-white p-2 rounded-xl shadow-sm border border-yellow-200 flex items-center justify-between transition-all duration-300 hidden">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-base shadow-inner">🐱</div>
+                        <div>
+                            <div class="text-[11px] font-black text-slate-700 leading-tight">Pemain 4</div>
+                            <div class="text-[9px] font-bold text-yellow-600 uppercase leading-none">Kucing</div>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded-lg text-center min-w-[32px]">
+                        <div class="text-sm font-black text-yellow-600 leading-none" id="pos-p3">1</div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- KOLOM KANAN: DAFTAR PEMAIN LIST (4 KOLOM) -->
-        <div class="lg:col-span-4 flex flex-col justify-center gap-3 h-full max-h-[90vh] overflow-y-auto p-1">
-            <div class="bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-xl border-2 border-emerald-100 flex flex-col gap-3">
-                <div class="flex items-center justify-between border-b pb-2">
-                    <h3 class="font-black text-slate-700 text-sm tracking-wide uppercase flex items-center gap-2">
-                        <span>👥</span> Daftar Pemain
-                    </h3>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Posisi Petak</span>
-                </div>
+    <!-- MAIN AREA (DITENGAHKAN PRESISI KELAS, MAPEL, DAN PAPAN) -->
+    <div class="w-full flex-1 flex flex-col justify-center items-center overflow-hidden my-auto">
+        
+        <!-- INFOBAR KELAS DAN MAPEL - TEPAT LURUS DITENGAH PAPAN -->
+        <div id="game-identity-bar" class="mb-2 bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-5 py-1.5 rounded-2xl shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2 z-[80]">
+            <span>Kelas</span> <span id="bar-kelas" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-lg"></span> 
+            <span class="ml-1">Mapel</span> <span id="bar-mapel" class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-lg"></span>
+        </div>
 
-                <!-- LIST PEMAIN VERTIKAL -->
-                <div class="flex flex-col gap-2.5">
-                    <!-- PEMAIN 1 -->
-                    <div id="card-p0" class="bg-white p-3 rounded-2xl shadow-md border-2 border-blue-200 flex items-center justify-between transition-all duration-300 hidden">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl bg-blue-100 border-2 border-blue-400 flex items-center justify-center font-black text-2xl shadow-inner">🐰</div>
-                            <div>
-                                <div class="text-xs font-black text-slate-700">Pemain 1</div>
-                                <div class="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Kelinci</div>
-                            </div>
-                        </div>
-                        <div class="bg-blue-50 border border-blue-200 px-3 py-1 rounded-xl text-center min-w-[50px]">
-                            <div class="text-lg font-black text-blue-600 leading-none" id="pos-p0">1</div>
-                        </div>
-                    </div>
+        <!-- BOARD VIEW PORT -->
+        <div class="board-wrapper flex justify-center items-center">
+            <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2.5 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
+                <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
+                    <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+                    <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 p-0.5 w-full h-full border-t border-l border-slate-300/60"></div>
 
-                    <!-- PEMAIN 2 -->
-                    <div id="card-p1" class="bg-white p-3 rounded-2xl shadow-md border-2 border-red-200 flex items-center justify-between transition-all duration-300 hidden">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl bg-red-100 border-2 border-red-400 flex items-center justify-center font-black text-2xl shadow-inner">🐐</div>
-                            <div>
-                                <div class="text-xs font-black text-slate-700">Pemain 2</div>
-                                <div class="text-[10px] font-bold text-red-500 uppercase tracking-wider">Kambing</div>
-                            </div>
-                        </div>
-                        <div class="bg-red-50 border border-red-200 px-3 py-1 rounded-xl text-center min-w-[50px]">
-                            <div class="text-lg font-black text-red-600 leading-none" id="pos-p1">1</div>
-                        </div>
-                    </div>
-
-                    <!-- PEMAIN 3 -->
-                    <div id="card-p2" class="bg-white p-3 rounded-2xl shadow-md border-2 border-emerald-200 flex items-center justify-between transition-all duration-300 hidden">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl bg-emerald-100 border-2 border-emerald-400 flex items-center justify-center font-black text-2xl shadow-inner">🐸</div>
-                            <div>
-                                <div class="text-xs font-black text-slate-700">Pemain 3</div>
-                                <div class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Katak</div>
-                            </div>
-                        </div>
-                        <div class="bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl text-center min-w-[50px]">
-                            <div class="text-lg font-black text-emerald-600 leading-none" id="pos-p2">1</div>
-                        </div>
-                    </div>
-
-                    <!-- PEMAIN 4 -->
-                    <div id="card-p3" class="bg-white p-3 rounded-2xl shadow-md border-2 border-yellow-200 flex items-center justify-between transition-all duration-300 hidden">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl bg-yellow-100 border-2 border-yellow-400 flex items-center justify-center font-black text-2xl shadow-inner">🐱</div>
-                            <div>
-                                <div class="text-xs font-black text-slate-700">Pemain 4</div>
-                                <div class="text-[10px] font-bold text-yellow-600 uppercase tracking-wider">Kucing</div>
-                            </div>
-                        </div>
-                        <div class="bg-yellow-50 border border-yellow-200 px-3 py-1 rounded-xl text-center min-w-[50px]">
-                            <div class="text-lg font-black text-yellow-600 leading-none" id="pos-p3">1</div>
-                        </div>
+                    <div id="tokens-container">
+                        <div id="player-token-0" class="player-token hidden"><div class="token-emoji">🐰</div><div class="token-base base-0"></div></div>
+                        <div id="player-token-1" class="player-token hidden"><div class="token-emoji">🐐</div><div class="token-base base-1"></div></div>
+                        <div id="player-token-2" class="player-token hidden"><div class="token-emoji">🐸</div><div class="token-base base-2"></div></div>
+                        <div id="player-token-3" class="player-token hidden"><div class="token-emoji">🐱</div><div class="token-base base-3"></div></div>
                     </div>
                 </div>
             </div>
@@ -383,9 +404,14 @@
     </div>
 
     <!-- CONTROLLER DADU WIDGET DI POJOK KANAN BAWAH -->
-    <div class="fixed bottom-4 right-4 z-[100] flex flex-col items-center gap-2 bg-white/95 backdrop-blur-md p-2.5 rounded-3xl shadow-2xl border-2 border-emerald-200 w-[95px] sm:w-[110px]">
-        <div id="mini-dice-visual" class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-50 border border-slate-200 rounded-2xl shadow-inner flex items-center justify-center text-3xl sm:text-4xl font-black">🎲</div>
-        <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl py-2 sm:py-2.5 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-xs tracking-wider uppercase border border-brand-600 truncate">
+    <div class="fixed bottom-4 right-4 z-[100] flex flex-col items-center gap-2 bg-white/95 backdrop-blur-md p-2 rounded-3xl shadow-2xl border-2 border-emerald-200 w-[90px] sm:w-[100px]">
+        <!-- VISUAL DADU MINI DENGAN TITIK -->
+        <div id="mini-dice-visual" class="w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-slate-200 rounded-2xl shadow-inner flex items-center justify-center p-1">
+            <div class="mini-dice-grid">
+                <div class="col-start-2 row-start-2 mini-pip-red"></div>
+            </div>
+        </div>
+        <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[11px] tracking-wider uppercase border border-brand-600 truncate">
             LEMPAR!
         </button>
     </div>
@@ -1189,11 +1215,11 @@
                 const card = document.getElementById(`card-p${i}`);
                 if (card) {
                     if (i === currentPlayer) {
-                        card.classList.add('card-active', 'ring-4', playerRingClasses[i]);
+                        card.classList.add('card-active', 'ring-2', playerRingClasses[i]);
                         card.classList.remove('card-inactive');
                     } else {
                         card.classList.add('card-inactive');
-                        card.classList.remove('card-active', 'ring-4', playerRingClasses[i]);
+                        card.classList.remove('card-active', 'ring-2', playerRingClasses[i]);
                     }
                 }
             }
@@ -1215,6 +1241,26 @@
             playerPositions[pIndex] = nextPos;
             updatePlayerPosition(pIndex, nextPos);
             setTimeout(() => { moveTokenStepByStep(pIndex, nextPos, endPos, stepDelay, onComplete); }, stepDelay);
+        }
+
+        // RENDER TITIK DADU MINI
+        function renderMiniDicePip(val) {
+            let pipsHTML = '';
+            switch(val) {
+                case 1:
+                    pipsHTML = `<div class="col-start-2 row-start-2 mini-pip-red"></div>`; break;
+                case 2:
+                    pipsHTML = `<div class="col-start-3 row-start-1 mini-pip"></div><div class="col-start-1 row-start-3 mini-pip"></div>`; break;
+                case 3:
+                    pipsHTML = `<div class="col-start-3 row-start-1 mini-pip"></div><div class="col-start-2 row-start-2 mini-pip"></div><div class="col-start-1 row-start-3 mini-pip"></div>`; break;
+                case 4:
+                    pipsHTML = `<div class="col-start-1 row-start-1 mini-pip"></div><div class="col-start-3 row-start-1 mini-pip"></div><div class="col-start-1 row-start-3 mini-pip"></div><div class="col-start-3 row-start-3 mini-pip"></div>`; break;
+                case 5:
+                    pipsHTML = `<div class="col-start-1 row-start-1 mini-pip"></div><div class="col-start-3 row-start-1 mini-pip"></div><div class="col-start-2 row-start-2 mini-pip"></div><div class="col-start-1 row-start-3 mini-pip"></div><div class="col-start-3 row-start-3 mini-pip"></div>`; break;
+                case 6:
+                    pipsHTML = `<div class="col-start-1 row-start-1 mini-pip"></div><div class="col-start-3 row-start-1 mini-pip"></div><div class="col-start-1 row-start-2 mini-pip"></div><div class="col-start-3 row-start-2 mini-pip"></div><div class="col-start-1 row-start-3 mini-pip"></div><div class="col-start-3 row-start-3 mini-pip"></div>`; break;
+            }
+            return `<div class="mini-dice-grid">${pipsHTML}</div>`;
         }
 
         function rollDice3D() {
@@ -1253,11 +1299,12 @@
                 shadow.style.transform = 'scale(1)'; shadow.style.opacity = '1';
                 
                 let blink = setInterval(() => {
-                    miniVisual.innerHTML = `<span class="text-slate-400 opacity-50">${Math.floor(Math.random()*6)+1}</span>`;
+                    miniVisual.innerHTML = renderMiniDicePip(Math.floor(Math.random()*6)+1);
                 }, 100);
 
                 setTimeout(() => {
-                    clearInterval(blink); miniVisual.innerHTML = `<span class="text-brand-600 font-black">${result}</span>`;
+                    clearInterval(blink); 
+                    miniVisual.innerHTML = renderMiniDicePip(result);
 
                     setTimeout(() => {
                         overlay.classList.remove('opacity-100'); overlay.classList.add('opacity-0');
