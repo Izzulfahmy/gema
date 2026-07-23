@@ -40,7 +40,7 @@
 
         .board-wrapper {
             width: 100%;
-            max-width: min(calc(100vw - 120px), calc(100vh - 100px)); 
+            max-width: min(100%, calc(100vh - 120px)); 
             position: relative;
             margin: auto;
         }
@@ -158,12 +158,12 @@
         }
 
         .card-active {
-            transform: scale(1.05);
+            transform: scale(1.02);
             opacity: 1 !important;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.2);
         }
         .card-inactive {
-            transform: scale(0.95);
+            transform: scale(0.98);
             opacity: 0.6;
         }
 
@@ -271,11 +271,123 @@
         window.fsUpdateDoc = updateDoc;
     </script>
 </head>
-<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-center items-center">
+<body class="animated-bg h-screen w-screen overflow-hidden text-slate-800 antialiased relative flex flex-col justify-between items-center p-3 sm:p-5">
 
-    <!-- INFOBAR IDENTITAS PERMAINAN AKTIF -->
-    <div id="game-identity-bar" class="absolute top-3 z-[90] bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-5 py-1.5 rounded-full shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-1.5">
-        <span>Kelas</span> <span id="bar-kelas"></span> <span class="ml-2">Mapel</span> <span id="bar-mapel"></span>
+    <!-- TOP HEADER / INFOBAR BARU -->
+    <div class="w-full flex justify-between items-center z-[90]">
+        <!-- INFOBAR IDENTITAS PERMAINAN AKTIF -->
+        <div id="game-identity-bar" class="bg-white/90 backdrop-blur-md border-2 border-emerald-200 px-5 py-2 rounded-2xl shadow-md font-black text-xs sm:text-sm text-emerald-700 uppercase tracking-wider hidden flex items-center gap-2">
+            <span>Kelas</span> <span id="bar-kelas" class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-lg"></span> 
+            <span class="ml-1">Mapel</span> <span id="bar-mapel" class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-lg"></span>
+        </div>
+
+        <!-- RE-START GAME CONTROLLER BUTTON -->
+        <button onclick="resetGame()" class="bg-white/90 backdrop-blur-md border border-white/80 text-rose-500 px-3.5 py-2 rounded-2xl shadow-md hover:bg-white hover:scale-105 transition-all flex items-center gap-1.5 font-black text-xs ml-auto" title="Ulang Permainan">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            <span>Reset</span>
+        </button>
+    </div>
+
+    <!-- MAIN CONTAINER (LAYOUT DUA KOLOM: KIRI PAPAN, KANAN DAFTAR PEMAIN) -->
+    <div class="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center overflow-hidden my-2 max-w-7xl">
+        
+        <!-- KOLOM KIRI: MAIN BOARD VIEW PORT (8 KOLOM) -->
+        <div class="lg:col-span-8 flex justify-center items-center h-full overflow-hidden">
+            <div class="board-wrapper">
+                <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2.5 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
+                    <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
+                        <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+                        <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 p-0.5 w-full h-full border-t border-l border-slate-300/60"></div>
+
+                        <div id="tokens-container">
+                            <div id="player-token-0" class="player-token hidden"><div class="token-emoji">🐰</div><div class="token-base base-0"></div></div>
+                            <div id="player-token-1" class="player-token hidden"><div class="token-emoji">🐐</div><div class="token-base base-1"></div></div>
+                            <div id="player-token-2" class="player-token hidden"><div class="token-emoji">🐸</div><div class="token-base base-2"></div></div>
+                            <div id="player-token-3" class="player-token hidden"><div class="token-emoji">🐱</div><div class="token-base base-3"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KOLOM KANAN: DAFTAR PEMAIN LIST (4 KOLOM) -->
+        <div class="lg:col-span-4 flex flex-col justify-center gap-3 h-full max-h-[90vh] overflow-y-auto p-1">
+            <div class="bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-xl border-2 border-emerald-100 flex flex-col gap-3">
+                <div class="flex items-center justify-between border-b pb-2">
+                    <h3 class="font-black text-slate-700 text-sm tracking-wide uppercase flex items-center gap-2">
+                        <span>👥</span> Daftar Pemain
+                    </h3>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Posisi Petak</span>
+                </div>
+
+                <!-- LIST PEMAIN VERTIKAL -->
+                <div class="flex flex-col gap-2.5">
+                    <!-- PEMAIN 1 -->
+                    <div id="card-p0" class="bg-white p-3 rounded-2xl shadow-md border-2 border-blue-200 flex items-center justify-between transition-all duration-300 hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-blue-100 border-2 border-blue-400 flex items-center justify-center font-black text-2xl shadow-inner">🐰</div>
+                            <div>
+                                <div class="text-xs font-black text-slate-700">Pemain 1</div>
+                                <div class="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Kelinci</div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-200 px-3 py-1 rounded-xl text-center min-w-[50px]">
+                            <div class="text-lg font-black text-blue-600 leading-none" id="pos-p0">1</div>
+                        </div>
+                    </div>
+
+                    <!-- PEMAIN 2 -->
+                    <div id="card-p1" class="bg-white p-3 rounded-2xl shadow-md border-2 border-red-200 flex items-center justify-between transition-all duration-300 hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-red-100 border-2 border-red-400 flex items-center justify-center font-black text-2xl shadow-inner">🐐</div>
+                            <div>
+                                <div class="text-xs font-black text-slate-700">Pemain 2</div>
+                                <div class="text-[10px] font-bold text-red-500 uppercase tracking-wider">Kambing</div>
+                            </div>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 px-3 py-1 rounded-xl text-center min-w-[50px]">
+                            <div class="text-lg font-black text-red-600 leading-none" id="pos-p1">1</div>
+                        </div>
+                    </div>
+
+                    <!-- PEMAIN 3 -->
+                    <div id="card-p2" class="bg-white p-3 rounded-2xl shadow-md border-2 border-emerald-200 flex items-center justify-between transition-all duration-300 hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-emerald-100 border-2 border-emerald-400 flex items-center justify-center font-black text-2xl shadow-inner">🐸</div>
+                            <div>
+                                <div class="text-xs font-black text-slate-700">Pemain 3</div>
+                                <div class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Katak</div>
+                            </div>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl text-center min-w-[50px]">
+                            <div class="text-lg font-black text-emerald-600 leading-none" id="pos-p2">1</div>
+                        </div>
+                    </div>
+
+                    <!-- PEMAIN 4 -->
+                    <div id="card-p3" class="bg-white p-3 rounded-2xl shadow-md border-2 border-yellow-200 flex items-center justify-between transition-all duration-300 hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-yellow-100 border-2 border-yellow-400 flex items-center justify-center font-black text-2xl shadow-inner">🐱</div>
+                            <div>
+                                <div class="text-xs font-black text-slate-700">Pemain 4</div>
+                                <div class="text-[10px] font-bold text-yellow-600 uppercase tracking-wider">Kucing</div>
+                            </div>
+                        </div>
+                        <div class="bg-yellow-50 border border-yellow-200 px-3 py-1 rounded-xl text-center min-w-[50px]">
+                            <div class="text-lg font-black text-yellow-600 leading-none" id="pos-p3">1</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTROLLER DADU WIDGET DI POJOK KANAN BAWAH -->
+    <div class="fixed bottom-4 right-4 z-[100] flex flex-col items-center gap-2 bg-white/95 backdrop-blur-md p-2.5 rounded-3xl shadow-2xl border-2 border-emerald-200 w-[95px] sm:w-[110px]">
+        <div id="mini-dice-visual" class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-50 border border-slate-200 rounded-2xl shadow-inner flex items-center justify-center text-3xl sm:text-4xl font-black">🎲</div>
+        <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-2xl py-2 sm:py-2.5 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-xs tracking-wider uppercase border border-brand-600 truncate">
+            LEMPAR!
+        </button>
     </div>
 
     <!-- MODAL 1: STARTUP FORM SELEKSI KELAS & MAPEL -->
@@ -288,7 +400,7 @@
             </div>
 
             <button onclick="openSettingsAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors" title="Pengaturan Guru">
-                <svg xmlns="http://www.w3.org/2000/xl" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -424,74 +536,6 @@
                 <button onclick="checkJawabanSiswa('D')" id="btn-ans-d" class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-left rounded-2xl border-2 border-slate-200 font-bold transition-all flex gap-3 text-sm sm:text-base"><span class="text-blue-500 font-black">D.</span> <span id="text-ans-d">Pilihan D</span></button>
             </div>
             <div id="quiz-feedback" class="mt-4 text-center font-black text-sm hidden"></div>
-        </div>
-    </div>
-
-    <!-- HUD RE-START GAME CONTROLLER -->
-    <div class="absolute top-4 right-4 z-[100]">
-        <button onclick="resetGame()" class="bg-white/80 backdrop-blur-md border border-white/60 text-rose-500 p-2 sm:p-2.5 rounded-xl shadow-lg hover:bg-white hover:scale-105 transition-all flex justify-center items-center" title="Ulang Permainan">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-        </button>
-    </div>
-
-    <!-- HUD CARD POSITIONING -->
-    <div id="card-p0" class="absolute top-20 left-4 sm:top-24 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-blue-200 flex items-center gap-2 transition-all duration-300 hidden origin-top-left">
-        <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-400 flex items-center justify-center font-black text-xl shadow-inner">🐰</div>
-        <div class="pr-2">
-            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p0">1</div>
-        </div>
-    </div>
-    
-    <div id="card-p1" class="absolute top-20 right-4 sm:top-24 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-red-200 flex flex-row-reverse items-center gap-2 hidden origin-top-right">
-        <div class="w-10 h-10 rounded-full bg-red-100 border border-red-400 flex items-center justify-center font-black text-xl shadow-inner">🐐</div>
-        <div class="pl-2 text-right">
-            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p1">1</div>
-        </div>
-    </div>
-
-    <div id="card-p2" class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-emerald-200 flex items-center gap-2 transition-all duration-300 hidden origin-bottom-left">
-        <div class="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-400 flex items-center justify-center font-black text-xl shadow-inner">🐸</div>
-        <div class="pr-2">
-            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p2">1</div>
-        </div>
-    </div>
-
-    <div id="card-p3" class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] bg-white/90 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border-2 border-yellow-200 flex flex-row-reverse items-center gap-2 hidden origin-bottom-right">
-        <div class="w-10 h-10 rounded-full bg-yellow-100 border border-yellow-400 flex items-center justify-center font-black text-xl shadow-inner">🐱</div>
-        <div class="pl-2 text-right">
-            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Posisi</div>
-            <div class="text-xl font-black text-slate-700 leading-none" id="pos-p3">1</div>
-        </div>
-    </div>
-
-    <!-- MAIN BOARD VIEW PORT -->
-    <div class="w-full h-full flex justify-center items-center p-2 sm:p-4 pb-4 sm:pb-6 pt-16 sm:pt-10">
-        <div class="board-wrapper">
-            
-            <!-- CONTROLLER DADU WIDGET -->
-            <div class="absolute bottom-0 right-[100%] mr-1 sm:mr-3 z-[100] flex flex-col items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl shadow-xl border-2 border-emerald-100 w-[72px] sm:w-[94px]">
-                <div id="mini-dice-visual" class="w-10 h-10 sm:w-14 sm:h-14 bg-slate-100 rounded-xl shadow-inner flex items-center justify-center text-2xl sm:text-4xl font-black">🎲</div>
-                <button id="btn-roll" onclick="rollDice3D()" class="toy-btn w-full bg-brand-500 hover:bg-brand-600 text-white font-black rounded-xl py-1.5 sm:py-2 shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-1 transition-all text-[9px] sm:text-xs tracking-wider uppercase border border-brand-600 truncate px-0.5">
-                    LEMPAR!
-                </button>
-            </div>
-
-            <div class="board-container bg-white/80 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2rem] shadow-2xl border-4 border-white">
-                <div class="w-full h-full bg-slate-50 rounded-xl sm:rounded-2xl overflow-hidden shadow-inner border border-slate-200 relative">
-                    <svg id="svg-layer" class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-                    <div id="board-grid" class="absolute inset-0 grid grid-cols-10 grid-rows-10 p-0.5 w-full h-full border-t border-l border-slate-300/60"></div>
-
-                    <div id="tokens-container">
-                        <div id="player-token-0" class="player-token hidden"><div class="token-emoji">🐰</div><div class="token-base base-0"></div></div>
-                        <div id="player-token-1" class="player-token hidden"><div class="token-emoji">🐐</div><div class="token-base base-1"></div></div>
-                        <div id="player-token-2" class="player-token hidden"><div class="token-emoji">🐸</div><div class="token-base base-2"></div></div>
-                        <div id="player-token-3" class="player-token hidden"><div class="token-emoji">🐱</div><div class="token-base base-3"></div></div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -1281,7 +1325,6 @@
             }
         }
 
-        // PERBAIKAN LOGIKA: DIJAWAB BENAR ATAU KEMBALI KE PETAK ASAL MAKA CHECKSNAKESLADDERS BARU BISA BERJALAN AMAN
         function checkSnakesLadders(pIndex, pos) {
             if (pos === 100) { triggerWin(pIndex); return; }
             if (ladders[pos]) {
